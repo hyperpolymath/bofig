@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  arangodb:
+    image: arangodb/arangodb:3.11
+    container_name: evidence_graph_arango
+    ports:
+      - "8529:8529"
+    environment:
+      ARANGO_ROOT_PASSWORD: dev
+    volumes:
+      - arango_data:/var/lib/arangodb3
+      - arango_apps:/var/lib/arangodb3-apps
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: evidence_graph_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: evidence_graph_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  arango_data:
+  arango_apps:
+  postgres_data:

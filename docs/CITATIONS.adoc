@@ -1,0 +1,36 @@
+= bofig - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{bofig_2025,
+  author = {Polymath, Hyper},
+  title = {bofig},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/bofig},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _bofig_ [Computer software]. Available at: https://github.com/hyperpolymath/bofig
+
+== OSCOLA
+
+Hyper Polymath, 'bofig' (2025) <https://github.com/hyperpolymath/bofig>
+
+== MLA
+
+Polymath, Hyper. "bofig." 2025, github.com/hyperpolymath/bofig.
+
+== APA 7
+
+Polymath, H. (2025). _bofig_ [Computer software]. GitHub. https://github.com/hyperpolymath/bofig
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

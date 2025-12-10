@@ -1,85 +1,85 @@
-# Evidence Graph for Investigative Journalism
+= Evidence Graph for Investigative Journalism
 
 > Infrastructure for pragmatic epistemology. Combining i-docs navigation, PROMPT epistemological scoring, and boundary objects theory.
 
-**Status:** Phase 1 (PoC) - Month 1 Complete
-**Version:** 0.1.0
+*Status:* Phase 1 (PoC) - Month 1 Complete
+*Version:* 0.1.0
 
-## Vision
+== Vision
 
-We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. **This system IS that infrastructure.**
+We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. *This system IS that infrastructure.*
 
-### Core Concepts
+=== Core Concepts
 
-1. **i-docs Navigation**: Navigation over narration, reader agency
-2. **PROMPT Framework**: 6-dimensional epistemological scoring (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
-3. **Boundary Objects**: Multiple audience perspectives on same evidence
+1. *i-docs Navigation*: Navigation over narration, reader agency
+2. *PROMPT Framework*: 6-dimensional epistemological scoring (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
+3. *Boundary Objects*: Multiple audience perspectives on same evidence
 
-## Quick Start
+== Quick Start
 
-### Prerequisites
+=== Prerequisites
 
-- **Elixir 1.16+** & **Erlang/OTP 26+**
-- **Phoenix 1.7+**
-- **Docker** or **Podman**
-- **Node.js 20+** (for assets)
+- *Elixir 1.16+* & *Erlang/OTP 26+*
+- *Phoenix 1.7+*
+- *Docker* or *Podman*
+- *Node.js 20+* (for assets)
 
-### 1. Clone Repository
+=== 1. Clone Repository
 
 ```bash
 git clone https://github.com/Hyperpolymath/bofig.git
 cd bofig
 ```
 
-### 2. Start Databases
+=== 2. Start Databases
 
-**Using Docker Compose:**
+*Using Docker Compose:*
 ```bash
 docker-compose up -d
 ```
 
-**Using Podman:** See [Podmanfile.md](Podmanfile.md)
+*Using Podman:* See [Podmanfile.md](Podmanfile.md)
 
 Verify ArangoDB is running: http://localhost:8529 (root/dev)
 
-### 3. Install Dependencies
+=== 3. Install Dependencies
 
 ```bash
-# Elixir dependencies
+= Elixir dependencies
 mix deps.get
 mix deps.compile
 
-# Frontend assets
+= Frontend assets
 cd assets && npm install && cd ..
 ```
 
-### 4. Setup Database
+=== 4. Setup Database
 
 ```bash
-# Create PostgreSQL database (for user auth)
+= Create PostgreSQL database (for user auth)
 mix ecto.create
 
-# Setup ArangoDB collections and indexes
+= Setup ArangoDB collections and indexes
 iex -S mix
 iex> EvidenceGraph.ArangoDB.setup_database()
 
-# Load UK Inflation 2023 test data
+= Load UK Inflation 2023 test data
 mix run priv/repo/seeds.exs
 ```
 
-### 5. Start Phoenix Server
+=== 5. Start Phoenix Server
 
 ```bash
 mix phx.server
 ```
 
 Visit:
-- **GraphQL Playground**: http://localhost:4000/api/graphiql
-- **LiveDashboard**: http://localhost:4000/dev/dashboard
+- *GraphQL Playground*: http://localhost:4000/api/graphiql
+- *LiveDashboard*: http://localhost:4000/dev/dashboard
 
-## GraphQL API Examples
+== GraphQL API Examples
 
-### Query: Get All Claims
+=== Query: Get All Claims
 
 ```graphql
 query {
@@ -109,7 +109,7 @@ query {
 }
 ```
 
-### Query: Evidence Chain (Graph Traversal)
+=== Query: Evidence Chain (Graph Traversal)
 
 ```graphql
 query {
@@ -137,7 +137,7 @@ query {
 }
 ```
 
-### Mutation: Create Claim
+=== Mutation: Create Claim
 
 ```graphql
 mutation {
@@ -164,7 +164,7 @@ mutation {
 }
 ```
 
-### Mutation: Import from Zotero
+=== Mutation: Import from Zotero
 
 ```graphql
 mutation {
@@ -186,7 +186,7 @@ mutation {
 }
 ```
 
-### Query: Navigation Paths
+=== Query: Navigation Paths
 
 ```graphql
 query {
@@ -207,7 +207,7 @@ query {
 }
 ```
 
-### Mutation: Auto-Generate Navigation Path
+=== Mutation: Auto-Generate Navigation Path
 
 ```graphql
 mutation {
@@ -225,7 +225,7 @@ mutation {
 }
 ```
 
-## Project Structure
+== Project Structure
 
 ```
 bofig/
@@ -260,75 +260,75 @@ bofig/
 └── docker-compose.yml             # Container setup
 ```
 
-## UK Inflation 2023 Test Dataset
+== UK Inflation 2023 Test Dataset
 
 The seed data includes a complete investigation:
 
-- **7 Claims** (primary, supporting, counter)
-- **10 Evidence items** (expand to 30)
+- *7 Claims* (primary, supporting, counter)
+- *10 Evidence items* (expand to 30)
   - Official statistics: ONS CPI, Ofgem, BoE
   - Academic: Peer-reviewed studies
   - Think tanks: Resolution Foundation, IFS
   - Interviews: Expert opinions
-- **10 Relationships** (supports/contradicts/contextualizes)
-- **3 Navigation Paths**:
-  1. **Researcher**: Evidence-first, methodology priority
-  2. **Policymaker**: Authoritative sources, recommendations
-  3. **Affected Person**: Personal impact, clarity
+- *10 Relationships* (supports/contradicts/contextualizes)
+- *3 Navigation Paths*:
+  1. *Researcher*: Evidence-first, methodology priority
+  2. *Policymaker*: Authoritative sources, recommendations
+  3. *Affected Person*: Personal impact, clarity
 
-### PROMPT Score Examples
+=== PROMPT Score Examples
 
 | Evidence | Prov | Repl | Obj | Meth | Pub | Trans | Overall |
 |----------|------|------|-----|------|-----|-------|---------|
-| ONS CPI Data | 100 | 100 | 95 | 95 | 100 | 95 | **97.5** |
-| Academic Study | 85 | 80 | 75 | 85 | 90 | 75 | **81.8** |
-| Think Tank Report | 75 | 70 | 65 | 75 | 80 | 70 | **72.3** |
-| Expert Interview | 85 | 45 | 60 | 50 | 40 | 75 | **59.0** |
+| ONS CPI Data | 100 | 100 | 95 | 95 | 100 | 95 | *97.5* |
+| Academic Study | 85 | 80 | 75 | 85 | 90 | 75 | *81.8* |
+| Think Tank Report | 75 | 70 | 65 | 75 | 80 | 70 | *72.3* |
+| Expert Interview | 85 | 45 | 60 | 50 | 40 | 75 | *59.0* |
 
-## Development
+== Development
 
-### Run Tests
+=== Run Tests
 
 ```bash
 mix test
 ```
 
-### Interactive Shell
+=== Interactive Shell
 
 ```bash
 iex -S mix phx.server
 
-# Query ArangoDB directly
+= Query ArangoDB directly
 iex> EvidenceGraph.ArangoDB.query("FOR c IN claims RETURN c")
 
-# Get a claim
+= Get a claim
 iex> EvidenceGraph.Claims.get_claim("claim_1")
 
-# Evidence chain traversal
+= Evidence chain traversal
 iex> EvidenceGraph.Relationships.evidence_chain("claim_1", 3)
 ```
 
-### Code Quality
+=== Code Quality
 
 ```bash
-# Format code
+= Format code
 mix format
 
-# Static analysis
+= Static analysis
 mix credo
 
-# Type checking
+= Type checking
 mix dialyzer
 ```
 
-## Deployment (Phase 2)
+== Deployment (Phase 2)
 
-- **Hosting**: Hetzner Cloud (EU data sovereignty)
-- **ArangoDB**: ArangoDB Oasis (€45/month)
-- **Phoenix**: Systemd service, Nginx reverse proxy
-- **CI/CD**: GitHub Actions
+- *Hosting*: Hetzner Cloud (EU data sovereignty)
+- *ArangoDB*: ArangoDB Oasis (€45/month)
+- *Phoenix*: Systemd service, Nginx reverse proxy
+- *CI/CD*: GitHub Actions
 
-## Documentation
+== Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Data model, database design, API specs
 - [ROADMAP.md](ROADMAP.md) - 18-month implementation plan
@@ -336,9 +336,9 @@ mix dialyzer
 - [docs/zotero-integration.md](docs/zotero-integration.md) - Two-way sync design
 - [CLAUDE.md](CLAUDE.md) - AI assistant context
 
-## Key Features
+== Key Features
 
-### Implemented (Phase 1 Month 1)
+=== Implemented (Phase 1 Month 1)
 
 - ✅ Multi-model ArangoDB integration (document + graph)
 - ✅ GraphQL API with Absinthe (15 queries, 11 mutations)
@@ -350,7 +350,7 @@ mix dialyzer
 - ✅ UK Inflation 2023 test dataset
 - ✅ Auto-generate navigation paths
 
-### Coming Next (Phase 1 Month 2-6)
+=== Coming Next (Phase 1 Month 2-6)
 
 - 🚧 Zotero browser extension (import/export)
 - 🚧 D3.js graph visualization
@@ -360,35 +360,35 @@ mix dialyzer
 - 🚧 Real-time collaboration
 - 🚧 IPFS provenance integration
 
-## Philosophy
+== Philosophy
 
-This isn't just a database. It's infrastructure for **coordinating without consensus**.
+This isn't just a database. It's infrastructure for *coordinating without consensus*.
 
 Every design choice asks:
 1. Does this support multiple audience perspectives?
 2. Does this make epistemology measurable?
 3. Does this enable navigation over narration?
 
-## Contributing
+== Contributing
 
 Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
-**Month 3 = Decision Point**: User testing with 25 NUJ journalists determines go/no-go.
+*Month 3 = Decision Point*: User testing with 25 NUJ journalists determines go/no-go.
 
-## License
+== License
 
 [To be determined]
 
-## Contact
+== Contact
 
-- **Repository**: https://github.com/Hyperpolymath/bofig
-- **Issues**: https://github.com/Hyperpolymath/bofig/issues
-- **User Testing**: NUJ network (Month 3, 6, 12)
+- *Repository*: https://github.com/Hyperpolymath/bofig
+- *Issues*: https://github.com/Hyperpolymath/bofig/issues
+- *User Testing*: NUJ network (Month 3, 6, 12)
 
 ---
 
-**Built with:** Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
+*Built with:* Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
 
-**Inspired by:** i-docs (MIT Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
+*Inspired by:* i-docs (MIT Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
 
-**Last Updated:** 2025-11-22
+*Last Updated:* 2025-11-22

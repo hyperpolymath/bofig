@@ -1,28 +1,25 @@
 # Project Instructions
 
-## ⚠️ CONVERSION NEEDED: npm → Deno
+## ⚠️ CONVERSION REQUIRED: TypeScript/JavaScript → ReScript
 
-This repo currently uses npm but needs to be converted to Deno.
+This repository needs FULL conversion from TS/JS to ReScript.
+
+### Policy (RSR)
+- **REQUIRED**: ReScript for all code
+- **FORBIDDEN**: TypeScript (.ts, .tsx)
+- **FORBIDDEN**: JavaScript (.js, .jsx) except generated .res.js
+- **EXCEPTION**: WASM for performance-critical computation
+
+### When modifying this codebase:
+1. DO NOT add new TS/JS files
+2. When touching existing TS/JS, convert to ReScript
+3. Create `.res` file with equivalent logic
+4. Delete the original TS/JS file
+5. Run `rescript build` to generate JS
 
 ### DO NOT:
-- Run `npm install`
-- Add new npm dependencies
-- Create package-lock.json
+- Add new TypeScript files
+- Write raw JavaScript
+- Use tsc or TypeScript compiler
 
-### INSTEAD:
-- Use `deno task` for scripts
-- Use npm: specifiers for dependencies (e.g., `import X from "npm:package"`)
-- Create deno.json instead of package.json
-
-### Conversion Steps:
-1. Analyze package.json dependencies
-2. Create deno.json with equivalent imports/tasks
-3. Update source files to use Deno imports
-4. Remove package.json and package-lock.json
-5. Test with `deno check` and `deno test`
-
-## Package Manager Policy (RSR)
-
-- **REQUIRED**: Deno for JavaScript/TypeScript
-- **FORBIDDEN**: npm, npx, node_modules (after conversion)
-- **FALLBACK**: Bun only if Deno is impossible
+See TS_CONVERSION_NEEDED.md for full migration guide.

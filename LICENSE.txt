@@ -1,20 +1,19 @@
-SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Palimpsest-0.5
-
-This software is dual-licensed under:
-  1. GNU Affero General Public License v3.0 or later
-  2. Palimpsest License v0.5
-
-See https://spdx.org/licenses/ for license details.
-================================================================================
-
-Evidence Graph for Investigative Journalism
-Dual License: MIT + Palimpsest v0.8
-
-Copyright (c) 2025 Evidence Graph Contributors
+SPDX-License-Identifier: MIT OR AGPL-3.0-or-later
+SPDX-FileCopyrightText: 2024-2025 hyperpolymath
 
 ================================================================================
-PRIMARY LICENSE: MIT License
+DUAL LICENSE: MIT OR AGPL-3.0-or-later
 ================================================================================
+
+This project is dual-licensed under the MIT License OR the GNU Affero General
+Public License v3.0 or later. You may choose to use, copy, modify, and
+distribute this work under the terms of EITHER license (your choice).
+
+--------------------------------------------------------------------------------
+MIT LICENSE
+--------------------------------------------------------------------------------
+
+Copyright (c) 2024-2025 hyperpolymath
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,109 +33,59 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-================================================================================
-SECONDARY LICENSE: Palimpsest License v0.8 (Emotionally Safe Contributions)
-================================================================================
+--------------------------------------------------------------------------------
+GNU AFFERO GENERAL PUBLIC LICENSE v3.0 OR LATER
+--------------------------------------------------------------------------------
 
-TERMS AND CONDITIONS FOR EMOTIONALLY SAFE SOFTWARE DEVELOPMENT
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
 
-This software is additionally licensed under the Palimpsest License v0.8,
-which provides enhanced protections for contributors' emotional safety and
-project governance transparency.
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details.
 
-Key Provisions:
+You should have received a copy of the GNU Affero General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
 
-1. REVERSIBILITY REQUIREMENT
-   - All contributions must be reversible within 90 days
-   - Contributors retain rights to withdraw their work
-   - Maintainers must provide clear reversion procedures
+The full text of the AGPL-3.0 is available at:
+  https://www.gnu.org/licenses/agpl-3.0.txt
 
-2. EMOTIONAL TEMPERATURE DISCLOSURE
-   - Project must maintain public "emotional temperature" metrics
-   - Metrics include: contributor churn rate, issue resolution time,
-     code review turnaround, governance decision transparency
-   - See: MAINTAINERS.md for current metrics
+--------------------------------------------------------------------------------
+CHOOSING YOUR LICENSE
+--------------------------------------------------------------------------------
 
-3. CONTRIBUTION PERIMETER FRAMEWORK (TPCF)
-   - This project operates at Perimeter 3: Community Sandbox
-   - Open contribution with graduated trust model
-   - See: CONTRIBUTING.md for detailed access levels
+You may choose to use this work under:
+  1. MIT License - Standard permissive open source license
+  2. AGPL-3.0-or-later - Copyleft license requiring source disclosure for
+     network services
 
-4. NO COERCED LABOR
-   - All contributions must be voluntary
-   - No implicit or explicit pressure on contributors
-   - Maintainers must respect contributor boundaries
-
-5. TRANSPARENT GOVERNANCE
-   - All governance decisions documented publicly
-   - Community input required for major changes
-   - See: MAINTAINERS.md for decision-making process
-
-6. ATTRIBUTION PRESERVATION
-   - All contributors properly credited in .well-known/humans.txt
-   - Git history preserved unless contributor requests removal
-   - Derivative works must maintain attribution chain
-
-7. ANTI-HARASSMENT COMMITMENT
-   - Zero tolerance for harassment, discrimination, or abuse
-   - See: CODE_OF_CONDUCT.md for enforcement procedures
-   - Safe reporting channels with confidentiality
-
-For full Palimpsest License v0.8 text, see:
-https://palimpsest.license/v0.8/full-text
-
-COMPLIANCE VERIFICATION:
-- Emotional Temperature Dashboard: docs/emotional-temperature.md
-- TPCF Perimeter Documentation: CONTRIBUTING.md
-- Reversibility Procedures: CONTRIBUTING.md#reversibility
-- Governance Records: MAINTAINERS.md
+For most uses, MIT License provides maximum flexibility.
+For ensuring open source remains open (especially for SaaS/network services),
+AGPL-3.0-or-later provides stronger protections.
 
 ================================================================================
-LICENSE CHOICE
+PALIMPSEST PHILOSOPHICAL OVERLAY (NON-BINDING)
 ================================================================================
 
-You may use this software under EITHER:
-- The MIT License (above), OR
-- The Palimpsest License v0.8 (above and full text at link)
+This project encourages (but does not legally require) adherence to the
+principles of the Palimpsest License - a framework for consent-based digital
+interaction and the future web.
 
-Projects using this software must comply with AT LEAST ONE of these licenses.
-Choosing Palimpsest v0.8 provides additional contributor protections and
-requires adherence to emotional safety provisions.
+Core Principles (Encouraged):
+  - Respect for emotional and creative lineage
+  - Transparent AI training practices with explicit consent
+  - Preservation of metadata and attribution
+  - Protection of narrative intent and cultural context
 
-================================================================================
-CONTRIBUTOR LICENSE AGREEMENT
-================================================================================
+The Palimpsest principles represent our vision for a consent-based internet.
+While not legally binding for use of this software, we encourage all users
+and contributors to familiarize themselves with these principles.
 
-By contributing to this project, you agree that:
-
-1. Your contributions are licensed under the same dual license (MIT + Palimpsest v0.8)
-2. You have the right to submit the contribution
-3. You understand and accept the Reversibility Requirement (90-day withdrawal window)
-4. You agree to the Code of Conduct and emotional safety provisions
-
-See CONTRIBUTING.md for detailed contribution procedures.
+Learn more: https://github.com/hyperpolymath/palimpsest-license
 
 ================================================================================
-THIRD-PARTY LICENSES
+END OF LICENSE
 ================================================================================
-
-This project includes or depends on the following third-party software:
-
-Elixir: Apache License 2.0
-Phoenix Framework: MIT License
-Absinthe (GraphQL): MIT License
-ArangoDB: Apache License 2.0
-D3.js: BSD 3-Clause License
-
-See individual dependencies for their full license texts.
-
-================================================================================
-CONTACT & QUESTIONS
-================================================================================
-
-For license questions: license@evidencegraph.org (see SECURITY.md for actual contact)
-For governance questions: See MAINTAINERS.md
-For security issues: See SECURITY.md
-
-Last Updated: 2025-11-22
-License Version: Dual MIT + Palimpsest v0.8

@@ -69,7 +69,7 @@ defmodule EvidenceGraph.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:gettext, "~> 0.24"},
+      {:gettext, "~> 1.0"},
       {:plug_cowboy, "~> 2.6"},
       {:corsica, "~> 2.1"},  # CORS for API
 

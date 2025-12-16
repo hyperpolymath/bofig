@@ -48,7 +48,7 @@ defmodule EvidenceGraph.MixProject do
       {:dataloader, "~> 2.0"},
 
       # Database
-      {:arangox, "~> 0.5.2"},
+      {:arangox, "~> 0.7.0"},
       {:ecto, "~> 3.11"},  # For changesets only, not SQL
       {:ecto_sql, "~> 3.11"},  # Minimal, for user auth only
       {:postgrex, ">= 0.0.0"},  # User auth storage only

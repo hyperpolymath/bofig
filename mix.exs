@@ -36,9 +36,9 @@ defmodule EvidenceGraph.MixProject do
       {:phoenix, "~> 1.7.10"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
-      {:phoenix_live_view, "~> 0.20.2"},
+      {:phoenix_live_view, "~> 1.1.19"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
 
       # GraphQL
@@ -69,7 +69,7 @@ defmodule EvidenceGraph.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
-      {:gettext, "~> 0.24"},
+      {:gettext, "~> 1.0"},
       {:plug_cowboy, "~> 2.6"},
       {:corsica, "~> 2.1"},  # CORS for API
 

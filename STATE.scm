@@ -15,7 +15,7 @@
   '((version . "0.1.0")
     (schema-version . "1.0")
     (created . "2025-12-15")
-    (updated . "2025-12-15")
+    (updated . "2025-12-18")
     (project . "bofig")
     (repo . "github.com/hyperpolymath/bofig")))
 
@@ -31,28 +31,33 @@
     (rsr-compliance . "gold-target")
 
     (tech-stack
-     ((primary . "See repository languages")
+     ((primary . "Elixir/Phoenix + ArangoDB")
       (ci-cd . "GitHub Actions + GitLab CI + Bitbucket Pipelines")
-      (security . "CodeQL + OSSF Scorecard")))))
+      (security . "CodeQL + OSSF Scorecard + SHA-pinned Actions")))))
 
 ;;;============================================================================
 ;;; CURRENT POSITION
 ;;;============================================================================
 
 (define current-position
-  '((phase . "v0.1 - Initial Setup and RSR Compliance")
-    (overall-completion . 25)
+  '((phase . "v0.1 - Foundation & RSR Compliance")
+    (overall-completion . 35)
 
     (components
      ((rsr-compliance
        ((status . "complete")
         (completion . 100)
-        (notes . "SHA-pinned actions, SPDX headers, multi-platform CI")))
+        (notes . "SHA-pinned actions, SPDX headers, multi-platform CI, permissions declarations")))
+
+      (security-hardening
+       ((status . "complete")
+        (completion . 100)
+        (notes . "All 15 GitHub Actions workflows SHA-pinned, SPDX headers added, permissions declared")))
 
       (documentation
        ((status . "foundation")
-        (completion . 30)
-        (notes . "README exists, META/ECOSYSTEM/STATE.scm added")))
+        (completion . 40)
+        (notes . "README, META/ECOSYSTEM/STATE.scm complete, ARCHITECTURE.md exists")))
 
       (testing
        ((status . "minimal")
@@ -60,15 +65,18 @@
         (notes . "CI/CD scaffolding exists, limited test coverage")))
 
       (core-functionality
-       ((status . "in-progress")
-        (completion . 25)
-        (notes . "Initial implementation underway")))))
+       ((status . "scaffolding")
+        (completion . 20)
+        (notes . "Phoenix project structure exists, mix.exs configured")))))
 
     (working-features
-     ("RSR-compliant CI/CD pipeline"
+     ("RSR-compliant CI/CD pipeline with SHA-pinned actions"
       "Multi-platform mirroring (GitHub, GitLab, Bitbucket)"
       "SPDX license headers on all files"
-      "SHA-pinned GitHub Actions"))))
+      "OSSF Scorecard integration"
+      "Security policy enforcement (weak crypto, HTTP, secrets detection)"
+      "TypeScript/JavaScript blocker for ReScript enforcement"
+      "Guix package management with guix.scm"))))
 
 ;;;============================================================================
 ;;; ROUTE TO MVP
@@ -76,33 +84,53 @@
 
 (define route-to-mvp
   '((target-version . "1.0.0")
-    (definition . "Stable release with comprehensive documentation and tests")
+    (definition . "Production platform with real investigation published")
 
     (milestones
      ((v0.2
-       ((name . "Core Functionality")
+       ((name . "Development Environment")
+        (status . "in-progress")
+        (items
+         ("Complete Elixir/Phoenix project setup"
+          "ArangoDB local instance running"
+          "GraphQL API skeleton"
+          "Core data models (Claims, Evidence, Relationships)"))))
+
+      (v0.3
+       ((name . "Zotero Integration")
         (status . "pending")
         (items
-         ("Implement primary features"
-          "Add comprehensive tests"
-          "Improve documentation"))))
+         ("Zotero extension update"
+          "API endpoint for evidence import"
+          "Metadata mapping"
+          "Two-way sync"))))
 
       (v0.5
-       ((name . "Feature Complete")
+       ((name . "Basic UI + User Testing")
         (status . "pending")
         (items
-         ("All planned features implemented"
-          "Test coverage > 70%"
-          "API stability"))))
+         ("Phoenix LiveView setup"
+          "Evidence list view"
+          "Claim creation form"
+          "D3.js graph visualization"
+          "User testing with 5 NUJ journalists"))))
+
+      (v0.7
+       ((name . "PROMPT Scoring")
+        (status . "pending")
+        (items
+         ("PROMPT scoring UI (6 dimensions)"
+          "Audience-weighted scoring"
+          "Score visualization"))))
 
       (v1.0
        ((name . "Production Release")
         (status . "pending")
         (items
-         ("Comprehensive test coverage"
+         ("Multi-user authentication"
+          "Real investigation published"
           "Performance optimization"
-          "Security audit"
-          "User documentation complete"))))))))
+          "Security audit complete"))))))))
 
 ;;;============================================================================
 ;;; BLOCKERS & ISSUES
@@ -116,16 +144,21 @@
      ())  ;; No high-priority blockers
 
     (medium-priority
+     ((dev-environment
+       ((description . "Development environment not fully set up")
+        (impact . "Cannot run application locally")
+        (needed . "Complete Phoenix/ArangoDB setup")))))
+
+    (low-priority
      ((test-coverage
        ((description . "Limited test infrastructure")
         (impact . "Risk of regressions")
-        (needed . "Comprehensive test suites")))))
+        (needed . "Comprehensive test suites")))
 
-    (low-priority
-     ((documentation-gaps
+      (documentation-gaps
        ((description . "Some documentation areas incomplete")
         (impact . "Harder for new contributors")
-        (needed . "Expand documentation")))))))
+        (needed . "Expand user documentation")))))))
 
 ;;;============================================================================
 ;;; CRITICAL NEXT ACTIONS
@@ -133,17 +166,18 @@
 
 (define critical-next-actions
   '((immediate
-     (("Review and update documentation" . medium)
-      ("Add initial test coverage" . high)
-      ("Verify CI/CD pipeline functionality" . high)))
+     (("Complete Phoenix project initialization" . high)
+      ("Set up ArangoDB Podman container" . high)
+      ("Create core data models" . medium)))
 
     (this-week
-     (("Implement core features" . high)
-      ("Expand test coverage" . medium)))
+     (("Implement GraphQL API skeleton" . high)
+      ("Load UK Inflation 2023 test data" . medium)))
 
     (this-month
      (("Reach v0.2 milestone" . high)
-      ("Complete documentation" . medium)))))
+      ("Begin Zotero integration" . medium)
+      ("First user feedback session" . low)))))
 
 ;;;============================================================================
 ;;; SESSION HISTORY
@@ -157,7 +191,18 @@
        ("Added META.scm, ECOSYSTEM.scm, STATE.scm"
         "Established RSR compliance"
         "Created initial project checkpoint"))
-      (notes . "First STATE.scm checkpoint created via automated script")))))
+      (notes . "First STATE.scm checkpoint created via automated script"))
+
+     ((date . "2025-12-18")
+      (session . "security-hardening")
+      (accomplishments
+       ("SHA-pinned all 15 GitHub Actions workflows"
+        "Added SPDX headers to all workflow files"
+        "Added permissions declarations"
+        "Fixed ECOSYSTEM.scm syntax to valid Scheme"
+        "Updated Elixir version to 1.16"
+        "Updated all action versions to latest secure releases"))
+      (notes . "Major security hardening session - all actions now SHA-pinned per RSR requirements")))))
 
 ;;;============================================================================
 ;;; HELPER FUNCTIONS (for Guile evaluation)
@@ -185,10 +230,10 @@
 (define state-summary
   '((project . "bofig")
     (version . "0.1.0")
-    (overall-completion . 25)
-    (next-milestone . "v0.2 - Core Functionality")
+    (overall-completion . 35)
+    (next-milestone . "v0.2 - Development Environment")
     (critical-blockers . 0)
     (high-priority-issues . 0)
-    (updated . "2025-12-15")))
+    (updated . "2025-12-18")))
 
 ;;; End of STATE.scm

@@ -77,3 +77,13 @@ htmlcov/
 /tmp/
 *.tmp
 *.bak
+
+# Zig
+/zig-cache/
+/zig-out/
+*.zig.zon.lock
+
+# Static Site
+/site/_site/
+/site/zig-cache/
+/site/zig-out/

@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+
+.{
+    .name = "bofig-site",
+    .version = "0.1.0",
+    .minimum_zig_version = "0.11.0",
+
+    .dependencies = .{
+        .@"zigzag-ssg" = .{
+            .path = "../tools/zigzag-ssg",
+        },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "content",
+        "templates",
+        "static",
+    },
+}

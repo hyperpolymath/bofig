@@ -1,0 +1,3 @@
+[submodule "tools/zigzag-ssg"]
+	path = tools/zigzag-ssg
+	url = https://github.com/hyperpolymath/zigzag-ssg.git

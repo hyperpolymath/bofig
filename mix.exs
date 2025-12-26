@@ -33,7 +33,7 @@ defmodule EvidenceGraph.MixProject do
   defp deps do
     [
       # Phoenix Core
-      {:phoenix, "~> 1.7.10"},
+      {:phoenix, "~> 1.8.3"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
       {:phoenix_live_view, "~> 1.1.19"},

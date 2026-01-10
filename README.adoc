@@ -1,7 +1,6 @@
-= Binary-Origami Figuration
-
-image:[MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
-image:[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+= Evidence Graph for Investigative Journalism
+image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 
 
 > Infrastructure for pragmatic epistemology. Combining i-docs navigation, PROMPT epistemological scoring, and boundary objects theory.
@@ -405,6 +404,6 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 *Built with:* Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
 
-*Inspired by:* i-docs (MIT Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
+*Inspired by:* i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
 
 *Last Updated:* 2025-11-22

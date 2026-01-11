@@ -418,6 +418,7 @@ This isn't just a database project. It's infrastructure for **coordinating witho
 - **Gephi**: Graph visualization (https://gephi.org/)
 - **Voyant Tools**: Text analysis (https://voyant-tools.org/)
 - **FormDB Debugger**: Proof-carrying database debugger (https://github.com/hyperpolymath/formdb-debugger)
+- **FormBase**: Open-source Airtable alternative (https://github.com/hyperpolymath/formbase)
 
 ## Changelog
 

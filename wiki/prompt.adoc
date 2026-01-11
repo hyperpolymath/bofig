@@ -1,0 +1,444 @@
+// SPDX-License-Identifier: MPL-2.0
+= PROMPT Scoring: Nutrition Labels for Evidence
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+*PROMPT* is a 6-dimensional framework for measuring epistemological quality—think of it as a "nutrition label" for how much you can trust a piece of evidence.
+
+toc::[]
+
+== What is PROMPT?
+
+PROMPT stands for six dimensions of evidence quality:
+
+[cols="1,1,3"]
+|===
+| Letter | Dimension | Question It Answers
+
+| *P*
+| Provenance
+| Where did this come from? Is the source credible?
+
+| *R*
+| Replicability
+| Could someone else verify this independently?
+
+| *O*
+| Objective
+| Are the key terms operationally defined?
+
+| *M*
+| Methodology
+| How was the data collected and analyzed?
+
+| *P*
+| Publication
+| Was this peer-reviewed? Where was it published?
+
+| *T*
+| Transparency
+| Is the data/methodology openly available?
+|===
+
+Each dimension is scored 0-100, producing an overall weighted score.
+
+== The Nutrition Label Metaphor
+
+Just like food has nutrition facts that help you make informed choices:
+
+[source,text]
+----
+┌─────────────────────────────────────┐
+│       EVIDENCE FACTS                │
+│         Serving Size: 1 claim       │
+├─────────────────────────────────────┤
+│ Provenance.............. 85/100     │
+│ Replicability........... 70/100     │
+│ Objective............... 75/100     │
+│ Methodology............. 90/100     │
+│ Publication............. 95/100     │
+│ Transparency............ 80/100     │
+├─────────────────────────────────────┤
+│ OVERALL SCORE: 82.5                 │
+│ (Weighted by audience type)         │
+└─────────────────────────────────────┘
+----
+
+You don't need to be a nutritionist to read a food label. You don't need to be an epistemologist to read a PROMPT score.
+
+== The Six Dimensions Explained
+
+=== P — Provenance (0-100)
+
+*"Where did this come from?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| Primary source (ONS, official government data, original research)
+
+| 70-89
+| Secondary source citing primary (academic paper, reputable journalism)
+
+| 50-69
+| Tertiary source (think tank report, aggregated data)
+
+| 30-49
+| Unknown or questionable source chain
+
+| 0-29
+| Anonymous, unverified, or unreliable origin
+|===
+
+=== R — Replicability (0-100)
+
+*"Could someone else verify this?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| Fully replicable (code available, data public, method documented)
+
+| 70-89
+| Mostly replicable (methodology described, some data available)
+
+| 50-69
+| Partially replicable (methodology described, data not available)
+
+| 30-49
+| Difficult to replicate (vague methods, proprietary data)
+
+| 0-29
+| Cannot be replicated (one-time event, destroyed evidence)
+|===
+
+=== O — Objective (0-100)
+
+*"Are key terms operationally defined?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| All key terms explicitly defined with measurable criteria
+
+| 70-89
+| Most terms defined, some ambiguity
+
+| 50-69
+| Some definitions, significant ambiguity
+
+| 30-49
+| Vague or contested definitions
+
+| 0-29
+| No operational definitions, purely subjective
+|===
+
+=== M — Methodology (0-100)
+
+*"How rigorous was the data collection and analysis?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| Gold-standard methodology (RCT, large sample, robust statistics)
+
+| 70-89
+| Strong methodology with minor limitations
+
+| 50-69
+| Acceptable methodology with known weaknesses
+
+| 30-49
+| Significant methodological issues
+
+| 0-29
+| No clear methodology or fundamentally flawed
+|===
+
+=== P — Publication (0-100)
+
+*"What venue reviewed and published this?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| Top-tier peer-reviewed journal, official government publication
+
+| 70-89
+| Peer-reviewed journal, reputable news outlet
+
+| 50-69
+| Working paper, pre-print, established think tank
+
+| 30-49
+| Blog, non-peer-reviewed report, less established source
+
+| 0-29
+| Self-published, social media, anonymous
+|===
+
+=== T — Transparency (0-100)
+
+*"How open is the evidence?"*
+
+[cols="1,3"]
+|===
+| Score Range | Meaning
+
+| 90-100
+| Fully open: data, code, methodology all public
+
+| 70-89
+| Mostly open: some materials available on request
+
+| 50-69
+| Partially open: methodology described, data restricted
+
+| 30-49
+| Limited openness: summary only, details withheld
+
+| 0-29
+| Closed: no access to underlying materials
+|===
+
+== Calculating the Overall Score
+
+=== Default Weights
+
+[source,elixir]
+----
+@weights %{
+  provenance: 0.20,      # 20%
+  replicability: 0.15,   # 15%
+  objective: 0.15,       # 15%
+  methodology: 0.20,     # 20%
+  publication: 0.15,     # 15%
+  transparency: 0.15     # 15%
+}
+
+def calculate_overall(scores) do
+  Enum.reduce(@weights, 0.0, fn {dim, weight}, acc ->
+    acc + (Map.get(scores, dim, 0) * weight)
+  end)
+end
+----
+
+=== Audience-Weighted Scores
+
+Different audiences prioritize different dimensions:
+
+[cols="1,1,1,1,1,1,1"]
+|===
+| Audience | P | R | O | M | Pub | T
+
+| Researcher
+| 0.15
+| *0.30*
+| 0.15
+| *0.25*
+| 0.10
+| 0.05
+
+| Policymaker
+| *0.25*
+| 0.10
+| *0.20*
+| 0.15
+| *0.20*
+| 0.10
+
+| Skeptic
+| 0.15
+| *0.25*
+| 0.10
+| *0.20*
+| 0.05
+| *0.25*
+
+| Activist
+| *0.25*
+| 0.10
+| *0.25*
+| 0.10
+| 0.15
+| 0.15
+
+| Affected Person
+| *0.20*
+| 0.10
+| *0.30*
+| 0.10
+| 0.10
+| 0.20
+
+| Journalist
+| *0.25*
+| 0.15
+| 0.15
+| 0.15
+| 0.15
+| 0.15
+|===
+
+This means the same evidence gets different "effective scores" for different audiences—enabling smarter navigation path generation.
+
+== Example: UK Inflation Evidence
+
+[cols="1,1,1,1,1,1,1,1"]
+|===
+| Evidence | P | R | O | M | Pub | T | Overall
+
+| ONS CPI Data
+| 100
+| 100
+| 95
+| 95
+| 100
+| 95
+| *97.5*
+
+| Academic Study
+| 85
+| 80
+| 75
+| 85
+| 90
+| 75
+| *81.8*
+
+| Think Tank Report
+| 75
+| 70
+| 65
+| 75
+| 80
+| 70
+| *72.3*
+
+| Expert Interview
+| 85
+| 45
+| 60
+| 50
+| 40
+| 75
+| *59.0*
+|===
+
+Notice how the interview scores low on replicability (you can't re-interview the moment) but high on provenance (named expert) and transparency (transcript available).
+
+== Why PROMPT Matters
+
+=== Makes Quality Explicit
+
+Traditional journalism relies on implicit credibility ("trust the New York Times"). PROMPT makes quality *measurable*:
+
+[source,text]
+----
+Before PROMPT:
+  "This source is trustworthy"
+  (Says who? Based on what?)
+
+After PROMPT:
+  "This source scores 85/100"
+  - Provenance: 90 (named researcher at Oxford)
+  - Methodology: 75 (n=500, self-reported data)
+  - Transparency: 90 (full dataset published)
+----
+
+=== Enables Navigation
+
+Navigation paths use PROMPT scores to order evidence. A skeptic's path surfaces low-transparency items early. A researcher's path prioritizes high-methodology sources.
+
+=== Supports Coordination Without Consensus
+
+Different stakeholders can use the *same* PROMPT scores to reach *different* conclusions—and that's okay. The framework doesn't dictate what to believe; it makes the *basis* for belief visible.
+
+== PROMPT is Optional
+
+IMPORTANT: PROMPT scoring is *optional* in bofig.
+
+* Evidence can be added without scores
+* Scores can be added incrementally
+* Users can explore investigations without ever seeing scores
+
+This reduces adoption friction. Power users who want epistemological rigor can enable it; casual users can ignore it.
+
+== API Examples
+
+=== Get PROMPT Scores for Evidence
+
+[source,graphql]
+----
+query {
+  evidence(id: "ons_cpi_2023") {
+    title
+    promptScores {
+      provenance
+      replicability
+      objective
+      methodology
+      publication
+      transparency
+      overall
+    }
+  }
+}
+----
+
+=== Update PROMPT Scores
+
+[source,graphql]
+----
+mutation {
+  updatePromptScores(
+    claimId: "claim_1"
+    scores: {
+      provenance: 85
+      replicability: 70
+      objective: 75
+      methodology: 80
+      publication: 90
+      transparency: 75
+    }
+  ) {
+    promptScores {
+      overall
+    }
+  }
+}
+----
+
+== Scoring UI (Coming Soon)
+
+Phase 2 will include a LiveView interface for scoring evidence:
+
+* Slider-based input for each dimension
+* Guidance tooltips explaining what each score means
+* Audience-weighted preview ("Here's how a skeptic would see this")
+* Batch scoring for multiple evidence items
+
+== Related Concepts
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — PROMPT scores as "fold lines"
+* link:navigation.adoc[i-docs Navigation] — How scores shape paths
+* link:glossary.adoc[Glossary] — Definitions of all terms
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

@@ -1,0 +1,141 @@
+// SPDX-License-Identifier: MPL-2.0
+= Bofig Wiki: Binary-Origami Figuration
+:icons: font
+
+[.lead]
+Welcome to the bofig wiki—your guide to understanding Binary-Origami Figuration and the infrastructure for pragmatic epistemology.
+
+[quote, Jonathan Jewell]
+____
+We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. *This system IS that infrastructure.*
+____
+
+== Quick Navigation
+
+[cols="1,3"]
+|===
+| *New here?*
+| Start with link:binary-origami.adoc[The Binary-Origami Metaphor] — explains the core concepts in plain language
+
+| *Want to understand the system?*
+| Read the four pillars in order: link:navigation.adoc[Navigation] → link:prompt.adoc[PROMPT] → link:boundary-objects.adoc[Boundary Objects] → link:graphs.adoc[Graphs]
+
+| *Ready to build?*
+| Follow the link:folding-101.adoc[Folding 101 Tutorial] — hands-on walkthrough
+
+| *Looking for a term?*
+| Check the link:glossary.adoc[Glossary]
+
+| *Have questions?*
+| Browse the link:faqs.adoc[FAQ]
+|===
+
+== Core Concepts
+
+[cols="1,2,1"]
+|===
+| Concept | One-Line Summary | Learn More
+
+| *Binary-Origami*
+| Evidence can be "folded" into different shapes for different audiences
+| link:binary-origami.adoc[Full explanation]
+
+| *i-docs Navigation*
+| Users choose their path through evidence—navigation over narration
+| link:navigation.adoc[Full explanation]
+
+| *PROMPT Scoring*
+| 6-dimensional "nutrition labels" for evidence quality
+| link:prompt.adoc[Full explanation]
+
+| *Boundary Objects*
+| Same evidence, multiple valid interpretations—coordination without consensus
+| link:boundary-objects.adoc[Full explanation]
+
+| *Evidence Graphs*
+| The underlying structure of claims, evidence, and relationships
+| link:graphs.adoc[Full explanation]
+|===
+
+== The Metaphor in Brief
+
+[source,text]
+----
+THE FLAT SHEET (Raw Evidence)
+╔════════════════════════════════════════╗
+║  Claims  ║ Evidence  ║  Relationships  ║
+╚════════════════════════════════════════╝
+
+         ↓ FOLD for Researcher ↓
+
+          /\
+         /  \    ← Methodology-first
+        /____\
+       /_/\__\_\
+
+         ↓ FOLD for Policymaker ↓
+
+       ┌───────┐
+       │ Auth  │ ← Authority-first
+       │ ority │
+       └───────┘
+
+SAME PAPER. DIFFERENT SHAPES.
+----
+
+Every fold is *reversible*. Users can always trace back to the original evidence.
+
+== All Wiki Pages
+
+=== Conceptual
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The main metaphor and framework
+* link:navigation.adoc[i-docs Navigation] — "Choose your own adventure" for evidence
+* link:prompt.adoc[PROMPT Scoring] — Epistemological quality metrics
+* link:boundary-objects.adoc[Boundary Objects] — Multi-stakeholder coordination theory
+* link:graphs.adoc[Evidence Graphs] — The data structure underneath
+
+=== Practical
+
+* link:folding-101.adoc[Folding 101] — Step-by-step tutorial
+* link:faqs.adoc[FAQ] — Common questions answered
+* link:glossary.adoc[Glossary] — Term definitions
+
+=== Project Documentation
+
+* link:../README.adoc[README] — Setup and quick start
+* link:../ARCHITECTURE.md[Architecture] — Technical data model
+* link:../docs/database-evaluation.md[Database Evaluation] — Why ArangoDB
+* link:../docs/zotero-integration.md[Zotero Integration] — Two-way sync design
+
+== Why This Wiki Exists
+
+Some feedback we've received:
+
+[quote]
+____
+"I don't understand what this project does."
+"The terminology is confusing."
+"Why is it called 'binary-origami'?"
+____
+
+Fair points. This wiki exists to:
+
+1. **Explain the metaphor** in plain language with diagrams
+2. **Connect abstract concepts** to practical implementation
+3. **Provide multiple entry points** for different learning styles
+4. **Make the project accessible** to journalists, not just developers
+
+If something is still unclear after reading these pages, please link:https://github.com/Hyperpolymath/bofig/issues[open an issue]. The goal is clarity for everyone.
+
+== Contributing to the Wiki
+
+Found a typo? Want to add an example? See link:../CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+
+Wiki pages use AsciiDoc format. Keep explanations concrete, use diagrams, and link to related pages.
+
+---
+
+_This wiki is part of the bofig project._
+_Repository: https://github.com/Hyperpolymath/bofig_
+_Last Updated: 2025-01_

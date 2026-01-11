@@ -1,0 +1,276 @@
+// SPDX-License-Identifier: MPL-2.0
+= Frequently Asked Questions
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+Common questions about bofig, Binary-Origami Figuration, and the underlying concepts.
+
+toc::[]
+
+== General Questions
+
+=== What is bofig?
+
+*bofig* (Binary-Origami Figuration) is infrastructure for investigative journalism that lets different audiences explore the same evidence in different ways. It combines:
+
+* **i-docs navigation**: Reader-driven exploration instead of author-controlled narration
+* **PROMPT scoring**: 6-dimensional quality metrics for evidence
+* **Boundary objects theory**: Same evidence, multiple valid interpretations
+
+=== Why the name "bofig"?
+
+*B*inary-*O*rigami *Fig*uration:
+
+* **Binary**: The clear, measurable relationships (supports/contradicts, 0-100 scores)
+* **Origami**: The art of folding evidence into different shapes for different audiences
+* **Figuration**: The intentional process of structuring information for clarity
+
+=== Who is this for?
+
+* **Investigative journalists** who want to present complex evidence accessibly
+* **Researchers** who want to share data with non-academic audiences
+* **Policymakers** who need evidence-based decision support
+* **Affected communities** who want to understand systemic issues
+* **Anyone** who wants epistemological rigor without gatekeeping
+
+=== Is this just another database?
+
+No. Databases store data. Bofig structures *evidence relationships* with built-in epistemological scoring and multi-perspective navigation. It's closer to an "evidence operating system."
+
+== Technical Questions
+
+=== Why ArangoDB instead of Neo4j or PostgreSQL?
+
+[cols="1,3"]
+|===
+| Reason | Explanation
+
+| Multi-model
+| ArangoDB handles both documents (claims, evidence) and graphs (relationships) natively
+
+| Elixir support
+| The `arangox` driver is mature and well-maintained
+
+| Cost
+| ArangoDB Oasis managed hosting is €45/month vs. higher Neo4j pricing
+
+| License
+| Apache 2.0 (permissive) vs. Neo4j's GPL/commercial split
+|===
+
+See link:../docs/database-evaluation.md[docs/database-evaluation.md] for detailed benchmarks.
+
+=== Why Elixir/Phoenix instead of Node.js or Python?
+
+* **Concurrency**: Elixir's actor model handles many simultaneous users efficiently
+* **Fault tolerance**: OTP supervision trees recover from failures gracefully
+* **LiveView**: Real-time UI without a JavaScript framework
+* **Functional**: Immutable data and pattern matching reduce bugs
+
+Per the link:../.claude/CLAUDE.md[language policy], we use ReScript for frontend code and avoid Python/Node.js.
+
+=== Can I use this without PROMPT scoring?
+
+Yes! PROMPT scoring is optional. You can:
+
+* Add evidence without scores
+* Add scores incrementally over time
+* Completely ignore scores and use bofig as a pure evidence graph
+
+We made scoring optional to reduce adoption friction.
+
+=== What's the GraphQL vs. REST split?
+
+* **GraphQL** (Absinthe): All complex queries, mutations, graph traversals
+* **REST**: Simple operations like Zotero import/export, health checks
+
+Most users interact through GraphQL at `/api/graphiql`.
+
+== Conceptual Questions
+
+=== What's the difference between "navigation" and "narration"?
+
+[cols="1,3"]
+|===
+| Narration | Navigation
+
+| Author decides the order
+| *Reader chooses the path*
+
+| One story, one interpretation
+| *Same evidence, multiple routes*
+
+| "Here's what happened"
+| *"Here's the evidence—explore"*
+|===
+
+See link:navigation.adoc[i-docs Navigation] for details.
+
+=== Why "coordination without consensus"?
+
+Different stakeholders often can't agree on what evidence *means*. But they can work together if they agree on what the evidence *is*.
+
+A policymaker and an activist looking at the same inflation data will draw different conclusions—and that's fine. Bofig makes the *basis* for their conclusions visible.
+
+=== How are PROMPT scores different from peer review?
+
+Peer review is binary (published or not). PROMPT is multi-dimensional:
+
+* An interview might score high on provenance (named expert) but low on replicability (can't re-interview)
+* A dataset might score high on transparency (fully open) but low on methodology (small sample)
+
+PROMPT captures nuance that binary peer review misses.
+
+=== What's a "boundary object"?
+
+Something that different communities use together, even when they understand it differently. A map is a boundary object—tourists, engineers, and soldiers all use the same map for different purposes.
+
+In bofig, evidence is the boundary object. See link:boundary-objects.adoc[Boundary Objects] for the full explanation.
+
+== Practical Questions
+
+=== How do I get started?
+
+1. Clone the repository: `git clone https://github.com/Hyperpolymath/bofig.git`
+2. Start ArangoDB: `podman run -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD=dev arangodb/arangodb:3.11`
+3. Install dependencies: `mix deps.get`
+4. Load test data: `mix run priv/repo/seeds.exs`
+5. Start Phoenix: `mix phx.server`
+6. Visit: http://localhost:4000/api/graphiql
+
+See the link:../README.adoc[README] for detailed setup instructions.
+
+=== Can I contribute?
+
+Yes! The project is open source from day 1. See the link:../CONTRIBUTING.adoc[CONTRIBUTING] guide.
+
+Priority areas:
+
+* Zotero browser extension (Phase 1)
+* D3.js visualization improvements
+* PROMPT scoring UI
+* Documentation improvements
+
+=== How do I create a navigation path?
+
+Via GraphQL:
+
+[source,graphql]
+----
+mutation {
+  createNavigationPath(input: {
+    investigationId: "uk_inflation_2023"
+    audienceType: RESEARCHER
+    name: "Methodology Deep-Dive"
+    pathNodes: [
+      {entityId: "ons_methodology", order: 1, context: "How is CPI calculated?"},
+      {entityId: "claim_1", order: 2, context: "The central claim"}
+    ]
+  }) {
+    id
+    name
+  }
+}
+----
+
+Or let bofig auto-generate one:
+
+[source,graphql]
+----
+mutation {
+  autoGeneratePath(
+    investigationId: "uk_inflation_2023"
+    audienceType: SKEPTIC
+  ) {
+    id
+    pathNodes { entityId order }
+  }
+}
+----
+
+=== How do I import from Zotero?
+
+[source,graphql]
+----
+mutation {
+  importFromZotero(
+    investigationId: "uk_inflation_2023"
+    zoteroJson: {
+      key: "ABC123"
+      itemType: "journalArticle"
+      title: "Economic Analysis of Inflation"
+      # ... other Zotero fields
+    }
+  ) {
+    id
+    title
+    zoteroKey
+  }
+}
+----
+
+See link:../docs/zotero-integration.md[docs/zotero-integration.md] for two-way sync details.
+
+== Philosophical Questions
+
+=== Doesn't this just enable "post-truth" by saying all interpretations are valid?
+
+No. Bofig distinguishes between:
+
+* **Evidence**: The facts (same for everyone)
+* **Interpretation**: What the facts mean (audience-specific)
+
+A skeptic can't deny that ONS data exists. They can question what it means. The PROMPT framework makes the *quality* of evidence explicit, preventing "alternative facts."
+
+=== Who decides the PROMPT scores?
+
+Currently, the journalist or researcher adding evidence assigns scores. Future versions may include:
+
+* Crowd-sourced scoring with reputation systems
+* Automated scoring based on metadata (peer review status, data availability)
+* Calibration against expert panels
+
+=== What's the difference between this and fact-checking?
+
+Fact-checkers produce binary verdicts (true/false/misleading). Bofig provides:
+
+* Multi-dimensional scores (not just true/false)
+* Multiple audience perspectives (not one authoritative view)
+* Exploration tools (not just conclusions)
+
+Fact-checking tells you what to believe. Bofig shows you *how* to evaluate evidence.
+
+=== Why should I trust this system?
+
+You shouldn't trust the *system*—you should trust the *evidence* (and verify it). Bofig is infrastructure, not an oracle. Every claim links to primary sources. Every PROMPT score is visible and contestable.
+
+If you disagree with a score, create your own navigation path emphasizing different evidence. The system supports disagreement as a feature, not a bug.
+
+== Getting Help
+
+=== Where do I report bugs?
+
+GitHub Issues: https://github.com/Hyperpolymath/bofig/issues
+
+=== Where can I ask questions?
+
+* GitHub Discussions (coming soon)
+* Issue tracker with the "question" label
+
+=== Is there commercial support?
+
+Not currently. This is a research/open-source project for now.
+
+== Related Pages
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The main metaphor
+* link:glossary.adoc[Glossary] — Term definitions
+* link:folding-101.adoc[Folding 101] — Step-by-step tutorial
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

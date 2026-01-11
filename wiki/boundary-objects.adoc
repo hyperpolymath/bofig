@@ -1,0 +1,292 @@
+// SPDX-License-Identifier: MPL-2.0
+= Boundary Objects: Shared Maps with Multiple Routes
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+*Boundary objects* are things that different communities can use together—even when they understand them differently. In bofig, evidence is a boundary object.
+
+toc::[]
+
+== What Are Boundary Objects?
+
+The term comes from sociologists Susan Leigh Star and James Griesemer (1989):
+
+[quote, Star & Griesemer]
+____
+Boundary objects are objects which are both plastic enough to adapt to local needs and the constraints of the several parties employing them, yet robust enough to maintain a common identity across sites.
+____
+
+=== The Map Metaphor
+
+Think of a map. A tourist, a civil engineer, and a military strategist all use the same map—but for completely different purposes:
+
+[cols="1,2,2"]
+|===
+| User | What They See | What They Need
+
+| Tourist
+| "Where are the restaurants?"
+| Routes, landmarks, attractions
+
+| Civil Engineer
+| "Where are the utilities?"
+| Infrastructure, elevation, drainage
+
+| Military Strategist
+| "Where are the chokepoints?"
+| Terrain, cover, sightlines
+|===
+
+Same map. Different uses. The map works as a **boundary object** because it's:
+
+1. **Robust enough** to maintain a shared structure (streets are streets)
+2. **Flexible enough** to support different interpretations
+
+== Evidence as a Boundary Object
+
+In investigative journalism, evidence serves multiple communities:
+
+[cols="1,2"]
+|===
+| Community | Their Relationship to Evidence
+
+| *Activists*
+| "This proves systemic injustice"
+
+| *Policymakers*
+| "This informs policy decisions"
+
+| *Researchers*
+| "This supports or refutes hypotheses"
+
+| *Skeptics*
+| "This needs more verification"
+
+| *Affected Persons*
+| "This explains what happened to me"
+
+| *Journalists*
+| "This is what we can publish"
+|===
+
+They're all looking at the *same* ONS inflation data—but asking different questions.
+
+== Why Coordination Without Consensus?
+
+The key insight: **you don't need everyone to agree on what evidence means** to work together productively.
+
+[source,text]
+----
+TRADITIONAL APPROACH:
+  "Let's agree on what this evidence means"
+  → Conflict, deadlock, power struggles
+
+BOUNDARY OBJECT APPROACH:
+  "Let's agree on what the evidence IS"
+  → Each community interprets for their context
+  → Coordination happens through shared structure
+----
+
+=== Example: Climate Data
+
+Climate scientists, oil executives, and environmental activists can all use IPCC data:
+
+* Scientists: "This confirms our models"
+* Executives: "This informs risk assessment"
+* Activists: "This demands urgent action"
+
+They'll never agree on what to *do* about climate change. But they can agree on the *data*—and that's enough to coordinate.
+
+== How Bofig Implements Boundary Objects
+
+=== 1. Single Source of Truth
+
+All communities access the same underlying evidence graph. There's one ONS dataset, one academic study, one interview transcript.
+
+[source,text]
+----
+┌─────────────────────────────────┐
+│       EVIDENCE GRAPH            │
+│   (One shared structure)        │
+├─────────────────────────────────┤
+│  Claims ←→ Evidence ←→ Claims   │
+│       Relationships             │
+│       PROMPT Scores             │
+└─────────────────────────────────┘
+         ↓         ↓         ↓
+    Researcher  Policymaker  Activist
+      VIEW        VIEW        VIEW
+----
+
+=== 2. Navigation Paths as Interpretive Lenses
+
+Different audiences access the same data through different paths:
+
+[cols="1,3"]
+|===
+| Path Type | What It Emphasizes
+
+| Researcher Path
+| Methodology → Data → Analysis → Counter-evidence
+
+| Policymaker Path
+| Authoritative sources → Recommendations → Trade-offs
+
+| Activist Path
+| Impact → Systemic causes → Call to action
+
+| Skeptic Path
+| Weak points → Counter-evidence → Open questions
+|===
+
+=== 3. PROMPT Scores as Boundary Metadata
+
+PROMPT scores work as boundary objects themselves:
+
+* A researcher interprets "Replicability: 70" as "needs validation"
+* A policymaker interprets it as "good enough for decision-making"
+* A skeptic interprets it as "where's the verification?"
+
+Same number, different meanings—but the number provides shared ground.
+
+== Star & Griesemer's Four Types
+
+Star and Griesemer identified four types of boundary objects:
+
+[cols="1,3,2"]
+|===
+| Type | Definition | In Bofig
+
+| *Repositories*
+| Ordered "piles" of objects indexed for different uses
+| The evidence database
+
+| *Ideal Types*
+| Abstract diagrams or templates
+| PROMPT scoring framework
+
+| *Coincident Boundaries*
+| Common objects with different internal contents
+| Navigation paths
+
+| *Standardized Forms*
+| Methods of communication across groups
+| GraphQL API, JSON-LD exports
+|===
+
+Bofig uses all four:
+
+1. **Repository**: ArangoDB stores claims, evidence, relationships
+2. **Ideal Type**: PROMPT dimensions define what "good evidence" means (abstractly)
+3. **Coincident Boundaries**: Same evidence, different navigation orders
+4. **Standardized Forms**: GraphQL mutations, Zotero imports, Dublin Core metadata
+
+== The Translation Problem
+
+Boundary objects don't eliminate translation—they make it *visible*.
+
+[source,text]
+----
+WITHOUT BOUNDARY OBJECTS:
+  Group A: "Energy drove inflation"
+  Group B: "No, food prices drove inflation"
+  → Deadlock (talking past each other)
+
+WITH BOUNDARY OBJECTS:
+  Shared Evidence: ONS CPI data, energy price records, food price records
+  Group A's Path: Focuses on energy → concludes energy drove inflation
+  Group B's Path: Focuses on food → concludes food drove inflation
+  → Both paths visible, disagreement localized
+----
+
+The disagreement isn't about what the evidence *is*—it's about which parts matter most. That's a productive disagreement.
+
+== Plasticity vs. Robustness
+
+Boundary objects balance two properties:
+
+[cols="1,3"]
+|===
+| Property | What It Means
+
+| *Plasticity*
+| Can be shaped to local needs (different navigation paths, different PROMPT weights)
+
+| *Robustness*
+| Maintains core structure (same claims, same evidence, same relationships)
+|===
+
+Too plastic → everyone interprets differently, no shared ground
+Too robust → one interpretation dominates, no local adaptation
+
+Bofig aims for the sweet spot: **shared data, multiple interpretations**.
+
+== Practical Benefits
+
+=== For Journalists
+
+* Work with sources who have different agendas
+* Present evidence without forcing readers into one interpretation
+* Make the basis of claims explicit
+
+=== For Researchers
+
+* Share data with policymakers without oversimplifying
+* Collaborate across disciplines with different standards
+* Make methodology accessible to non-experts
+
+=== For Policymakers
+
+* Access evidence without wading through academic jargon
+* See what different stakeholders prioritize
+* Make decisions with visible trade-offs
+
+=== For Affected Communities
+
+* See how their experiences connect to systemic patterns
+* Access evidence in accessible formats
+* Challenge expert interpretations on shared ground
+
+== Example: Multi-Stakeholder Investigation
+
+Imagine an investigation into housing costs:
+
+[source,text]
+----
+EVIDENCE:
+  - ONS housing price index
+  - Shelter report on homelessness
+  - Landlord association lobbying docs
+  - Tenant interviews
+  - Academic study on rent controls
+
+STAKEHOLDERS:
+  - Tenant advocates → Want to show exploitation
+  - Landlords → Want to show market constraints
+  - Policymakers → Want to identify interventions
+  - Researchers → Want to test economic theories
+
+SHARED GROUND:
+  All stakeholders use the same evidence graph
+  Each has a navigation path suited to their needs
+  Disagreements are localized to interpretation, not data
+----
+
+== Related Concepts
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The overarching metaphor
+* link:navigation.adoc[i-docs Navigation] — How paths implement boundary objects
+* link:prompt.adoc[PROMPT Scoring] — Shared metrics with multiple interpretations
+
+== References
+
+* Star, S.L. & Griesemer, J.R. (1989). "Institutional Ecology, 'Translations' and Boundary Objects: Amateurs and Professionals in Berkeley's Museum of Vertebrate Zoology, 1907-39." _Social Studies of Science_, 19(3), 387-420.
+* Bowker, G.C. & Star, S.L. (1999). _Sorting Things Out: Classification and Its Consequences_. MIT Press.
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

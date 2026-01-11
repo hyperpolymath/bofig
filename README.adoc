@@ -390,6 +390,13 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 *Month 3 = Decision Point*: User testing with 25 NUJ journalists determines go/no-go.
 
+== Related Projects
+
+* https://github.com/hyperpolymath/formdb[FormDB] - The narrative-first, reversible, audit-grade database
+* https://github.com/hyperpolymath/fqldt[FQLdt] - Dependently-typed Form Query Language (compile-time proofs)
+* https://github.com/hyperpolymath/formdb-studio[FormDB Studio] - Zero-friction GUI for non-technical users
+* https://github.com/hyperpolymath/zotero-formdb[Zotero-FormDB] - Reference manager with PROMPT scores
+
 == License
 
 [To be determined]

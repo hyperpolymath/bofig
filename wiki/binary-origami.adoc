@@ -1,0 +1,191 @@
+// SPDX-License-Identifier: MPL-2.0
+= The Binary-Origami Metaphor
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+*Binary-Origami Figuration* is the conceptual framework behind bofig. This page explains what the name means and why it matters.
+
+toc::[]
+
+== What is Binary-Origami?
+
+Think of evidence like a flat sheet of paper. On its own, it's just data—claims, sources, relationships, scores. But depending on who's looking and what they need, that same sheet can be *folded* into completely different shapes.
+
+=== The Three Components
+
+[cols="1,3,3"]
+|===
+| Component | Meaning | Example
+
+| *Binary*
+| The clear, discrete relationships in evidence (supports/contradicts/contextualizes) and the 0-100 scores that make epistemology measurable
+| A claim has a PROMPT score of 85. An evidence item either supports or contradicts. No ambiguity.
+
+| *Origami*
+| The art of _folding_ evidence into different shapes for different audiences—without losing the original structure
+| A researcher sees methodology first. A policymaker sees recommendations. Same evidence, different "folds."
+
+| *Figuration*
+| The process of structuring information so it can be unfolded and refolded for clarity, reversibility, and interoperability
+| Navigation paths that let any user trace back to primary sources
+|===
+
+== Why This Metaphor Matters
+
+=== Reversibility
+
+Just like you can unfold origami back to a flat sheet, users can *always trace back* to the original evidence. No information is lost in the folding.
+
+[source,text]
+----
+RESEARCHER VIEW          FLAT EVIDENCE         POLICYMAKER VIEW
+
+     /\                  +--------+                  /\
+    /  \ ←—— unfold ——   | Claims | ——— fold ———→  /  \
+   /____\                | Sources|               /    \
+  ↑                      | Scores |                    ↑
+  methodology-first      +--------+      authority-first
+----
+
+=== Interoperability
+
+The same evidence can be "folded" into formats for:
+
+* Zotero reference managers
+* GraphQL APIs
+* JSON-LD for semantic web
+* D3.js visualizations
+
+=== Multiple Perspectives
+
+Different audiences need different entry points to the same truth:
+
+[cols="1,3"]
+|===
+| Audience | Their "Fold"
+
+| *Researcher*
+| Evidence-first, methodology priority, replicability emphasized
+
+| *Policymaker*
+| Authoritative sources, recommendations, publication venue
+
+| *Affected Person*
+| Personal impact, clarity, transparency
+
+| *Skeptic*
+| Counter-evidence surfaced, methodology scrutinized
+
+| *Journalist*
+| Provenance chains, source verification, PROMPT scores visible
+|===
+
+== The Philosophical Core
+
+[quote, Jonathan Jewell]
+____
+We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. *This system IS that infrastructure.*
+____
+
+Binary-Origami Figuration addresses a fundamental problem: how do we *coordinate without consensus*?
+
+In investigative journalism, activists, policymakers, researchers, and affected communities rarely agree on what evidence means. But they can all work with the *same evidence* if it's structured to support their different perspectives.
+
+=== Key Design Principles
+
+1. **Same data, multiple views**: The evidence graph is one structure. Navigation paths create different "folds."
+2. **Measurable epistemology**: PROMPT scores make quality explicit, not implicit.
+3. **Navigation over narration**: Users choose their path through evidence, not the author.
+4. **Reversibility**: Every fold can be unfolded. Every path can be retraced.
+
+== Visual Metaphor
+
+[source,text]
+----
+THE FLAT SHEET (Raw Evidence)
+╔════════════════════════════════════════╗
+║  ONS Data  ║ Interview  ║  Study X     ║
+║  Report Y  ║ ThinkTank  ║  BoE Stats   ║
+╚════════════════════════════════════════╝
+
+                    ↓ FOLD
+
+THE RESEARCHER'S CRANE (Methodology-First)
+          /\
+         /  \
+        /____\
+       /_/\__\_\
+         ‖
+    Peer-reviewed first,
+    interviews last
+
+THE POLICYMAKER'S BOX (Authority-First)
+       ┌───────┐
+       │  ONS  │
+       │  BoE  │
+       └───────┘
+    Official sources first,
+    think tanks second
+----
+
+== How It Works in Practice
+
+=== Example: UK Inflation 2023 Investigation
+
+The test dataset includes 7 claims and 30 evidence items about UK inflation.
+
+[cols="1,2"]
+|===
+| Claim | "Energy price cap increases drove inflation higher than headline CPI"
+
+| *Supporting Evidence*
+| ONS CPI data, Ofgem price cap announcements
+
+| *Contradicting Evidence*
+| BoE analysis showing food prices as primary driver
+
+| *Contextualizing Evidence*
+| Resolution Foundation reports on distributional impact
+|===
+
+**Three folds of the same evidence:**
+
+1. **Researcher Path**: Starts with methodology (how was CPI calculated?), leads to source data, ends with interpretation conflicts
+
+2. **Policymaker Path**: Starts with official sources (ONS, BoE), leads to actionable findings, ends with policy recommendations
+
+3. **Affected Person Path**: Starts with personal impact (how much more am I paying?), leads to causes, ends with systemic explanations
+
+== Related Concepts
+
+* link:navigation.adoc[i-docs Navigation] — The "choose your own adventure" principle
+* link:prompt.adoc[PROMPT Scoring] — The "nutrition labels" for evidence quality
+* link:boundary-objects.adoc[Boundary Objects] — The theory behind multi-perspective design
+* link:graphs.adoc[Evidence Graphs] — The skeleton beneath the origami
+* link:folding-101.adoc[Folding 101] — Step-by-step tutorial
+
+== FAQ
+
+[qanda]
+Why not just use a wiki or CMS?::
+    Wikis and CMSs don't have built-in epistemological scoring, audience-specific navigation, or formal reversibility. They store content; bofig structures *evidence relationships*.
+
+Is this just a graph database with extra steps?::
+    No. Graph databases store relationships. Bofig adds: (1) PROMPT scoring for measurable quality, (2) boundary object paths for multi-stakeholder coordination, (3) reversible folding patterns for different audiences.
+
+What does "figuration" add to "binary-origami"?::
+    Figuration is the *process* of structuring. It implies intentional design, not just storage. The system doesn't just hold data—it shapes how that data can be understood across contexts.
+
+== Further Reading
+
+* Star, S.L. & Griesemer, J.R. (1989). "Institutional Ecology, 'Translations' and Boundary Objects"
+* MIT Open Doc Lab: http://opendoclab.mit.edu/[i-docs Principles]
+* The PROMPT Framework: See link:prompt.adoc[PROMPT Scoring]
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

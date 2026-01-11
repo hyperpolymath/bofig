@@ -1,6 +1,5 @@
 = Evidence Graph for Investigative Journalism
-
-image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
+image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 
 
@@ -8,6 +7,51 @@ image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,l
 
 *Status:* Phase 1 (PoC) - Month 1 Complete
 *Version:* 0.1.0
+
+== New Here? Start with the Wiki
+
+[TIP]
+====
+*Confused by the terminology?* The link:wiki/index.adoc[Binary-Origami Wiki] explains everything in metaphors, diagrams, and plain language.
+====
+
+[quote, Jonathan Jewell]
+____
+This isn't just a database. It's *infrastructure for folding and unfolding evidence*—so everyone can see the shape that fits their needs.
+____
+
+=== Why "Binary-Origami"?
+
+* *Binary*: Evidence is stored as clear, connected data (supports/contradicts, 0-100 scores)
+* *Origami*: The same evidence can be "folded" into different forms for different audiences
+* *Figuration*: The rules for folding/unfolding are transparent and reversible
+
+[cols="1,2,1"]
+|===
+| Concept | Description | Learn More
+
+| i-docs Navigation
+| "Choose Your Own Adventure" for evidence
+| link:wiki/navigation.adoc[Wiki]
+
+| PROMPT Scoring
+| "Nutrition labels" for trustworthiness
+| link:wiki/prompt.adoc[Wiki]
+
+| Boundary Objects
+| "Shared maps" with multiple routes
+| link:wiki/boundary-objects.adoc[Wiki]
+
+| Evidence Graphs
+| The "skeleton" beneath the origami
+| link:wiki/graphs.adoc[Wiki]
+|===
+
+=== For the Impatient
+
+1. Try the <<quick-start,Quick Start>> to see it in action
+2. Skim the link:wiki/binary-origami.adoc[Binary-Origami Metaphor] page
+3. Dive into the link:wiki/faqs.adoc[FAQ] if something's unclear
 
 == Vision
 
@@ -18,7 +62,9 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
 1. *i-docs Navigation*: Navigation over narration, reader agency
 2. *PROMPT Framework*: 6-dimensional epistemological scoring (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
 3. *Boundary Objects*: Multiple audience perspectives on same evidence
+4. Evidence Graph for Investigative Journalism amd Related Disciplines
 
+[[quick-start]]
 == Quick Start
 
 === Prerequisites
@@ -345,11 +391,21 @@ mix dialyzer
 
 == Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Data model, database design, API specs
-- [ROADMAP.md](ROADMAP.md) - 18-month implementation plan
-- [docs/database-evaluation.md](docs/database-evaluation.md) - ArangoDB comparison
-- [docs/zotero-integration.md](docs/zotero-integration.md) - Two-way sync design
-- [CLAUDE.md](CLAUDE.md) - AI assistant context
+=== Conceptual (Start Here!)
+
+- link:wiki/index.adoc[Binary-Origami Wiki] - Explains the metaphor and concepts in plain language
+- link:wiki/binary-origami.adoc[The Metaphor] - Why "Binary-Origami Figuration"?
+- link:wiki/folding-101.adoc[Folding 101] - Hands-on tutorial
+- link:wiki/faqs.adoc[FAQ] - Common questions answered
+- link:wiki/glossary.adoc[Glossary] - Term definitions
+
+=== Technical
+
+- link:ARCHITECTURE.md[ARCHITECTURE.md] - Data model, database design, API specs
+- link:ROADMAP.md[ROADMAP.md] - 18-month implementation plan
+- link:docs/database-evaluation.md[docs/database-evaluation.md] - ArangoDB comparison
+- link:docs/zotero-integration.md[docs/zotero-integration.md] - Two-way sync design
+- link:CLAUDE.md[CLAUDE.md] - AI assistant context
 
 == Key Features
 
@@ -390,6 +446,13 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 *Month 3 = Decision Point*: User testing with 25 NUJ journalists determines go/no-go.
 
+== Related Projects
+
+* https://github.com/hyperpolymath/formdb[FormDB] - The narrative-first, reversible, audit-grade database
+* https://github.com/hyperpolymath/fqldt[FQLdt] - Dependently-typed Form Query Language (compile-time proofs)
+* https://github.com/hyperpolymath/formdb-studio[FormDB Studio] - Zero-friction GUI for non-technical users
+* https://github.com/hyperpolymath/zotero-formdb[Zotero-FormDB] - Reference manager with PROMPT scores
+
 == License
 
 [To be determined]
@@ -404,6 +467,6 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 *Built with:* Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
 
-*Inspired by:* i-docs (MIT Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
+*Inspired by:* i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
 
 *Last Updated:* 2025-11-22

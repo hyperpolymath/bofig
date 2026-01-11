@@ -1,0 +1,380 @@
+// SPDX-License-Identifier: MPL-2.0
+= Evidence Graphs: The Skeleton Beneath the Origami
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+*Evidence graphs* are the underlying data structure that makes everything else possible. Think of them as the skeleton beneath the origami folds.
+
+toc::[]
+
+== What is an Evidence Graph?
+
+An evidence graph is a network of:
+
+* **Nodes**: Claims and evidence items
+* **Edges**: Relationships between them (supports, contradicts, contextualizes)
+
+[source,text]
+----
+                    ┌─────────────────┐
+                    │  Primary Claim  │
+                    │  "Energy drove  │
+                    │   inflation"    │
+                    └────────┬────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │ SUPPORTS          │ SUPPORTS          │ CONTRADICTS
+         ▼                   ▼                   ▼
+    ┌──────────┐       ┌──────────┐       ┌──────────┐
+    │ ONS Data │       │ Ofgem    │       │ BoE      │
+    │ (97.5)   │       │ Report   │       │ Analysis │
+    └────┬─────┘       └──────────┘       └────┬─────┘
+         │ SUPPORTS                             │ SUPPORTS
+         ▼                                      ▼
+    ┌──────────┐                          ┌──────────┐
+    │ Academic │                          │ Food     │
+    │ Study    │                          │ Prices   │
+    └──────────┘                          └──────────┘
+----
+
+== Why Graphs?
+
+Traditional databases store data in tables (rows and columns). But evidence doesn't fit neatly into tables:
+
+[cols="1,3,3"]
+|===
+| Model | Strengths | Weaknesses
+
+| *Tables (SQL)*
+| Great for structured records
+| Poor for relationships-of-relationships
+
+| *Documents (NoSQL)*
+| Flexible schemas
+| No native relationship traversal
+
+| *Graphs*
+| Relationships are first-class
+| Less familiar, new query language
+|===
+
+Evidence is *inherently relational*. A claim is only meaningful in relation to its supporting evidence. Evidence is only significant in relation to claims it supports or contradicts.
+
+== Graph Concepts in Bofig
+
+=== Nodes (Vertices)
+
+[cols="1,2,2"]
+|===
+| Node Type | Example | Key Properties
+
+| *Claim*
+| "Energy prices drove UK inflation higher than headline CPI"
+| text, claim_type, confidence_level, PROMPT scores
+
+| *Evidence*
+| ONS Consumer Price Index dataset (March 2023)
+| title, evidence_type, source_url, PROMPT scores
+
+| *Investigation*
+| "UK Inflation 2023"
+| title, status, collaborators
+|===
+
+=== Edges (Relationships)
+
+[cols="1,2,3"]
+|===
+| Relationship | Meaning | Properties
+
+| *SUPPORTS*
+| Evidence supports a claim
+| weight (0 to 1), confidence, reasoning
+
+| *CONTRADICTS*
+| Evidence contradicts a claim
+| weight (-1 to 0), confidence, reasoning
+
+| *CONTEXTUALIZES*
+| Evidence provides context without support/contradiction
+| weight (neutral), confidence, reasoning
+|===
+
+=== Weight and Confidence
+
+Each edge has two numeric properties:
+
+[source,text]
+----
+WEIGHT:
+  -1.0 ═══════════╪═══════════ +1.0
+  Strong          Neutral      Strong
+  Contradiction              Support
+
+CONFIDENCE:
+  0.0 ════════════════════════ 1.0
+  Very           Moderate     Very
+  Uncertain                   Certain
+----
+
+Example:
+
+* ONS data SUPPORTS "energy drove inflation" with weight=0.9, confidence=0.95
+* BoE analysis CONTRADICTS with weight=-0.6, confidence=0.80
+
+== ArangoDB: The Multi-Model Database
+
+Bofig uses ArangoDB because it combines:
+
+1. **Document storage** (like MongoDB): Store claims and evidence as JSON
+2. **Graph queries** (like Neo4j): Traverse relationships efficiently
+
+[source,javascript]
+----
+// AQL (ArangoDB Query Language) example
+FOR claim IN claims
+  FILTER claim._key == "claim_1"
+  FOR evidence, edge IN 1..3 OUTBOUND claim relationships
+    FILTER edge.relationship_type == "supports"
+    RETURN {
+      evidence: evidence.title,
+      weight: edge.weight,
+      depth: LENGTH(pathVertices(edge)) - 1
+    }
+----
+
+This query: "Find all evidence that supports claim_1, up to 3 hops deep."
+
+== Graph Traversal Patterns
+
+=== Evidence Chains
+
+Follow the chain of support/contradiction:
+
+[source,text]
+----
+claim₁ → evidence₁ → claim₂ → evidence₂ → claim₃
+         (supports)  (derived)  (supports)  (derived)
+----
+
+The GraphQL API exposes this:
+
+[source,graphql]
+----
+query {
+  evidenceChain(claimId: "claim_1", maxDepth: 3) {
+    rootClaim {
+      text
+    }
+    nodes {
+      ... on Claim { text }
+      ... on Evidence { title }
+    }
+    edges {
+      relationshipType
+      weight
+    }
+    maxDepth
+  }
+}
+----
+
+=== Shortest Path
+
+Find how two pieces of evidence connect:
+
+[source,graphql]
+----
+query {
+  findPath(fromId: "ons_data", toId: "interview_1", maxDepth: 5) {
+    node {
+      ... on Claim { text }
+      ... on Evidence { title }
+    }
+    relationship {
+      relationshipType
+    }
+    depth
+  }
+}
+----
+
+=== Propagated Weights
+
+As you traverse deeper, confidence decays:
+
+[source,elixir]
+----
+def propagated_weight(path) do
+  path
+  |> Enum.map(& &1.weight)
+  |> Enum.reduce(1.0, &(&1 * &2))  # Multiplicative decay
+end
+
+# Example:
+# claim₁ → evidence₁ (0.9) → claim₂ → evidence₂ (0.8)
+# Propagated weight: 0.9 × 0.8 = 0.72
+----
+
+This captures: evidence that's three hops away is less directly relevant than evidence that's one hop away.
+
+== Collections in ArangoDB
+
+[source,text]
+----
+DOCUMENT COLLECTIONS:
+  ├── investigations   (container for claims/evidence)
+  ├── claims           (statements to be evaluated)
+  ├── evidence         (supporting/contradicting materials)
+  └── navigation_paths (audience-specific orderings)
+
+EDGE COLLECTION:
+  └── relationships    (supports/contradicts/contextualizes)
+----
+
+=== Indexes
+
+[source,javascript]
+----
+// Full-text search on claims and evidence
+db.claims.ensureIndex({ type: "fulltext", fields: ["text"] })
+db.evidence.ensureIndex({ type: "fulltext", fields: ["title"] })
+
+// PROMPT score queries (find high-quality evidence)
+db.claims.ensureIndex({ type: "skiplist", fields: ["prompt_scores.overall"] })
+
+// Investigation filtering
+db.claims.ensureIndex({ type: "hash", fields: ["investigation_id"] })
+
+// Zotero sync lookup
+db.evidence.ensureIndex({ type: "hash", fields: ["zotero_key"] })
+----
+
+== Graph Visualization
+
+The D3.js frontend renders the evidence graph:
+
+[source,text]
+----
+    ○───────○
+   /         \
+  ○     ○─────○
+   \   /
+    ○─○
+
+○ = Node (claim or evidence)
+─ = Edge (relationship)
+Size = PROMPT score
+Color = Type (claim=blue, evidence=green)
+Line thickness = Weight
+----
+
+Users can:
+
+* Zoom and pan
+* Click nodes for details
+* Filter by PROMPT score thresholds
+* Highlight specific paths
+
+== Performance Considerations
+
+=== Query Optimization
+
+Graph traversals can be expensive. Strategies:
+
+1. **Depth limits**: Most queries stop at 3-5 hops
+2. **Materialized paths**: Pre-compute common traversals
+3. **Index usage**: Hash indexes for direct lookups, skiplist for ranges
+
+=== Benchmarks (Targets)
+
+[cols="1,1"]
+|===
+| Operation | Target
+
+| Single investigation load
+| < 500ms
+
+| Evidence chain (depth 5)
+| < 1s
+
+| Full-text search
+| < 200ms
+
+| Create relationship
+| < 100ms
+|===
+
+== Why Not Neo4j?
+
+[cols="1,2,2"]
+|===
+| Factor | ArangoDB | Neo4j
+
+| Document + Graph
+| Native multi-model
+| Requires separate document store
+
+| Query Language
+| AQL (SQL-like)
+| Cypher (different paradigm)
+
+| Elixir Support
+| `arangox` library
+| No official driver
+
+| Managed Hosting
+| ArangoDB Oasis (€45/mo)
+| Neo4j Aura ($$)
+
+| License
+| Apache 2.0
+| GPL (community) / commercial
+|===
+
+ArangoDB's multi-model approach means we can store JSON documents (claims, evidence) and graph edges (relationships) in the same database without synchronization overhead.
+
+== The Graph as Skeleton
+
+The origami metaphor: navigation paths are different "folds" of the same paper. The graph is the paper itself—the underlying structure that persists across all views.
+
+[source,text]
+----
+                 GRAPH (Skeleton)
+                      │
+    ┌─────────────────┼─────────────────┐
+    │                 │                 │
+Researcher       Policymaker       Activist
+   Fold              Fold             Fold
+    │                 │                 │
+    ▼                 ▼                 ▼
+  View 1            View 2           View 3
+----
+
+No matter how you fold the origami:
+
+* The nodes are the same
+* The edges are the same
+* The PROMPT scores are the same
+
+Only the *order* and *emphasis* change.
+
+== Related Concepts
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The overarching metaphor
+* link:navigation.adoc[i-docs Navigation] — How paths traverse the graph
+* link:prompt.adoc[PROMPT Scoring] — Node-level quality metrics
+
+== Further Reading
+
+* ArangoDB Documentation: https://www.arangodb.com/docs/stable/
+* Graph Database Concepts: https://neo4j.com/developer/graph-database/
+* Network Science: Barabási, A.L. (2016). _Network Science_. Cambridge University Press.
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

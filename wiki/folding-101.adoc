@@ -1,0 +1,546 @@
+// SPDX-License-Identifier: MPL-2.0
+= Folding 101: A Step-by-Step Guide
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+A hands-on tutorial for creating your first evidence graph and navigation paths. Learn by doing.
+
+toc::[]
+
+== What You'll Build
+
+By the end of this tutorial, you'll have:
+
+1. Created an investigation
+2. Added claims with PROMPT scores
+3. Added evidence
+4. Connected claims to evidence with relationships
+5. Created navigation paths for different audiences
+
+We'll use a simplified example: "Did remote work increase productivity?"
+
+== Prerequisites
+
+* Bofig running locally (see link:../README.adoc[README] for setup)
+* Access to GraphQL playground at http://localhost:4000/api/graphiql
+
+== Step 1: The Flat Sheet (Raw Evidence)
+
+Before folding origami, you need a flat sheet. Before creating navigation paths, you need raw data.
+
+Let's gather our "paper":
+
+[source,text]
+----
+CLAIMS WE'LL MAKE:
+  1. "Remote work increased overall productivity"
+  2. "Communication quality decreased with remote work"
+  3. "Worker satisfaction improved with flexibility"
+
+EVIDENCE WE'LL USE:
+  1. Stanford WFH study (2023)
+  2. Gallup engagement survey
+  3. Company productivity metrics (anonymized)
+  4. Employee interviews (5 participants)
+----
+
+== Step 2: Create the Investigation
+
+An investigation is the container for all your claims and evidence.
+
+[source,graphql]
+----
+mutation {
+  createInvestigation(input: {
+    title: "Remote Work Productivity Analysis"
+    description: "Examining claims about remote work's impact on productivity"
+    status: DRAFT
+  }) {
+    id
+    title
+    status
+  }
+}
+----
+
+*Save the returned `id`*—you'll need it for subsequent steps.
+
+Let's call it `investigation_remote_work`.
+
+== Step 3: Add Claims
+
+Now add your claims, one at a time.
+
+=== Primary Claim
+
+[source,graphql]
+----
+mutation {
+  createClaim(input: {
+    investigationId: "investigation_remote_work"
+    text: "Remote work increased overall productivity during 2020-2023"
+    claimType: PRIMARY
+    confidenceLevel: 0.75
+    promptScores: {
+      provenance: 80
+      replicability: 70
+      objective: 75
+      methodology: 70
+      publication: 65
+      transparency: 60
+    }
+  }) {
+    id
+    text
+    promptScores {
+      overall
+    }
+  }
+}
+----
+
+Note the overall score is automatically calculated (~70.25).
+
+=== Supporting Claim
+
+[source,graphql]
+----
+mutation {
+  createClaim(input: {
+    investigationId: "investigation_remote_work"
+    text: "Worker satisfaction improved with schedule flexibility"
+    claimType: SUPPORTING
+    confidenceLevel: 0.85
+  }) {
+    id
+    text
+  }
+}
+----
+
+=== Counter Claim
+
+[source,graphql]
+----
+mutation {
+  createClaim(input: {
+    investigationId: "investigation_remote_work"
+    text: "Spontaneous collaboration and innovation decreased"
+    claimType: COUNTER
+    confidenceLevel: 0.60
+  }) {
+    id
+    text
+  }
+}
+----
+
+== Step 4: Add Evidence
+
+Now add the materials that support or contradict your claims.
+
+=== Academic Study
+
+[source,graphql]
+----
+mutation {
+  createEvidence(input: {
+    investigationId: "investigation_remote_work"
+    title: "Stanford Work-From-Home Study (Bloom et al. 2023)"
+    evidenceType: DOCUMENT
+    sourceUrl: "https://nber.org/papers/example"
+    promptScores: {
+      provenance: 95
+      replicability: 85
+      objective: 80
+      methodology: 90
+      publication: 95
+      transparency: 75
+    }
+    tags: ["academic", "peer-reviewed", "longitudinal"]
+  }) {
+    id
+    title
+    promptScores {
+      overall
+    }
+  }
+}
+----
+
+=== Survey Data
+
+[source,graphql]
+----
+mutation {
+  createEvidence(input: {
+    investigationId: "investigation_remote_work"
+    title: "Gallup Employee Engagement Survey Q4 2023"
+    evidenceType: DATASET
+    sourceUrl: "https://gallup.com/example"
+    promptScores: {
+      provenance: 90
+      replicability: 80
+      objective: 85
+      methodology: 85
+      publication: 80
+      transparency: 70
+    }
+  }) {
+    id
+    title
+  }
+}
+----
+
+=== Interviews
+
+[source,graphql]
+----
+mutation {
+  createEvidence(input: {
+    investigationId: "investigation_remote_work"
+    title: "Employee interviews (n=5, anonymized)"
+    evidenceType: INTERVIEW
+    promptScores: {
+      provenance: 75
+      replicability: 30
+      objective: 60
+      methodology: 50
+      publication: 40
+      transparency: 85
+    }
+    tags: ["qualitative", "first-person"]
+  }) {
+    id
+    title
+    promptScores {
+      overall
+    }
+  }
+}
+----
+
+Notice the interview scores differently—high transparency (transcripts available), low replicability (can't re-interview the moment).
+
+== Step 5: Connect Claims and Evidence
+
+Now create the edges that connect your graph.
+
+=== Stanford Study Supports Primary Claim
+
+[source,graphql]
+----
+mutation {
+  createRelationship(input: {
+    fromId: "claim_primary"
+    toId: "evidence_stanford"
+    relationshipType: SUPPORTS
+    weight: 0.85
+    confidence: 0.90
+    reasoning: "Randomized trial showing 13% productivity increase for WFH employees"
+  }) {
+    id
+    relationshipType
+    weight
+  }
+}
+----
+
+=== Interviews Contextualize (Mixed Support)
+
+[source,graphql]
+----
+mutation {
+  createRelationship(input: {
+    fromId: "claim_primary"
+    toId: "evidence_interviews"
+    relationshipType: CONTEXTUALIZES
+    weight: 0.30
+    confidence: 0.65
+    reasoning: "Mixed experiences reported—some thrived, others struggled"
+  }) {
+    id
+    relationshipType
+    weight
+  }
+}
+----
+
+=== Some Evidence Supports Counter-Claim
+
+[source,graphql]
+----
+mutation {
+  createRelationship(input: {
+    fromId: "claim_counter"
+    toId: "evidence_interviews"
+    relationshipType: SUPPORTS
+    weight: 0.70
+    confidence: 0.60
+    reasoning: "Interviewees mentioned missing spontaneous hallway conversations"
+  }) {
+    id
+    relationshipType
+  }
+}
+----
+
+== Step 6: View the Evidence Chain
+
+Now see how your evidence connects:
+
+[source,graphql]
+----
+query {
+  evidenceChain(claimId: "claim_primary", maxDepth: 2) {
+    rootClaim {
+      text
+    }
+    nodes {
+      ... on Claim {
+        id
+        text
+        claimType
+      }
+      ... on Evidence {
+        id
+        title
+        evidenceType
+      }
+    }
+    edges {
+      relationshipType
+      weight
+      confidence
+    }
+    maxDepth
+  }
+}
+----
+
+You'll see the primary claim connected to all its supporting and contextualizing evidence.
+
+== Step 7: Create the First Fold (Researcher Path)
+
+Now the origami begins. Let's create a navigation path for researchers:
+
+[source,graphql]
+----
+mutation {
+  createNavigationPath(input: {
+    investigationId: "investigation_remote_work"
+    audienceType: RESEARCHER
+    name: "Methodological Deep-Dive"
+    description: "Evidence-first path emphasizing research quality and replicability"
+    pathNodes: [
+      {
+        entityId: "evidence_stanford"
+        order: 1
+        context: "Start with the highest-quality evidence: peer-reviewed RCT"
+      },
+      {
+        entityId: "claim_primary"
+        order: 2
+        context: "Now see what claim this evidence supports"
+      },
+      {
+        entityId: "evidence_gallup"
+        order: 3
+        context: "Cross-reference with large-scale survey data"
+      },
+      {
+        entityId: "claim_counter"
+        order: 4
+        context: "Consider alternative interpretations"
+      },
+      {
+        entityId: "evidence_interviews"
+        order: 5
+        context: "Qualitative nuance—lower replicability but adds depth"
+      }
+    ]
+  }) {
+    id
+    name
+    audienceType
+    pathNodes {
+      entityId
+      order
+      context
+    }
+  }
+}
+----
+
+== Step 8: Create the Second Fold (Skeptic Path)
+
+Different fold, same evidence:
+
+[source,graphql]
+----
+mutation {
+  createNavigationPath(input: {
+    investigationId: "investigation_remote_work"
+    audienceType: SKEPTIC
+    name: "Challenge the Narrative"
+    description: "Counter-evidence and methodological limitations first"
+    pathNodes: [
+      {
+        entityId: "claim_counter"
+        order: 1
+        context: "Start with what might be wrong"
+      },
+      {
+        entityId: "evidence_interviews"
+        order: 2
+        context: "Real voices expressing concerns"
+      },
+      {
+        entityId: "claim_primary"
+        order: 3
+        context: "The mainstream claim—examine it critically"
+      },
+      {
+        entityId: "evidence_stanford"
+        order: 4
+        context: "Best evidence, but check the limitations"
+      },
+      {
+        entityId: "evidence_gallup"
+        order: 5
+        context: "Survey data—what's the selection bias?"
+      }
+    ]
+  }) {
+    id
+    name
+    audienceType
+  }
+}
+----
+
+== Step 9: Auto-Generate a Path
+
+Let bofig create a path based on audience-weighted PROMPT scores:
+
+[source,graphql]
+----
+mutation {
+  autoGeneratePath(
+    investigationId: "investigation_remote_work"
+    audienceType: POLICYMAKER
+  ) {
+    id
+    name
+    description
+    pathNodes {
+      entityId
+      order
+      context
+    }
+  }
+}
+----
+
+The algorithm will prioritize evidence with high provenance and publication scores (what policymakers care about).
+
+== Step 10: Compare the Folds
+
+Query all paths and see how they differ:
+
+[source,graphql]
+----
+query {
+  navigationPaths(investigationId: "investigation_remote_work") {
+    name
+    audienceType
+    pathNodes {
+      entityId
+      order
+    }
+  }
+}
+----
+
+You'll see three paths through the *same* evidence graph, each ordered differently:
+
+[source,text]
+----
+RESEARCHER: Stanford → Primary Claim → Gallup → Counter → Interviews
+SKEPTIC:    Counter → Interviews → Primary Claim → Stanford → Gallup
+POLICYMAKER: [auto-generated based on provenance/publication weights]
+----
+
+Same paper, different folds.
+
+== Understanding What You Built
+
+[source,text]
+----
+     THE FLAT SHEET (Evidence Graph)
+     ┌────────────────────────────────┐
+     │  Stanford  │  Gallup  │  Interviews  │
+     │  Primary   │  Supporting  │  Counter   │
+     └────────────────────────────────┘
+              ↓ FOLD ↓
+
+     RESEARCHER CRANE          SKEPTIC BOX
+          /\                   ┌─────────┐
+         /  \                  │ Counter │
+        /____\                 │ first   │
+       High-method             └─────────┘
+       evidence first          Questions first
+----
+
+== Next Steps
+
+1. **Add more evidence**: Import from Zotero, add documents, link datasets
+2. **Refine PROMPT scores**: Score all evidence systematically
+3. **Create more paths**: Affected person, journalist, activist perspectives
+4. **Visualize**: Use the D3.js graph view to see the structure
+5. **Share**: Export paths for different stakeholders
+
+== Common Mistakes
+
+[cols="1,2"]
+|===
+| Mistake | Solution
+
+| Creating paths before evidence
+| Add all claims and evidence first, then create relationships, then fold into paths
+
+| Forgetting relationships
+| Paths without relationships are just lists—connect claims to evidence
+
+| Over-scoring interviews
+| Interviews are high-provenance but low-replicability—score honestly
+
+| Making all paths the same
+| The point is *different* orders for *different* audiences
+|===
+
+== Review: The Origami Process
+
+1. **Gather the paper** (claims, evidence)
+2. **Mark the fold lines** (relationships, PROMPT scores)
+3. **Fold for researcher** (methodology-first path)
+4. **Fold for skeptic** (counter-evidence-first path)
+5. **Fold for policymaker** (authority-first path)
+6. **Same paper, different shapes** (same evidence, different presentations)
+
+The paper can always be unfolded—every path leads back to the original evidence graph.
+
+== Related Pages
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The full metaphor
+* link:prompt.adoc[PROMPT Scoring] — Detailed scoring guide
+* link:navigation.adoc[i-docs Navigation] — Path design principles
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

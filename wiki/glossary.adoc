@@ -1,0 +1,266 @@
+// SPDX-License-Identifier: MPL-2.0
+= Glossary of Terms
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+Definitions of key terms used in bofig and the Binary-Origami Figuration framework.
+
+toc::[]
+
+== A
+
+[[arango]]
+ArangoDB::
+  A multi-model database that combines document and graph capabilities. Bofig uses ArangoDB to store claims, evidence, and their relationships in a single system.
+
+[[audience-type]]
+Audience Type::
+  One of six predefined stakeholder categories: Researcher, Policymaker, Activist, Skeptic, Affected Person, Journalist. Each type has different PROMPT weight priorities that shape navigation paths.
+
+[[aql]]
+AQL (ArangoDB Query Language)::
+  The query language for ArangoDB, similar to SQL but with native graph traversal support. Used internally by bofig for complex evidence chain queries.
+
+== B
+
+[[binary]]
+Binary::
+  In the context of Binary-Origami Figuration, refers to the clear, discrete relationships in evidence: supports/contradicts/contextualizes, 0-100 scores, yes/no verifiability. Binary doesn't mean "two options" but rather "clearly defined and measurable."
+
+[[binary-origami]]
+Binary-Origami Figuration::
+  The conceptual framework behind bofig. Combines:
+  * **Binary**: Measurable evidence relationships and scores
+  * **Origami**: Folding evidence into different shapes for different audiences
+  * **Figuration**: The intentional process of structuring information
+  +
+  See link:binary-origami.adoc[Binary-Origami Figuration] for full explanation.
+
+[[bofig]]
+bofig::
+  The shorthand name for this project. Stands for *B*inary-*O*rigami *Fig*uration. Also the repository name.
+
+[[boundary-object]]
+Boundary Object::
+  A concept from sociology (Star & Griesemer, 1989). Objects that different communities use together while understanding them differently. In bofig, evidence serves as a boundary object—activists and policymakers access the same data but interpret it for their contexts. See link:boundary-objects.adoc[Boundary Objects].
+
+== C
+
+[[claim]]
+Claim::
+  A statement that can be supported or contradicted by evidence. In bofig, claims have:
+  * `text`: The claim itself
+  * `claim_type`: PRIMARY, SUPPORTING, or COUNTER
+  * `confidence_level`: 0.0 to 1.0
+  * `prompt_scores`: PROMPT scoring metrics
+
+[[confidence]]
+Confidence::
+  A 0.0-1.0 score indicating how certain a relationship or claim is. Distinct from weight—a relationship can have high weight (strong support) but low confidence (uncertain).
+
+[[contradiction]]
+Contradicts::
+  One of three relationship types. Evidence contradicts a claim when it provides reasons to doubt or disbelieve the claim. Represented with negative weights (-1.0 to 0).
+
+[[contextualization]]
+Contextualizes::
+  One of three relationship types. Evidence contextualizes when it provides background without directly supporting or contradicting. Represented with neutral weights.
+
+== D
+
+[[dublin-core]]
+Dublin Core::
+  A metadata standard for describing digital resources. Bofig stores Dublin Core metadata to ensure evidence is interoperable with academic repositories and search systems.
+
+== E
+
+[[edge]]
+Edge::
+  In graph terminology, a connection between two nodes. In bofig, edges represent relationships between claims and evidence (supports, contradicts, contextualizes).
+
+[[evidence]]
+Evidence::
+  Materials that support or contradict claims. Types include: DOCUMENT, DATASET, INTERVIEW, MEDIA, OTHER. Each evidence item has PROMPT scores and can link to external sources (URLs, IPFS hashes, Zotero keys).
+
+[[evidence-chain]]
+Evidence Chain::
+  A traversal through the evidence graph following relationships. Example: claim₁ → evidence₁ → claim₂ → evidence₂. Chains show how evidence connects across multiple hops.
+
+[[evidence-graph]]
+Evidence Graph::
+  The underlying data structure: nodes (claims, evidence) connected by edges (relationships). See link:graphs.adoc[Evidence Graphs].
+
+== F
+
+[[figuration]]
+Figuration::
+  The process of structuring information intentionally. Not just storage, but shaping how data can be understood across contexts. The "figuration" in Binary-Origami Figuration emphasizes intentional design.
+
+[[fold]]
+Fold::
+  Metaphor for organizing evidence for a specific audience. A "researcher fold" orders evidence by methodology; a "policymaker fold" orders by authority. Same evidence, different arrangements.
+
+== G
+
+[[graph-traversal]]
+Graph Traversal::
+  Moving through a graph by following edges. Bofig's `evidenceChain` and `findPath` queries traverse the evidence graph to find connected items.
+
+[[graphql]]
+GraphQL::
+  A query language for APIs. Bofig uses GraphQL (via Absinthe) for all complex operations. Clients can request exactly the data they need.
+
+== I
+
+[[i-docs]]
+i-docs (Interactive Documentary)::
+  A documentary form that emphasizes reader/viewer agency over author-controlled narrative. Pioneered by MIT Open Doc Lab. Bofig applies i-docs principles to evidence presentation. See link:navigation.adoc[i-docs Navigation].
+
+[[investigation]]
+Investigation::
+  A container for related claims and evidence. Has a title, status (DRAFT, REVIEW, PUBLISHED, ARCHIVED), collaborators, and associated navigation paths.
+
+[[ipfs]]
+IPFS (InterPlanetary File System)::
+  A distributed file system for storing and sharing data. Bofig stores IPFS hashes for evidence to provide tamper-proof provenance.
+
+== J
+
+[[json-ld]]
+JSON-LD::
+  A JSON-based format for linked data. Bofig stores evidence in JSON-LD-ready format to enable future semantic web integration.
+
+== M
+
+[[methodology]]
+Methodology (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures the rigor of data collection and analysis. High methodology scores indicate robust research methods.
+
+== N
+
+[[navigation-path]]
+Navigation Path::
+  A curated sequence of claims and evidence designed for a specific audience type. Includes:
+  * `audience_type`: Who this path is for
+  * `path_nodes`: Ordered list of entities with context
+  * `entry_points`: Starting points for exploration
+  +
+  See link:navigation.adoc[i-docs Navigation].
+
+[[node]]
+Node::
+  In graph terminology, a discrete entity (vertex). In bofig, nodes are either claims or evidence items.
+
+== O
+
+[[objective]]
+Objective (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures whether key terms are operationally defined. High scores mean concepts are clearly specified and measurable.
+
+[[origami]]
+Origami::
+  The art of paper folding. In Binary-Origami Figuration, a metaphor for organizing the same evidence into different shapes (navigation paths) for different audiences without losing the original structure.
+
+[[overall-score]]
+Overall Score::
+  A weighted average of the six PROMPT dimensions. Default weights: Provenance 20%, Replicability 15%, Objective 15%, Methodology 20%, Publication 15%, Transparency 15%.
+
+== P
+
+[[path-node]]
+Path Node::
+  A single step in a navigation path. Contains:
+  * `entity_id`: Which claim or evidence to show
+  * `order`: Position in the sequence
+  * `context`: Why this item appears here
+  * `emphasis`: What to highlight
+
+[[plasticity]]
+Plasticity::
+  The ability of boundary objects to be shaped for local needs. In bofig, navigation paths provide plasticity—same evidence, different arrangements.
+
+[[pragmatic-epistemology]]
+Pragmatic Epistemology::
+  A philosophical approach that focuses on the practical consequences of beliefs rather than abstract truth. Bofig's PROMPT framework operationalizes pragmatic epistemology by asking "how would this evidence help different stakeholders?"
+
+[[prompt]]
+PROMPT::
+  The 6-dimensional epistemological scoring framework:
+  * **P**rovenance: Source credibility
+  * **R**eplicability: Verifiability
+  * **O**bjective: Operational definitions
+  * **M**ethodology: Research rigor
+  * **P**ublication: Venue quality
+  * **T**ransparency: Openness
+  +
+  See link:prompt.adoc[PROMPT Scoring].
+
+[[provenance]]
+Provenance (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures source credibility. High scores for primary sources (original data, official publications), lower for secondary/tertiary sources.
+
+[[publication]]
+Publication (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures the venue where evidence appeared. High scores for peer-reviewed journals, lower for self-published or anonymous sources.
+
+== R
+
+[[relationship]]
+Relationship::
+  A connection between a claim and evidence (or between claims). Types: SUPPORTS, CONTRADICTS, CONTEXTUALIZES. Each has a weight (-1.0 to +1.0) and confidence (0.0 to 1.0).
+
+[[replicability]]
+Replicability (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures whether others could verify the evidence independently. High scores when methodology and data are public.
+
+[[reversibility]]
+Reversibility::
+  A key property of Binary-Origami Figuration. Users can always trace back from any navigation path to the original evidence. No information is lost in folding.
+
+[[robustness]]
+Robustness::
+  The property of boundary objects that maintains core structure across different uses. In bofig, the evidence graph is robust—same nodes and edges regardless of navigation path.
+
+== S
+
+[[schema-org]]
+Schema.org::
+  A vocabulary for structured data. Bofig stores Schema.org metadata to enable semantic web compatibility and rich search results.
+
+[[supports]]
+Supports::
+  One of three relationship types. Evidence supports a claim when it provides reasons to believe the claim. Represented with positive weights (0 to +1.0).
+
+== T
+
+[[transparency]]
+Transparency (PROMPT dimension)::
+  One of six PROMPT dimensions. Measures how openly available the evidence's data and methods are. High scores when everything is public; lower when restricted.
+
+[[traversal]]
+Traversal::
+  See [[graph-traversal]].
+
+== W
+
+[[weight]]
+Weight::
+  A -1.0 to +1.0 score on relationships indicating strength. Positive = support, negative = contradiction, near-zero = contextual. Distinct from confidence—weight indicates direction, confidence indicates certainty.
+
+== Z
+
+[[zotero]]
+Zotero::
+  An open-source reference management tool. Bofig integrates with Zotero for evidence import/export, enabling researchers to use familiar workflows.
+
+[[zotero-key]]
+Zotero Key::
+  A unique identifier for items in Zotero. Bofig stores Zotero keys to enable two-way synchronization between Zotero libraries and the evidence graph.
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

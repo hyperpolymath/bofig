@@ -1,0 +1,339 @@
+// SPDX-License-Identifier: MPL-2.0
+= i-docs Navigation: Choose Your Own Adventure
+:toc:
+:toc-placement!:
+:icons: font
+
+[.lead]
+*Navigation over narration*—the core principle that lets different audiences explore evidence in different ways.
+
+toc::[]
+
+== What is i-docs Navigation?
+
+Interactive documentaries (i-docs) pioneered a radical idea: instead of telling viewers a linear story, let them *navigate* through content based on their interests.
+
+Bofig applies this principle to evidence:
+
+[cols="1,3"]
+|===
+| Traditional Journalism | i-docs Approach
+
+| Author decides order
+| *Reader chooses path*
+
+| One narrative thread
+| *Multiple entry points*
+
+| "Here's the story"
+| *"Here's the evidence—explore"*
+
+| Passive consumption
+| *Active investigation*
+|===
+
+== The "Choose Your Own Adventure" Metaphor
+
+Remember those books where you'd read to a decision point, then flip to page 47 or page 112 depending on your choice?
+
+Bofig works the same way with evidence:
+
+[source,text]
+----
+START: "Did UK inflation hurt low-income households more?"
+        |
+        ├── "I want methodology first"
+        │         ↓
+        │   [ONS CPI methodology docs]
+        │         ↓
+        │   [Academic critiques of CPI weighting]
+        │         ↓
+        │   [Alternative indices (RPI, CPIH)]
+        │
+        └── "I want impact first"
+                  ↓
+            [Resolution Foundation report]
+                  ↓
+            [Food bank usage statistics]
+                  ↓
+            [Personal testimonies]
+----
+
+Both paths lead to the same underlying evidence—but the *order* and *emphasis* differ.
+
+== Navigation Paths in Bofig
+
+=== What is a Navigation Path?
+
+A **Navigation Path** is a curated sequence of claims and evidence designed for a specific audience.
+
+[source,elixir]
+----
+%NavigationPath{
+  id: "path_researcher_inflation",
+  audience_type: :researcher,
+  name: "Methodological Deep-Dive",
+  description: "Starts with data sources, ends with interpretation",
+  path_nodes: [
+    %{entity_id: "ons_cpi_methodology", order: 1, context: "How is CPI calculated?"},
+    %{entity_id: "claim_primary", order: 2, context: "The central claim"},
+    %{entity_id: "academic_study_1", order: 3, context: "Peer-reviewed verification"},
+    %{entity_id: "counter_evidence_1", order: 4, context: "Alternative interpretations"}
+  ]
+}
+----
+
+=== Six Audience Types
+
+[cols="1,2,2"]
+|===
+| Audience | Priority | Starting Point
+
+| *Researcher*
+| Methodology, replicability
+| Data sources, academic literature
+
+| *Policymaker*
+| Authority, actionability
+| Official statistics, recommendations
+
+| *Activist*
+| Impact, provenance
+| Affected communities, systemic causes
+
+| *Skeptic*
+| Counter-evidence, transparency
+| Contradicting claims, methodology gaps
+
+| *Affected Person*
+| Clarity, personal relevance
+| "What does this mean for me?"
+
+| *Journalist*
+| Source verification, PROMPT scores
+| Primary documents, interview transcripts
+|===
+
+== How Navigation Paths Work
+
+=== Entry Points
+
+Every investigation has multiple entry points—different places to start depending on your needs:
+
+* **Claim-first**: Start with the main argument, explore supporting evidence
+* **Evidence-first**: Start with raw data, build toward claims
+* **Question-first**: Start with a question, follow the thread
+
+=== Path Nodes
+
+Each node in a path includes:
+
+[cols="1,3"]
+|===
+| Property | Purpose
+
+| `entity_id`
+| Which claim or evidence item to show
+
+| `order`
+| Where in the sequence (1, 2, 3...)
+
+| `context`
+| *Why* show this here? What's the audience's question at this point?
+
+| `emphasis`
+| What to highlight (e.g., show PROMPT scores for skeptics)
+|===
+
+=== Auto-Generated Paths
+
+Bofig can automatically generate navigation paths based on audience type:
+
+[source,graphql]
+----
+mutation {
+  autoGeneratePath(
+    investigationId: "uk_inflation_2023"
+    audienceType: SKEPTIC
+  ) {
+    id
+    name
+    pathNodes {
+      entityId
+      order
+      context
+    }
+  }
+}
+----
+
+The algorithm:
+
+1. **Sorts by audience-weighted PROMPT scores** (skeptics prioritize transparency)
+2. **Surfaces counter-evidence early** (skeptics want to see objections)
+3. **Includes methodology gaps** (skeptics want to know what's missing)
+
+== Example: Three Paths Through UK Inflation
+
+=== Researcher Path
+
+[source,text]
+----
+1. ONS CPI Methodology (PROMPT: 97.5)
+   "How is CPI calculated?"
+        ↓
+2. Academic Study on Distributional Impact (PROMPT: 81.8)
+   "Peer-reviewed analysis"
+        ↓
+3. Primary Claim: "Energy drove inflation"
+   "The central argument"
+        ↓
+4. Counter-evidence: Food prices
+   "Alternative interpretation"
+        ↓
+5. Methodology Limitations
+   "What the data doesn't capture"
+----
+
+=== Policymaker Path
+
+[source,text]
+----
+1. BoE Policy Statement (PROMPT: 92.0)
+   "Official position"
+        ↓
+2. Primary Claim: "Energy drove inflation"
+   "The issue requiring policy response"
+        ↓
+3. ONS Official Statistics (PROMPT: 97.5)
+   "Authoritative data"
+        ↓
+4. Think Tank Recommendations (PROMPT: 72.3)
+   "Actionable suggestions"
+        ↓
+5. Expected Outcomes
+   "What happens if we act?"
+----
+
+=== Affected Person Path
+
+[source,text]
+----
+1. "What does this mean for my bills?"
+   Plain-language summary
+        ↓
+2. Resolution Foundation Report (PROMPT: 72.3)
+   "Who's hit hardest?"
+        ↓
+3. Personal Testimonies
+   "Stories from people like me"
+        ↓
+4. Primary Claim: "Energy drove inflation"
+   "The bigger picture"
+        ↓
+5. What Can I Do?
+   "Practical steps"
+----
+
+== Navigation vs. Narration
+
+[cols="1,3,3"]
+|===
+| Aspect | Narration (Traditional) | Navigation (i-docs)
+
+| Control
+| Author controls flow
+| *User chooses path*
+
+| Structure
+| Linear: beginning → end
+| *Graph: multiple routes*
+
+| Re-reading
+| Same experience each time
+| *Different paths, new insights*
+
+| Bias
+| Author's perspective embedded
+| *Perspectives explicit via audience paths*
+
+| Discovery
+| "I'll tell you what matters"
+| *"Explore what matters to YOU"*
+|===
+
+== Design Principles
+
+=== 1. Every Path is Reversible
+
+Users can always go back. Every node links to its sources. No dead ends.
+
+=== 2. Same Evidence, Different Orders
+
+The underlying data doesn't change—only the sequence and emphasis.
+
+=== 3. Context is Everything
+
+A `PathNode` without context is just a link. The `context` field answers: "Why am I seeing this *now*?"
+
+=== 4. Paths Can Be Saved and Shared
+
+Users can create their own paths and share them. "Here's how I explored this investigation."
+
+== API Examples
+
+=== Get Paths for an Investigation
+
+[source,graphql]
+----
+query {
+  navigationPaths(investigationId: "uk_inflation_2023") {
+    id
+    name
+    audienceType
+    pathNodes {
+      entityId
+      order
+      context
+    }
+  }
+}
+----
+
+=== Create a Custom Path
+
+[source,graphql]
+----
+mutation {
+  createNavigationPath(input: {
+    investigationId: "uk_inflation_2023"
+    audienceType: JOURNALIST
+    name: "Source Verification Trail"
+    pathNodes: [
+      {entityId: "primary_claim", order: 1, context: "What are we verifying?"},
+      {entityId: "ons_data", order: 2, context: "Primary source check"},
+      {entityId: "interview_1", order: 3, context: "Expert commentary"}
+    ]
+  }) {
+    id
+    name
+  }
+}
+----
+
+== Related Concepts
+
+* link:binary-origami.adoc[Binary-Origami Figuration] — The overarching metaphor
+* link:boundary-objects.adoc[Boundary Objects] — Why multiple perspectives work
+* link:prompt.adoc[PROMPT Scoring] — How evidence quality shapes paths
+
+== References
+
+* MIT Open Doc Lab: http://opendoclab.mit.edu/[Interactive Documentary Research]
+* Gaudenzi, S. (2013). "The Living Documentary: from representing reality to co-creating reality in digital interactive documentary"
+
+---
+
+_Last Updated: 2025-01_
+
+link:index.adoc[← Back to Wiki Index]

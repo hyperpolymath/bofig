@@ -9,7 +9,7 @@ image:[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 - PROMPT epistemological scoring, and 
 - boundary objects theory.
 
-Providing an evidence graph for investigative journalism.
+An evidence graph for investigative journalism.
 
 *Status:* Phase 1 (PoC) - Month 1 Complete
 *Version:* 0.1.0

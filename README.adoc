@@ -1,6 +1,6 @@
-= Evidence Graph for Investigative Journalism
-image:https://img.shields.io/badge/license-PMPL--1.0-blue.svg[License,link="https://github.com/hyperpolymath/palimpsest-license"]
-image:https://img.shields.io/badge/Philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+= Binary-Origami Figurator
+image:[License,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 
 
 > Infrastructure for pragmatic epistemology. Combining i-docs navigation, PROMPT epistemological scoring, and boundary objects theory.

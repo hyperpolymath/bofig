@@ -3,7 +3,13 @@ image:[License,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 
 
-> Infrastructure for pragmatic epistemology. Combining i-docs navigation, PROMPT epistemological scoring, and boundary objects theory.
+> Infrastructure for pragmatic epistemology. Combining 
+
+- i-docs navigation, 
+- PROMPT epistemological scoring, and 
+- boundary objects theory.
+
+Providing an evidence graph for investigative journalism.
 
 *Status:* Phase 1 (PoC) - Month 1 Complete
 *Version:* 0.1.0
@@ -15,7 +21,7 @@ image:[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
 *Confused by the terminology?* The link:wiki/index.adoc[Binary-Origami Wiki] explains everything in metaphors, diagrams, and plain language.
 ====
 
-[quote, Jonathan Jewell]
+[quote]
 ____
 This isn't just a database. It's *infrastructure for folding and unfolding evidence*—so everyone can see the shape that fits their needs.
 ____

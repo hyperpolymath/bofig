@@ -417,6 +417,7 @@ This isn't just a database project. It's infrastructure for **coordinating witho
 - **Zotero**: Reference management (https://www.zotero.org/)
 - **Gephi**: Graph visualization (https://gephi.org/)
 - **Voyant Tools**: Text analysis (https://voyant-tools.org/)
+- **FormDB Debugger**: Proof-carrying database debugger (https://github.com/hyperpolymath/formdb-debugger)
 
 ## Changelog
 

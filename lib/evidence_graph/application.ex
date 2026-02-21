@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 defmodule EvidenceGraph.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications

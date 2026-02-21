@@ -477,3 +477,8 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 *Inspired by:* i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
 
 *Last Updated:* 2025-11-22
+
+
+== Architecture
+
+See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.

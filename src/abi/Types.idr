@@ -1,14 +1,12 @@
-||| ABI Type Definitions Template
+||| ABI Type Definitions for Evidence Graph
 |||
-||| This module defines the Application Binary Interface (ABI) for this library.
+||| Defines the Application Binary Interface for the evidence graph library.
 ||| All type definitions include formal proofs of correctness.
 |||
-||| Replace {{PROJECT}} with your project name.
-||| Replace {{TYPES}} with your actual type definitions.
-|||
-||| @see https://idris2.readthedocs.io for Idris2 documentation
+||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 
-module {{PROJECT}}.ABI.Types
+module EvidenceGraph.ABI.Types
 
 import Data.Bits
 import Data.So

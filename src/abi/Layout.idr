@@ -1,13 +1,14 @@
-||| Memory Layout Proofs
+||| Memory Layout Proofs for Evidence Graph
 |||
-||| This module provides formal proofs about memory layout, alignment,
+||| Provides formal proofs about memory layout, alignment,
 ||| and padding for C-compatible structs.
 |||
-||| @see https://en.wikipedia.org/wiki/Data_structure_alignment
+||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 
-module {{PROJECT}}.ABI.Layout
+module EvidenceGraph.ABI.Layout
 
-import {{PROJECT}}.ABI.Types
+import EvidenceGraph.ABI.Types
 import Data.Vect
 import Data.So
 

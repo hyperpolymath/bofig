@@ -1,34 +1,34 @@
-= bofig - Citation Guide
+= bofig (Evidence Graph) — Citation Guide
 :toc:
 
 == BibTeX
 
 [source,bibtex]
 ----
-@software{bofig_2025,
-  author = {Polymath, Hyper},
-  title = {bofig},
-  year = {2025},
+@software{bofig_2026,
+  author = {Jewell, Jonathan D.A.},
+  title = {bofig: Evidence Graph for Investigative Journalism},
+  year = {2026},
   url = {https://github.com/hyperpolymath/bofig},
-  license = {AGPL-3.0-or-later}
+  license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2025) _bofig_ [Computer software]. Available at: https://github.com/hyperpolymath/bofig
+Jewell, J.D.A. (2026) _bofig: Evidence Graph for Investigative Journalism_ [Computer software]. Available at: https://github.com/hyperpolymath/bofig
 
 == OSCOLA
 
-Hyper Polymath, 'bofig' (2025) <https://github.com/hyperpolymath/bofig>
+Jonathan D.A. Jewell, 'bofig: Evidence Graph for Investigative Journalism' (2026) <https://github.com/hyperpolymath/bofig>
 
 == MLA
 
-Polymath, Hyper. "bofig." 2025, github.com/hyperpolymath/bofig.
+Jewell, Jonathan D.A. "bofig: Evidence Graph for Investigative Journalism." 2026, github.com/hyperpolymath/bofig.
 
 == APA 7
 
-Polymath, H. (2025). _bofig_ [Computer software]. GitHub. https://github.com/hyperpolymath/bofig
+Jewell, J.D.A. (2026). _bofig: Evidence Graph for Investigative Journalism_ [Computer software]. GitHub. https://github.com/hyperpolymath/bofig
 
 == See Also
 

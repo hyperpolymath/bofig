@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 defmodule EvidenceGraph.Repo do
   use Ecto.Repo,
     otp_app: :evidence_graph,

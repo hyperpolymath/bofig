@@ -7,7 +7,7 @@
     (version "0.3.0")
     (schema-version "1.0")
     (created "2026-01-03")
-    (updated "2026-02-21")
+    (updated "2026-02-22")
     (project "bofig")
     (repo "github.com/hyperpolymath/bofig"))
 
@@ -25,7 +25,7 @@
 
   (current-position
     (phase "implementation")
-    (overall-completion 63)
+    (overall-completion 72)
 
     (components
       (component "elixir-core"
@@ -82,11 +82,13 @@
 
       (component "abi-ffi"
         (description "Idris2 ABI proofs + Zig FFI implementation")
-        (status "scaffolded")
-        (completion 35)
-        (notes "Generic template types (Result, Handle, Platform, StructLayout)
-         with proofs. Not customized for Evidence Graph data structures.
-         Zig FFI is placeholder. No integration with Elixir via NIFs."))
+        (status "mostly-complete")
+        (completion 80)
+        (notes "Domain types: ClaimType, EvidenceType, RelationshipType,
+         AudienceType, PromptScore, CPromptScores, CClaim, CRelationship,
+         CPathNode. Layout proofs with field bounds. Zig FFI implements
+         PROMPT overall/audience scoring, propagated weight, cycle detection.
+         Comptime ABI verification. All Zig tests pass. All Idris2 compiles."))
 
       (component "documentation"
         (description "README, ARCHITECTURE, ROADMAP, TOPOLOGY, CLAUDE.md")
@@ -113,10 +115,13 @@
 
       (component "zotero-integration"
         (description "Two-way sync with Zotero reference manager")
-        (status "architectural")
-        (completion 8)
-        (notes "GraphQL mutation skeleton. Evidence schema has zotero_key field.
-         Design doc exists. No actual Zotero API client, no auth, no sync."))
+        (status "mostly-complete")
+        (completion 75)
+        (notes "Tesla-based Zotero Web API v3 client with pagination, versioning.
+         Bidirectional mapper (Zotero JSON ↔ Evidence Graph, Dublin Core,
+         Schema.org). Sync coordinator with incremental sync via library
+         versioning. Oban worker for 15-min periodic sync. Config in place.
+         Remaining: integration tests, error recovery edge cases."))
 
       (component "seed-data"
         (description "UK Inflation 2023 test dataset")
@@ -202,13 +207,13 @@
       ("Zero test coverage — no ExUnit tests exist"))
     (high
       ("No LiveView components — frontend entirely missing"
-       "Zotero client not implemented — only GraphQL skeleton"
        ".well-known/ directory missing (security.txt, ai.txt, humans.txt)"))
     (medium
-      ("ABI/FFI not customized for Evidence Graph types"
-       "ROADMAP.adoc still generic RSR template"
+      ("ROADMAP.adoc still generic RSR template"
        "Duplicate justfile/Justfile"
-       "Other .machine_readable/ SCM files still stubs"))
+       "Other .machine_readable/ SCM files still stubs"
+       "Zotero integration needs integration tests"
+       "ABI/FFI not yet integrated with Elixir via NIFs"))
     (low
       ("Contractiles directory mostly empty"
        "wiki/ referenced in README but not present")))
@@ -237,4 +242,12 @@
       (summary "RSR compliance pass: filled ABI/FFI templates, fixed AGPL→PMPL
        across all files, added SPDX headers to 30 Elixir files, SHA-pinned
        16 workflow actions, updated citations and documentation.
-       Updated STATE.scm from 0% to accurate 63% completion."))))
+       Updated STATE.scm from 0% to accurate 63% completion."))
+    (session "2026-02-22"
+      (summary "Implemented Zotero Web API v3 integration: Tesla client with
+       pagination/versioning, bidirectional mapper (Dublin Core, Schema.org),
+       sync coordinator with incremental sync, Oban periodic worker.
+       Customized ABI/FFI for Evidence Graph: domain types (ClaimType,
+       EvidenceType, RelationshipType, AudienceType, PromptScore),
+       C-compatible structs with layout proofs, Zig FFI with PROMPT
+       scoring, propagated weight, cycle detection. All compiles/passes."))))

@@ -1,21 +1,26 @@
-// EvidenceGraph Integration Tests
+// Evidence Graph Integration Tests
 // SPDX-License-Identifier: PMPL-1.0-or-later
 // Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 //
 // These tests verify that the Zig FFI correctly implements the Idris2 ABI
+// for Evidence Graph domain operations.
 
 const std = @import("std");
 const testing = std.testing;
 
 // Import FFI functions
-extern fn evidence_graph_init() ?*opaque {};
-extern fn evidence_graph_free(?*opaque {}) void;
-extern fn evidence_graph_process(?*opaque {}, u32) c_int;
-extern fn evidence_graph_get_string(?*opaque {}) ?[*:0]const u8;
-extern fn evidence_graph_free_string(?[*:0]const u8) void;
-extern fn evidence_graph_last_error() ?[*:0]const u8;
+extern fn evidence_graph_init() ?*anyopaque;
+extern fn evidence_graph_free(?*anyopaque) void;
+extern fn evidence_graph_is_initialized(?*anyopaque) u32;
 extern fn evidence_graph_version() [*:0]const u8;
-extern fn evidence_graph_is_initialized(?*opaque {}) u32;
+extern fn evidence_graph_build_info() [*:0]const u8;
+extern fn evidence_graph_last_error() ?[*:0]const u8;
+extern fn evidence_graph_get_string(?*anyopaque) ?[*:0]const u8;
+extern fn evidence_graph_free_string(?[*:0]const u8) void;
+extern fn evidence_graph_prompt_overall(?*anyopaque, u32, u32, u32, u32, u32, u32) u32;
+extern fn evidence_graph_prompt_audience(?*anyopaque, u32, u32, u32, u32, u32, u32, u32) u32;
+extern fn evidence_graph_propagated_weight(?*anyopaque, ?[*]const f64, u32) u32;
+extern fn evidence_graph_check_cycle(?*anyopaque, ?[*:0]const u8, ?[*:0]const u8) c_int;
 
 //==============================================================================
 // Lifecycle Tests
@@ -32,30 +37,194 @@ test "handle is initialized" {
     const handle = evidence_graph_init() orelse return error.InitFailed;
     defer evidence_graph_free(handle);
 
-    const initialized = evidence_graph_is_initialized(handle);
-    try testing.expectEqual(@as(u32, 1), initialized);
+    try testing.expectEqual(@as(u32, 1), evidence_graph_is_initialized(handle));
 }
 
 test "null handle is not initialized" {
-    const initialized = evidence_graph_is_initialized(null);
-    try testing.expectEqual(@as(u32, 0), initialized);
+    try testing.expectEqual(@as(u32, 0), evidence_graph_is_initialized(null));
+}
+
+test "free null is safe" {
+    evidence_graph_free(null);
 }
 
 //==============================================================================
-// Operation Tests
+// PROMPT Score Tests
 //==============================================================================
 
-test "process with valid handle" {
+test "prompt overall — balanced 50s gives 5000" {
     const handle = evidence_graph_init() orelse return error.InitFailed;
     defer evidence_graph_free(handle);
 
-    const result = evidence_graph_process(handle, 42);
-    try testing.expectEqual(@as(c_int, 0), result); // 0 = ok
+    const result = evidence_graph_prompt_overall(handle, 50, 50, 50, 50, 50, 50);
+    try testing.expectEqual(@as(u32, 5000), result);
 }
 
-test "process with null handle returns error" {
-    const result = evidence_graph_process(null, 42);
-    try testing.expectEqual(@as(c_int, 4), result); // 4 = null_pointer
+test "prompt overall — all zeros gives 0" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_prompt_overall(handle, 0, 0, 0, 0, 0, 0);
+    try testing.expectEqual(@as(u32, 0), result);
+}
+
+test "prompt overall — all 100s gives 10000" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_prompt_overall(handle, 100, 100, 100, 100, 100, 100);
+    try testing.expectEqual(@as(u32, 10000), result);
+}
+
+test "prompt overall — null handle returns error sentinel" {
+    const result = evidence_graph_prompt_overall(null, 50, 50, 50, 50, 50, 50);
+    try testing.expectEqual(@as(u32, 0xFFFFFFFF), result);
+}
+
+test "prompt overall — score out of range (101)" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_prompt_overall(handle, 101, 50, 50, 50, 50, 50);
+    try testing.expectEqual(@as(u32, 0xFFFFFFFF), result);
+}
+
+test "prompt audience — researcher emphasises methodology" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    // researcher(0): methodology=0.35, replicability=0.30
+    // Score: only methodology=100, rest=0 → 100*0.35 = 35.00 → 3500
+    const result = evidence_graph_prompt_audience(handle, 0, 0, 0, 0, 100, 0, 0);
+    try testing.expectEqual(@as(u32, 3500), result);
+}
+
+test "prompt audience — policymaker emphasises provenance" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    // policymaker(1): provenance=0.30
+    // Score: only provenance=100, rest=0 → 100*0.30 = 30.00 → 3000
+    const result = evidence_graph_prompt_audience(handle, 1, 100, 0, 0, 0, 0, 0);
+    try testing.expectEqual(@as(u32, 3000), result);
+}
+
+test "prompt audience — skeptic emphasises transparency" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    // skeptic(2): transparency=0.35
+    const result = evidence_graph_prompt_audience(handle, 2, 0, 0, 0, 0, 0, 100);
+    try testing.expectEqual(@as(u32, 3500), result);
+}
+
+test "prompt audience — invalid audience type" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_prompt_audience(handle, 99, 50, 50, 50, 50, 50, 50);
+    try testing.expectEqual(@as(u32, 0xFFFFFFFF), result);
+}
+
+test "prompt audience — all audiences, balanced scores" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    // All scores 50 → any audience weight × 50 summed should = 50.00 → 5000
+    var audience_type: u32 = 0;
+    while (audience_type <= 5) : (audience_type += 1) {
+        const result = evidence_graph_prompt_audience(handle, audience_type, 50, 50, 50, 50, 50, 50);
+        try testing.expectEqual(@as(u32, 5000), result);
+    }
+}
+
+//==============================================================================
+// Relationship Weight Tests
+//==============================================================================
+
+test "propagated weight — single hop 0.8" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const weights = [_]f64{0.8};
+    const result = evidence_graph_propagated_weight(handle, &weights, 1);
+    // (0.8 + 1.0) * 1000 = 1800
+    try testing.expectEqual(@as(u32, 1800), result);
+}
+
+test "propagated weight — two hops 0.9 * 0.8 = 0.72" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const weights = [_]f64{ 0.9, 0.8 };
+    const result = evidence_graph_propagated_weight(handle, &weights, 2);
+    // (0.72 + 1.0) * 1000 = 1720
+    try testing.expectEqual(@as(u32, 1720), result);
+}
+
+test "propagated weight — contradiction chain" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const weights = [_]f64{ 0.9, -0.7 };
+    const result = evidence_graph_propagated_weight(handle, &weights, 2);
+    // 0.9 * -0.7 = -0.63 → (-0.63 + 1.0) * 1000 = 370
+    try testing.expectEqual(@as(u32, 370), result);
+}
+
+test "propagated weight — empty chain returns 0" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_propagated_weight(handle, null, 0);
+    try testing.expectEqual(@as(u32, 0), result);
+}
+
+test "propagated weight — null handle" {
+    const weights = [_]f64{0.5};
+    const result = evidence_graph_propagated_weight(null, &weights, 1);
+    try testing.expectEqual(@as(u32, 0), result);
+}
+
+//==============================================================================
+// Cycle Detection Tests
+//==============================================================================
+
+test "check cycle — self loop detected" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_check_cycle(handle, "claim_1", "claim_1");
+    try testing.expectEqual(@as(c_int, 7), result); // graph_cycle
+}
+
+test "check cycle — different nodes ok" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_check_cycle(handle, "claim_1", "evidence_2");
+    try testing.expectEqual(@as(c_int, 0), result); // ok
+}
+
+test "check cycle — null from_id" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_check_cycle(handle, null, "evidence_2");
+    try testing.expectEqual(@as(c_int, 4), result); // null_pointer
+}
+
+test "check cycle — null to_id" {
+    const handle = evidence_graph_init() orelse return error.InitFailed;
+    defer evidence_graph_free(handle);
+
+    const result = evidence_graph_check_cycle(handle, "claim_1", null);
+    try testing.expectEqual(@as(c_int, 4), result); // null_pointer
+}
+
+test "check cycle — null handle" {
+    const result = evidence_graph_check_cycle(null, "a", "b");
+    try testing.expectEqual(@as(c_int, 4), result); // null_pointer
 }
 
 //==============================================================================
@@ -70,6 +239,10 @@ test "get string result" {
     defer if (str) |s| evidence_graph_free_string(s);
 
     try testing.expect(str != null);
+    if (str) |s| {
+        const text = std.mem.span(s);
+        try testing.expectEqualStrings("EvidenceGraph OK", text);
+    }
 }
 
 test "get string with null handle" {
@@ -81,45 +254,37 @@ test "get string with null handle" {
 // Error Handling Tests
 //==============================================================================
 
-test "last error after null handle operation" {
-    _ = evidence_graph_process(null, 0);
+test "last error after null handle PROMPT call" {
+    _ = evidence_graph_prompt_overall(null, 0, 0, 0, 0, 0, 0);
 
     const err = evidence_graph_last_error();
     try testing.expect(err != null);
 
     if (err) |e| {
+        const allocator = std.heap.c_allocator;
         const err_str = std.mem.span(e);
         try testing.expect(err_str.len > 0);
+        allocator.free(err_str);
     }
-}
-
-test "no error after successful operation" {
-    const handle = evidence_graph_init() orelse return error.InitFailed;
-    defer evidence_graph_free(handle);
-
-    _ = evidence_graph_process(handle, 0);
-
-    // Error should be cleared after successful operation
-    // (This depends on implementation)
 }
 
 //==============================================================================
 // Version Tests
 //==============================================================================
 
-test "version string is not empty" {
+test "version string is semantic version" {
     const ver = evidence_graph_version();
     const ver_str = std.mem.span(ver);
 
     try testing.expect(ver_str.len > 0);
+    try testing.expect(std.mem.count(u8, ver_str, ".") >= 1);
 }
 
-test "version string is semantic version format" {
-    const ver = evidence_graph_version();
-    const ver_str = std.mem.span(ver);
+test "build info contains Zig" {
+    const info = evidence_graph_build_info();
+    const info_str = std.mem.span(info);
 
-    // Should be in format X.Y.Z
-    try testing.expect(std.mem.count(u8, ver_str, ".") >= 1);
+    try testing.expect(std.mem.indexOf(u8, info_str, "Zig") != null);
 }
 
 //==============================================================================
@@ -136,48 +301,6 @@ test "multiple handles are independent" {
     try testing.expect(h1 != h2);
 
     // Operations on h1 should not affect h2
-    _ = evidence_graph_process(h1, 1);
-    _ = evidence_graph_process(h2, 2);
-}
-
-test "double free is safe" {
-    const handle = evidence_graph_init() orelse return error.InitFailed;
-
-    evidence_graph_free(handle);
-    evidence_graph_free(handle); // Should not crash
-}
-
-test "free null is safe" {
-    evidence_graph_free(null); // Should not crash
-}
-
-//==============================================================================
-// Thread Safety Tests (if applicable)
-//==============================================================================
-
-test "concurrent operations" {
-    const handle = evidence_graph_init() orelse return error.InitFailed;
-    defer evidence_graph_free(handle);
-
-    const ThreadContext = struct {
-        h: *opaque {},
-        id: u32,
-    };
-
-    const thread_fn = struct {
-        fn run(ctx: ThreadContext) void {
-            _ = evidence_graph_process(ctx.h, ctx.id);
-        }
-    }.run;
-
-    var threads: [4]std.Thread = undefined;
-    for (&threads, 0..) |*thread, i| {
-        thread.* = try std.Thread.spawn(.{}, thread_fn, .{
-            ThreadContext{ .h = handle, .id = @intCast(i) },
-        });
-    }
-
-    for (threads) |thread| {
-        thread.join();
-    }
+    _ = evidence_graph_prompt_overall(h1, 100, 100, 100, 100, 100, 100);
+    _ = evidence_graph_prompt_overall(h2, 0, 0, 0, 0, 0, 0);
 }

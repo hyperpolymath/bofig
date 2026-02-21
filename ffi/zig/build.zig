@@ -1,4 +1,4 @@
-// EvidenceGraph FFI Build Configuration
+// Evidence Graph FFI Build Configuration
 // SPDX-License-Identifier: PMPL-1.0-or-later
 // Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 
@@ -8,41 +8,53 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    // Shared library (.so, .dylib, .dll)
-    const lib = b.addSharedLibrary(.{
-        .name = "evidence_graph",
+    // Create the root module for the library
+    const lib_module = b.createModule(.{
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
     });
 
-    // Set version
-    lib.version = .{ .major = 0, .minor = 1, .patch = 0 };
+    // Shared library (.so, .dylib, .dll)
+    const lib = b.addLibrary(.{
+        .name = "evidence_graph",
+        .root_module = lib_module,
+        .linkage = .dynamic,
+        .version = .{ .major = 0, .minor = 3, .patch = 0 },
+    });
 
     // Static library (.a)
-    const lib_static = b.addStaticLibrary(.{
+    const lib_static = b.addLibrary(.{
         .name = "evidence_graph",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
+        .linkage = .static,
     });
 
     // Install artifacts
     b.installArtifact(lib);
     b.installArtifact(lib_static);
 
-    // Generate header file for C compatibility
-    const header = b.addInstallHeader(
+    // Install header file
+    const header_install = b.addInstallHeaderFile(
         b.path("include/evidence_graph.h"),
         "evidence_graph.h",
     );
-    b.getInstallStep().dependOn(&header.step);
+    b.getInstallStep().dependOn(&header_install.step);
 
-    // Unit tests
+    // Unit tests (from main.zig)
     const lib_tests = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
     });
 
     const run_lib_tests = b.addRunArtifact(lib_tests);
@@ -51,10 +63,15 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&run_lib_tests.step);
 
     // Integration tests
-    const integration_tests = b.addTest(.{
+    const integration_module = b.createModule(.{
         .root_source_file = b.path("test/integration_test.zig"),
         .target = target,
         .optimize = optimize,
+        .link_libc = true,
+    });
+
+    const integration_tests = b.addTest(.{
+        .root_module = integration_module,
     });
 
     integration_tests.linkLibrary(lib);
@@ -63,33 +80,4 @@ pub fn build(b: *std.Build) void {
 
     const integration_test_step = b.step("test-integration", "Run integration tests");
     integration_test_step.dependOn(&run_integration_tests.step);
-
-    // Documentation
-    const docs = b.addTest(.{
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = .Debug,
-    });
-
-    const docs_step = b.step("docs", "Generate documentation");
-    docs_step.dependOn(&b.addInstallDirectory(.{
-        .source_dir = docs.getEmittedDocs(),
-        .install_dir = .prefix,
-        .install_subdir = "docs",
-    }).step);
-
-    // Benchmark (if needed)
-    const bench = b.addExecutable(.{
-        .name = "evidence_graph-bench",
-        .root_source_file = b.path("bench/bench.zig"),
-        .target = target,
-        .optimize = .ReleaseFast,
-    });
-
-    bench.linkLibrary(lib);
-
-    const run_bench = b.addRunArtifact(bench);
-
-    const bench_step = b.step("bench", "Run benchmarks");
-    bench_step.dependOn(&run_bench.step);
 }

@@ -55,6 +55,12 @@ config :evidence_graph, EvidenceGraph.ArangoDB,
   username: System.get_env("ARANGO_USERNAME") || "root",
   password: System.get_env("ARANGO_PASSWORD") || "dev"
 
+# Zotero Web API v3 configuration
+config :evidence_graph, EvidenceGraph.Zotero.Client,
+  api_key: System.get_env("ZOTERO_API_KEY"),
+  user_id: System.get_env("ZOTERO_USER_ID"),
+  library_type: String.to_existing_atom(System.get_env("ZOTERO_LIBRARY_TYPE") || "user")
+
 # Oban (background jobs) configuration
 config :evidence_graph, Oban,
   repo: EvidenceGraph.Repo,
@@ -63,8 +69,7 @@ config :evidence_graph, Oban,
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
     {Oban.Plugins.Cron,
      crontab: [
-       # Sync Zotero every 15 minutes (Phase 2)
-       # {"*/15 * * * *", EvidenceGraph.Workers.ZoteroSync}
+       {"*/15 * * * *", EvidenceGraph.Workers.ZoteroSync}
      ]}
   ]
 

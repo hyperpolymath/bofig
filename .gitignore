@@ -58,6 +58,14 @@ __pycache__/
 # Chapel
 *.chpl.tmp.*
 
+# Zig
+.zig-cache/
+zig-out/
+
+# Idris2
+build/ttc/
+build/depends/
+
 # Secrets
 .env
 .env.*

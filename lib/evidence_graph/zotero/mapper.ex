@@ -83,11 +83,11 @@ defmodule EvidenceGraph.Zotero.Mapper do
       "url" => evidence.source_url,
       "tags" => Enum.map(evidence.tags || [], &%{"tag" => &1}),
       "creators" => parse_creators_for_zotero(evidence.dublin_core),
-      "date" => get_in(evidence.dublin_core, ["date"]),
-      "publisher" => get_in(evidence.dublin_core, ["publisher"]),
-      "abstractNote" => get_in(evidence.dublin_core, ["description"]),
-      "language" => get_in(evidence.dublin_core, ["language"]),
-      "rights" => get_in(evidence.dublin_core, ["rights"]),
+      "date" => dig(evidence.dublin_core, ["date"]),
+      "publisher" => dig(evidence.dublin_core, ["publisher"]),
+      "abstractNote" => dig(evidence.dublin_core, ["description"]),
+      "language" => dig(evidence.dublin_core, ["language"]),
+      "rights" => dig(evidence.dublin_core, ["rights"]),
       "extra" => build_extra_field(evidence)
     }
   end
@@ -220,8 +220,8 @@ defmodule EvidenceGraph.Zotero.Mapper do
     |> String.trim()
   end
 
-  defp get_in(nil, _keys), do: nil
-  defp get_in(map, []), do: map
-  defp get_in(map, [key | rest]) when is_map(map), do: get_in(Map.get(map, key), rest)
-  defp get_in(_, _), do: nil
+  defp dig(nil, _keys), do: nil
+  defp dig(map, []), do: map
+  defp dig(map, [key | rest]) when is_map(map), do: dig(Map.get(map, key), rest)
+  defp dig(_, _), do: nil
 end

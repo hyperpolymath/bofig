@@ -86,12 +86,24 @@ defmodule EvidenceGraph.Claims.Claim do
       text: doc["text"],
       claim_type: String.to_existing_atom(doc["claim_type"]),
       confidence_level: doc["confidence_level"],
-      prompt_scores: struct(PromptScores, doc["prompt_scores"] || %{}),
+      prompt_scores: parse_prompt_scores(doc["prompt_scores"]),
       created_by: doc["created_by"],
       metadata: doc["metadata"] || %{},
       inserted_at: parse_datetime(doc["inserted_at"]),
       updated_at: parse_datetime(doc["updated_at"])
     }
+  end
+
+  defp parse_prompt_scores(nil), do: %PromptScores{}
+
+  defp parse_prompt_scores(map) when is_map(map) do
+    atomized =
+      for {k, v} <- map, into: %{} do
+        key = if is_binary(k), do: String.to_existing_atom(k), else: k
+        {key, v}
+      end
+
+    struct(PromptScores, atomized)
   end
 
   defp parse_datetime(nil), do: nil

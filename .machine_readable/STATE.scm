@@ -25,7 +25,7 @@
 
   (current-position
     (phase "implementation")
-    (overall-completion 72)
+    (overall-completion 75)
 
     (components
       (component "elixir-core"
@@ -67,10 +67,17 @@
 
       (component "tests"
         (description "ExUnit test suite")
-        (status "not-started")
-        (completion 0)
-        (notes "CRITICAL GAP. Zero test files exist despite comprehensive
-         testing strategy documented in CLAUDE.md. No test/ directory content."))
+        (status "in-progress")
+        (completion 45)
+        (notes "140 unit tests across 6 test files, all passing. Coverage:
+         Claim schema (changeset, ArangoDB conversion, round-trip),
+         Evidence schema (changeset, conversion, Zotero export),
+         Relationship schema (changeset, edge docs, effective_weight),
+         Navigation Path schema (changeset, path_nodes validation),
+         PROMPT scoring (overall, all 6 audiences, weight sums, to_map),
+         Zotero mapper (type mapping, Dublin Core, Schema.org, round-trips).
+         Bug found and fixed: string-key prompt_scores from ArangoDB.
+         Remaining: integration tests requiring ArangoDB, GraphQL tests."))
 
       (component "ci-cd"
         (description "GitHub Actions workflows")
@@ -203,8 +210,7 @@
            "Full documentation")))))
 
   (blockers-and-issues
-    (critical
-      ("Zero test coverage — no ExUnit tests exist"))
+    (critical)
     (high
       ("No LiveView components — frontend entirely missing"
        ".well-known/ directory missing (security.txt, ai.txt, humans.txt)"))
@@ -212,7 +218,7 @@
       ("ROADMAP.adoc still generic RSR template"
        "Duplicate justfile/Justfile"
        "Other .machine_readable/ SCM files still stubs"
-       "Zotero integration needs integration tests"
+       "Integration tests need running ArangoDB instance"
        "ABI/FFI not yet integrated with Elixir via NIFs"))
     (low
       ("Contractiles directory mostly empty"
@@ -220,16 +226,15 @@
 
   (critical-next-actions
     (immediate
-      ("Write ExUnit tests for Claims context"
-       "Write ExUnit tests for Evidence context"
-       "Write ExUnit tests for PROMPT scoring"))
+      ("Write GraphQL schema tests (Absinthe)"
+       "Write integration tests with ArangoDB"
+       "Populate .well-known/ directory"))
     (this-week
       ("Create LiveView investigation dashboard"
        "Wire D3.js visualization into Phoenix"
-       "Populate .well-known/ directory"))
+       "Fix get_in conflict in Zotero mapper (DONE)"))
     (this-month
-      ("Implement Zotero API client"
-       "Create LiveView PROMPT scoring interface"
+      ("Create LiveView PROMPT scoring interface"
        "Customize Idris2 ABI for Evidence Graph types"
        "NUJ pilot preparation")))
 
@@ -250,4 +255,13 @@
        Customized ABI/FFI for Evidence Graph: domain types (ClaimType,
        EvidenceType, RelationshipType, AudienceType, PromptScore),
        C-compatible structs with layout proofs, Zig FFI with PROMPT
-       scoring, propagated weight, cycle detection. All compiles/passes."))))
+       scoring, propagated weight, cycle detection. All compiles/passes."))
+    (session "2026-02-22b"
+      (summary "Created ExUnit test suite: 140 unit tests across 6 files, all
+       passing. Tests cover: Claim/Evidence/Relationship/Path schemas (changeset
+       validation, ArangoDB conversion, round-trips), PROMPT scoring (overall
+       calculation, all 6 audience types, weight sums), Zotero mapper (type
+       mapping, Dublin Core, Schema.org extraction). Found and fixed bug:
+       string-keyed prompt_scores from ArangoDB ignored by struct/2.
+       Fixed Kernel.get_in/2 conflict in Zotero mapper (renamed to dig/2).
+       Updated STATE.scm: tests 0%→45%, overall 72%→75%."))))

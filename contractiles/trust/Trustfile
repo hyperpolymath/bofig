@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Trustfile - cryptographic verification reference for Evidence Graph (bofig)
+#
+# The full A2ML v2.1 Trustfile is at: bofig.trustfile.a2ml (repository root)
+# This file documents the verification steps for the contractiles framework.
+
+version: 1
+
+verification:
+  trustfile:
+    path: "bofig.trustfile.a2ml"
+    format: "A2ML v2.1"
+    hash_algorithm: "SHA3-512"
+
+  signatures:
+    primary:
+      algorithm: "Ed448+Dilithium5"
+      key_location: "PLACEHOLDER:secure-key-store"
+      verify: "a2ml verify --key primary bofig.trustfile.a2ml"
+    fallback:
+      algorithm: "SPHINCS+-SHA2-256f"
+      key_location: "PLACEHOLDER:secure-key-store"
+      verify: "a2ml verify --key fallback bofig.trustfile.a2ml"
+
+  integrity:
+    - name: trustfile-hash
+      run: "sha3sum -a 512 bofig.trustfile.a2ml"
+    - name: source-integrity
+      run: "find lib/ -name '*.ex' -exec sha3sum -a 512 {} +"
+    - name: release-integrity
+      run: "sha3sum -a 512 _build/prod/rel/evidence_graph/bin/evidence_graph"
+
+  provenance:
+    author: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    repository: "https://github.com/Hyperpolymath/bofig"
+    ci_cd: ".github/workflows/trustfile.yml"
+    transparency_log: "https://evidencegraph.org/.well-known/transparency-log"

@@ -2,10 +2,6 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 defmodule EvidenceGraphWeb.Schema.Types.ClaimTypes do
   use Absinthe.Schema.Notation
-  import Absinthe.Resolution.Helpers, only: [dataloader: 1]
-
-  alias EvidenceGraphWeb.Schema.Types
-
   @desc "A claim in an investigation"
   object :claim do
     field :id, non_null(:id)
@@ -21,13 +17,13 @@ defmodule EvidenceGraphWeb.Schema.Types.ClaimTypes do
 
     # Relationships
     field :supporting_evidence, list_of(:evidence_with_relationship) do
-      resolve(fn claim, _args, %{context: context} ->
+      resolve(fn claim, _args, _resolution ->
         EvidenceGraph.Claims.get_supporting_evidence(claim.id)
       end)
     end
 
     field :contradicting_evidence, list_of(:evidence_with_relationship) do
-      resolve(fn claim, _args, %{context: context} ->
+      resolve(fn claim, _args, _resolution ->
         EvidenceGraph.Claims.get_contradicting_evidence(claim.id)
       end)
     end

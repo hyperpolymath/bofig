@@ -2,6 +2,9 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database (Postgres for user auth only)
 config :evidence_graph, EvidenceGraph.Repo,
   username: "postgres",
@@ -15,7 +18,7 @@ config :evidence_graph, EvidenceGraph.Repo,
 # you can enable the server option below.
 config :evidence_graph, EvidenceGraphWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "test_secret_key_base_not_used_in_production",
+  secret_key_base: "test_secret_key_base_not_used_in_production_must_be_at_least_sixty_four_bytes_long_for_cookie_store",
   server: false
 
 # Print only warnings and errors during test
@@ -27,10 +30,16 @@ config :phoenix, :plug_init_mode, :runtime
 # Disable Oban during tests
 config :evidence_graph, Oban, testing: :inline
 
+# Disable Swoosh API client during tests
+config :swoosh, :api_client, false
+
+# Use test mailer adapter
+config :evidence_graph, EvidenceGraph.Mailer, adapter: Swoosh.Adapters.Test
+
 # ArangoDB test settings
 config :evidence_graph, EvidenceGraph.ArangoDB,
+  client: Arangox.MintClient,
   endpoints: "http://localhost:8529",
   database: "evidence_graph_test#{System.get_env("MIX_TEST_PARTITION")}",
-  username: "root",
-  password: "dev",
+  auth: {:basic, "root", "dev"},
   pool_size: 2

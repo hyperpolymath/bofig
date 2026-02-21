@@ -1,22 +1,127 @@
+= Evidence Graph (bofig) - Roadmap
 // SPDX-License-Identifier: PMPL-1.0-or-later
-= YOUR Template Repo Roadmap
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+:toc:
+:sectnums:
 
-== Current Status
+== Overview
 
-Initial development phase.
+18-month development plan for the Evidence Graph, an infrastructure platform for pragmatic epistemology in investigative journalism.
 
-== Milestones
+== Phase 1: Proof of Concept (Months 1-6)
 
-=== v0.1.0 - Foundation
-* [ ] Core functionality
-* [ ] Basic documentation
-* [ ] CI/CD pipeline
+=== v0.1.0 - Foundation [COMPLETE]
 
-=== v1.0.0 - Stable Release
-* [ ] Full feature set
-* [ ] Comprehensive tests
-* [ ] Production ready
+*Released: 2025-11-22*
 
-== Future Directions
+* Elixir/Phoenix application with ArangoDB multi-model database
+* GraphQL API (Absinthe): 15 queries, 11 mutations
+* PROMPT epistemological scoring (6 dimensions)
+* Claims, Evidence, Relationships, Navigation Paths data models
+* Graph traversal algorithms (evidence chains, shortest path, contradiction detection)
+* UK Inflation 2023 test dataset (7 claims, 30 evidence items)
+* D3.js force-directed graph visualisation
+* RSR compliance: LICENSE, SECURITY.md, CONTRIBUTING, CHANGELOG
 
-_To be determined based on community feedback._
+=== v1.0.0 - Phase 1 PoC [THIS RELEASE]
+
+*Released: 2026-02-21*
+
+* Phoenix 1.8 LiveView frontend (5 interactive pages)
+* User authentication (phx.gen.auth with bcrypt)
+* Zotero REST API integration (import, export, batch-import, sync-status)
+* D3.js force-directed graph + radar chart visualisations
+* Audience-weighted navigation paths (6 audience types)
+* Production deployment config (Containerfile, nginx, systemd)
+* Podman containerisation with podman-compose
+* NUJ user testing protocols (task script, consent, feedback, decision matrix)
+* A2ML v2.1 Cyberwar-Ready Trustfile
+* 257 tests, 0 failures, 0 compile warnings
+* Full RSR compliance with all contractiles
+
+=== v1.1.0 - Zotero Browser Extension (Month 3-4)
+
+* Zotero browser extension for one-click evidence import
+* Two-way sync between Zotero library and Evidence Graph
+* Batch operations for large reference collections
+* PROMPT score suggestions from metadata analysis
+
+=== Decision Point: Month 3
+
+*Criteria:* NUJ journalist user testing (target: 25 participants)
+
+* *Continue:* If journalists find the tool useful for real investigations
+* *Pivot:* If core assumptions about evidence navigation are wrong
+* *Metrics:* Task completion rate, time-on-task, System Usability Scale (SUS)
+
+== Phase 2: Platform (Months 7-12)
+
+=== v2.0.0 - Multi-Investigation Platform
+
+* Multi-investigation dashboard with cross-referencing
+* Real-time collaborative editing via Phoenix PubSub
+* Advanced D3.js visualisations (timeline, heatmap, Sankey diagrams)
+* Full-text search across evidence corpus
+* Role-based access control (admin, journalist, reviewer, reader)
+* API rate limiting and key management
+* IPFS provenance integration for tamper-evident storage
+* Deployment to Hetzner Cloud (EU data sovereignty)
+* ArangoDB Oasis managed database
+
+=== Decision Point: Month 9
+
+*Criteria:* Platform stability and user retention
+
+* *Scale:* If 50+ active users and stable infrastructure
+* *Consolidate:* Focus on reliability before new features
+
+== Phase 3: Production Ecosystem (Months 13-18)
+
+=== v3.0.0 - Production Launch
+
+* Public API with documentation and SDK
+* Formal security audit and penetration testing
+* LEAN4 formal proofs for cryptographic protocols
+* Integration with academic citation databases
+* Cross-investigation evidence linking
+* EU funding application
+* Academic paper on boundary objects in journalism tooling
+* NUJ partnership formalisation
+
+=== Decision Point: Month 12
+
+*Criteria:* Sustainability and community
+
+* *Open:* If community contributors emerge, open governance model
+* *Sustain:* If grant funding secured, dedicated development
+* *Archive:* If insufficient adoption, document lessons learned
+
+== Success Metrics
+
+[cols="1,2,1"]
+|===
+| Phase | Metric | Target
+
+| Phase 1
+| NUJ participants complete test tasks
+| 25 participants, >70% task completion
+
+| Phase 2
+| Active monthly users
+| 50+ journalists/researchers
+
+| Phase 3
+| Investigations using the platform
+| 10+ real investigations
+|===
+
+== Technology Stack
+
+* *Backend:* Elixir 1.18+ / Phoenix 1.8+ / OTP 27
+* *Graph DB:* ArangoDB 3.11+ (multi-model)
+* *Auth DB:* PostgreSQL 16 (user accounts only)
+* *API:* GraphQL (Absinthe) + REST (Zotero)
+* *Frontend:* Phoenix LiveView + D3.js
+* *Container:* Podman + podman-compose
+* *Hosting:* Hetzner Cloud (EU)
+* *CI/CD:* GitHub Actions (19 workflows)

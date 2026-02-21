@@ -1,35 +1,50 @@
-# SPDX-License-Identifier: PLMP-1.0-or-later
-# Mustfile - declarative state contract (template)
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Mustfile - declarative state contract for Evidence Graph (bofig)
 # See: https://github.com/hyperpolymath/mustfile
 
 version: 1
 
 metadata:
-  name: project-state-contract
-  spec: v0.0.1
-  description: "Invariant checks for config, policy, gateway, logs, and schema."
+  name: bofig-state-contract
+  spec: v1.0.0
+  description: "Invariant checks for bofig: compilation, tests, security, schema."
 
 parameters:
-  gateway_port: "8080"
-  schema_version: "v0.0.1"
+  phoenix_port: "4000"
+  arango_port: "8529"
+  postgres_port: "5432"
 
 checks:
-  - name: config-valid
-    description: "config/service.yaml must be valid."
-    run: "yq -e '.' config/service.yaml >/dev/null"
+  - name: compile-clean
+    description: "Project must compile with zero warnings."
+    run: "mix compile --warnings-as-errors"
 
-  - name: policy-compiles
-    description: "policy/policy.ncl must compile."
-    run: "nickel check policy/policy.ncl"
+  - name: tests-pass
+    description: "All 257+ ExUnit tests must pass."
+    run: "mix test"
 
-  - name: gateway-exposes-port
-    description: "Service must expose the configured port."
-    run: "bash -uc 'ss -lnt | rg \":${GATEWAY_PORT:-8080}\"'"
+  - name: credo-strict
+    description: "Credo strict mode with zero issues."
+    run: "mix credo --strict"
 
-  - name: logs-are-json
-    description: "Logs must be JSON."
-    run: "bash -uc 'rg --files -g \"*.json\" logs | xargs -r jq -e .'"
+  - name: format-check
+    description: "All Elixir code must be formatted."
+    run: "mix format --check-formatted"
 
-  - name: schema-version-matches
-    description: "Schema must match version spec."
-    run: "bash -uc 'rg -n \"${SCHEMA_VERSION:-v0.0.1}\" schema'"
+  - name: deps-audit
+    description: "No known dependency vulnerabilities."
+    run: "mix deps.audit"
+
+  - name: spdx-headers
+    description: "All lib/ files must have SPDX license headers."
+    run: "bash -c '[ $(grep -rL \"SPDX-License-Identifier\" lib/ --include=\"*.ex\" | wc -l) -eq 0 ]'"
+
+  - name: state-scm-exists
+    description: "STATE.scm must exist in .machine_readable/."
+    run: "test -f .machine_readable/STATE.scm"
+
+  - name: health-endpoint
+    description: "Health endpoint must be defined in router."
+    run: "grep -q '/api/health' lib/evidence_graph_web/router.ex"

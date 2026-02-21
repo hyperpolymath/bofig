@@ -1,0 +1,18 @@
+/* TEAM */
+Name: Jonathan D.A. Jewell
+Contact: jonathan.jewell@open.ac.uk
+GitHub: hyperpolymath
+Location: United Kingdom
+
+/* PROJECT */
+Name: bofig (Evidence Graph for Investigative Journalism)
+Description: Infrastructure for pragmatic epistemology in investigative journalism
+Framework: PROMPT (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
+License: PMPL-1.0-or-later
+
+/* SITE */
+Language: Elixir
+Framework: Phoenix 1.8 + LiveView
+Database: ArangoDB (multi-model: document + graph)
+API: GraphQL (Absinthe)
+Standards: RSR (Rhodium Standard Repositories)

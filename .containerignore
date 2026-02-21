@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# .containerignore - Exclude from Podman build context
+
+# Build artifacts
+_build/
+deps/
+doc/
+cover/
+.elixir_ls/
+
+# Git
+.git/
+.gitattributes
+
+# Documentation (not needed in container)
+docs/
+wiki/
+*.md
+*.adoc
+*.djot
+
+# RSR / Contractiles (not needed in container)
+contractiles/
+ffi/
+src/abi/
+.machine_readable/
+.well-known/
+
+# Development files
+.env
+.env.*
+.formatter.exs
+.credo.exs
+.dialyzer_ignore.exs
+Justfile
+Mustfile
+podman-compose.yml
+.containerignore
+.gitlab-ci.yml
+.editorconfig
+
+# AI manifests
+0-AI-MANIFEST.a2ml
+AI.a2ml
+AI.djot
+CLAUDE.md
+.claude/
+
+# Test data
+test/
+erl_crash.dump
+
+# Node modules (assets are built in container)
+assets/node_modules/
+
+# Generated
+generated/

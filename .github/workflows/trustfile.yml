@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Trustfile Validation - A2ML v2.1 integrity checks
+
+name: Trustfile Validation
+
+on:
+  push:
+    paths:
+      - 'bofig.trustfile.a2ml'
+      - '.github/workflows/trustfile.yml'
+  pull_request:
+    paths:
+      - 'bofig.trustfile.a2ml'
+
+permissions: read-all
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Validate A2ML YAML structure
+        run: |
+          python3 -c "
+          import yaml
+          with open('bofig.trustfile.a2ml') as f:
+              data = yaml.safe_load(f)
+          required = ['meta', 'threat_model', 'trustfile', 'lean4_proofs', 'signature_block']
+          for section in required:
+              assert section in data, f'Missing required section: {section}'
+          print('A2ML structure valid: all required sections present.')
+          "
+
+      - name: Verify trustfile integrity hash
+        run: |
+          if command -v sha3sum &>/dev/null; then
+            sha3sum -a 512 bofig.trustfile.a2ml
+          else
+            echo "sha3sum not available, using sha256sum fallback"
+            sha256sum bofig.trustfile.a2ml
+          fi
+
+      - name: Check SPDX header
+        run: |
+          head -1 bofig.trustfile.a2ml | grep -q "SPDX-License-Identifier" || \
+            (echo "Missing SPDX header" && exit 1)
+          echo "SPDX header present."
+
+      - name: Hypatia scan placeholder
+        run: echo "Hypatia scan placeholder - install hypatia CLI for full scanning."

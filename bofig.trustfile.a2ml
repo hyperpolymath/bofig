@@ -1,0 +1,541 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# bofig.trustfile.a2ml - A2ML v2.1 Cyberwar-Ready Trustfile
+# Evidence Graph for Investigative Journalism
+# Spec: https://github.com/hyperpolymath/a2ml
+
+# =============================================================================
+# [META]
+# =============================================================================
+meta:
+  id: "did:web:hyperpolymath.github.io:bofig"
+  name: "bofig"
+  full_name: "Evidence Graph for Investigative Journalism"
+  version: "2026.2.4-cyberwar"
+  a2ml_version: "2.1"
+  created: "2026-02-21"
+  author: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+  license: "PMPL-1.0-or-later"
+
+  contexts:
+    - "https://a2ml.org/v2.1"
+    - "https://leanprover.github.io/lean4"
+    - "https://hypatia.scans/v1"
+    - "https://w3id.org/security/v2"
+    - "https://w3id.org/transparency/v1"
+
+  signature:
+    algorithm: "Ed448+Dilithium5"
+    public_key: "PLACEHOLDER:Ed448:bofig-signing-key-2026"
+    dilithium_key: "PLACEHOLDER:Dilithium5:bofig-pq-key-2026"
+
+  fallback_signature:
+    algorithm: "SPHINCS+-SHA2-256f"
+    public_key: "PLACEHOLDER:SPHINCS+:bofig-fallback-key-2026"
+
+  integrity:
+    hash_algorithms:
+      - "sha3-512"
+      - "shake256"
+      - "blake3"
+    zone_integrity: "zonemd"
+
+  ci_cd:
+    platform: "github-actions"
+    workflow_ref: ".github/workflows/trustfile.yml"
+    bots: "gitbot-fleet"
+    scanner: "hypatia-scan"
+
+  automation:
+    gitbot_fleet:
+      hashing: true
+      diffing: true
+    hypatia:
+      integrity: true
+      lean4_proofs: true
+
+# =============================================================================
+# [THREAT_MODEL]
+# =============================================================================
+threat_model:
+  domain: "investigative-journalism"
+  classification: "high-sensitivity"
+  data_types:
+    - "journalist source identities"
+    - "unpublished evidence"
+    - "investigation strategies"
+    - "whistleblower communications"
+
+  adversaries:
+    - name: "APT (State Actors)"
+      description: "State-sponsored actors targeting journalist sources and evidence."
+      capability: "high"
+      motivation: "Suppress investigations, identify sources, tamper with evidence."
+      mitigations:
+        - "Capability-based authentication for all API endpoints"
+        - "LEAN4 formal proofs for cryptographic protocol correctness"
+        - "Append-only transparency logs for evidence chain integrity"
+        - "Ed448+Dilithium5 hybrid signatures (quantum-resistant)"
+        - "No remote BEAM shell in production"
+
+    - name: "Ransomware"
+      description: "Ransomware targeting journalism infrastructure."
+      capability: "medium"
+      motivation: "Financial extortion, data destruction."
+      mitigations:
+        - "Consent-Aware HTTP for all data operations"
+        - "SDP isolation for database services"
+        - "Immutable append-only logs"
+        - "Regular ArangoDB and PostgreSQL backups"
+        - "Non-root container execution"
+
+    - name: "Quantum Adversary"
+      description: "Future quantum computing threats to current cryptography."
+      capability: "future"
+      motivation: "Harvest-now-decrypt-later attacks on journalist data."
+      mitigations:
+        - "Kyber1024+Dilithium5 post-quantum key exchange"
+        - "SPHINCS+ fallback signatures"
+        - "Automated key rotation schedule"
+        - "Hybrid classical+PQ for transition period"
+
+    - name: "Insider Threat"
+      description: "Compromised or malicious collaborators."
+      capability: "medium"
+      motivation: "Leak sources, tamper with evidence graph."
+      mitigations:
+        - "Per-user audit logging of all mutations"
+        - "PROMPT score tamper detection"
+        - "Evidence chain integrity verification"
+        - "Role-based access control"
+
+# =============================================================================
+# [DNS]
+# =============================================================================
+dns:
+  domain: "evidencegraph.org"
+  registrar: "future-registration"
+
+  records:
+    soa:
+      primary_ns: "ns1.evidencegraph.org"
+      admin_email: "hostmaster.evidencegraph.org"
+      serial: 2026022101
+      refresh: 3600
+      retry: 900
+      expire: 604800
+      minimum_ttl: 300
+
+    a:
+      - name: "@"
+        value: "PLACEHOLDER:IPv4"
+        ttl: 300
+    aaaa:
+      - name: "@"
+        value: "PLACEHOLDER:IPv6"
+        ttl: 300
+
+    https:
+      - name: "@"
+        priority: 1
+        target: "."
+        alpn: "h2,h3"
+        port: 443
+
+    security:
+      dmarc:
+        policy: "reject"
+        rua: "mailto:dmarc@evidencegraph.org"
+        ruf: "mailto:dmarc-forensic@evidencegraph.org"
+        pct: 100
+      caa:
+        - flag: 0
+          tag: "issue"
+          value: "letsencrypt.org"
+        - flag: 0
+          tag: "issuewild"
+          value: ";"
+      tlsa:
+        usage: 3
+        selector: 1
+        matching_type: 1
+        data: "PLACEHOLDER:TLSA-HASH"
+
+    txt:
+      - name: "_capability._tcp"
+        value: "v=CAP1; alg=Ed448+Dilithium5; endpoint=/api/graphql"
+      - name: "_consent._http"
+        value: "v=CAHTTP1; policy=strict; log=append-only"
+
+# =============================================================================
+# [TRUSTFILE]
+# =============================================================================
+trustfile:
+  keys:
+    primary:
+      algorithm: "Ed448"
+      public_key: "PLACEHOLDER:Ed448:bofig-primary-2026"
+      purpose: "signing"
+    pq_hybrid:
+      algorithm: "Dilithium5"
+      public_key: "PLACEHOLDER:Dilithium5:bofig-pq-2026"
+      purpose: "post-quantum signing"
+    fallback:
+      algorithm: "SPHINCS+-SHA2-256f"
+      public_key: "PLACEHOLDER:SPHINCS+:bofig-fallback-2026"
+      purpose: "stateless hash-based fallback"
+
+  algorithms:
+    hash:
+      - "SHA3-512"
+      - "SHAKE256"
+      - "BLAKE3"
+    kdf: "HKDF-SHAKE512"
+    password: "Argon2id"
+    symmetric: "AES-256-GCM"
+
+  policies:
+    dns:
+      engine: "OPA"
+      language: "Rego"
+      rules:
+        - "all DNS records must have DNSSEC signatures"
+        - "CAA must restrict to letsencrypt.org"
+        - "DMARC policy must be reject"
+
+    http:
+      engine: "OPA"
+      language: "Rego"
+      rules:
+        - "all responses must include security headers"
+        - "CSP must be enforced"
+        - "HSTS max-age >= 31536000"
+
+    elixir:
+      engine: "OPA"
+      language: "Rego"
+      rules:
+        - "no Code.eval_string in production paths"
+        - "no remote BEAM shell in prod config"
+        - "all user input validated via Ecto changesets"
+        - "GraphQL depth limiting enforced"
+
+  fallbacks:
+    signature: "SPHINCS+-SHA2-256f"
+    key_exchange: "ClassicMcEliece-6960119"
+
+# =============================================================================
+# [CI_CD]
+# =============================================================================
+ci_cd:
+  platform: "github-actions"
+  workflow: ".github/workflows/trustfile.yml"
+
+  jobs:
+    validate:
+      steps:
+        - "Validate A2ML structure"
+        - "Verify integrity hashes (SHA3-512)"
+        - "Hypatia scan"
+        - "LEAN4 proof check (stubs)"
+
+    integrity:
+      trigger: "push"
+      steps:
+        - "Compute SHA3-512 of trustfile"
+        - "Compute BLAKE3 of all lib/ files"
+        - "Update integrity manifest"
+
+  gitbot_fleet:
+    hooks:
+      pre_commit:
+        - "Verify SPDX headers on changed files"
+        - "Hash changed files (SHA3-512, BLAKE3)"
+      post_merge:
+        - "Recompute full integrity manifest"
+        - "Alert on unexpected file changes"
+
+  hypatia:
+    scans:
+      dns:
+        schedule: "daily"
+        checks: ["zonemd", "caa", "dmarc"]
+      crypto:
+        schedule: "weekly"
+        checks: ["pq-hybrid-keys", "tls-1.3-only", "ocsp-stapling"]
+      elixir:
+        schedule: "on-push"
+        checks: ["input-validation", "auth-enforcement", "no-dangerous-functions"]
+
+# =============================================================================
+# [LEAN4_PROOFS]
+# =============================================================================
+lean4_proofs:
+  repository: "hyperpolymath/bofig-proofs"
+  status: "stub"
+
+  theorems:
+    - name: "dns_correctness"
+      file: "Bofig/DNS.lean"
+      status: "stub"
+      statement: "All DNS records satisfy DNSSEC + CAA + DMARC constraints."
+
+    - name: "tls_handshake_safety"
+      file: "Bofig/TLS.lean"
+      status: "stub"
+      statement: "TLS 1.3 handshake with PQ hybrid key exchange is safe against MitM."
+
+    - name: "consent_aware_http_soundness"
+      file: "Bofig/ConsentHTTP.lean"
+      status: "stub"
+      statement: "Consent-Aware HTTP correctly enforces data operation policies."
+
+    - name: "capability_gateway_correctness"
+      file: "Bofig/Capability.lean"
+      status: "stub"
+      statement: "Capability tokens correctly restrict API access per role."
+
+    - name: "elixir_input_validation"
+      file: "Bofig/InputValidation.lean"
+      status: "stub"
+      statement: "All user input passes through Ecto changeset validation before database operations."
+
+    - name: "prompt_scoring_consistency"
+      file: "Bofig/PROMPT.lean"
+      status: "stub"
+      statement: "PROMPT scoring algorithm produces consistent results across audience weightings."
+
+    - name: "evidence_chain_integrity"
+      file: "Bofig/EvidenceChain.lean"
+      status: "stub"
+      statement: "Evidence chain graph operations preserve referential integrity."
+
+# =============================================================================
+# [AUTOMATION]
+# =============================================================================
+automation:
+  hashing:
+    tool: "gitbot-fleet"
+    triggers: ["pre-commit", "post-merge"]
+    algorithms: ["SHA3-512", "SHAKE256", "BLAKE3"]
+    manifest: ".integrity/hashes.json"
+
+  diffing:
+    tool: "gitbot-fleet"
+    rules:
+      - "alert-on-unexpected-changes"
+      - "require-proof-updates-for-crypto-changes"
+      - "flag-new-dependencies"
+
+  integrity:
+    tools: ["hypatia", "lean4"]
+    checks:
+      zonemd: "verify DNS zone integrity"
+      transparency_log: "append-only log consistency"
+      lean_proofs: "all proof stubs accounted for"
+
+# =============================================================================
+# [HYPATIA_SCANS]
+# =============================================================================
+hypatia_scans:
+  dns:
+    - "zonemd: verify zone message digest"
+    - "caa: restrict certificate authorities"
+    - "dmarc: email authentication policy"
+
+  crypto:
+    - "pq-hybrid-keys: Ed448+Dilithium5 present"
+    - "tls-1.3-only: no TLS 1.2 fallback"
+    - "ocsp-stapling: OCSP responses stapled"
+
+  elixir:
+    - "input-validation: Ecto changesets on all user input"
+    - "auth-enforcement: all routes require authentication"
+    - "no-dangerous-functions: no Code.eval_string, no :rpc in prod"
+    - "no-atom-exhaustion: no String.to_atom on user input"
+
+# =============================================================================
+# [CAPABILITY_GATEWAY]
+# =============================================================================
+capability_gateway:
+  endpoints:
+    - path: "/api/graphql"
+      methods: ["POST"]
+      auth:
+        required: true
+        type: "capability-token"
+        signature: "Ed448+Dilithium5"
+      roles: ["journalist", "researcher", "reviewer", "admin"]
+
+    - path: "/api/evidence/*"
+      methods: ["GET", "POST"]
+      auth:
+        required: true
+        type: "api-key + capability-token"
+      roles: ["journalist", "admin"]
+
+    - path: "/api/health"
+      methods: ["GET"]
+      auth:
+        required: false
+      notes: "Unauthenticated health check for container orchestration."
+
+    - path: "/admin/*"
+      methods: ["GET", "POST", "PUT", "DELETE"]
+      auth:
+        required: true
+        type: "device-attestation"
+      roles: ["admin"]
+
+# =============================================================================
+# [SDP_RULES]
+# =============================================================================
+sdp_rules:
+  services:
+    - name: "dashboard.internal"
+      access:
+        admins:
+          auth: "device-attestation"
+          mfa: true
+        bots:
+          auth: "JWT"
+          key_exchange: "Kyber1024"
+
+    - name: "db.internal.arangodb"
+      port: 8529
+      access:
+        apps:
+          auth: "mutual-tls"
+          key_exchange: "Kyber1024-X25519"
+        admins:
+          auth: "device-attestation + mutual-tls"
+
+    - name: "db.internal.postgres"
+      port: 5432
+      access:
+        apps:
+          auth: "mutual-tls"
+          notes: "User auth database only."
+
+# =============================================================================
+# [TRANSPARENCY_LOG]
+# =============================================================================
+transparency_log:
+  spec: "RFC 9162"
+  uri: "https://evidencegraph.org/.well-known/transparency-log"
+  format: "append-only"
+
+  initial_entry:
+    timestamp: "2026-02-21T00:00:00Z"
+    event: "trustfile-created"
+    version: "1.0.0"
+    signature: "PLACEHOLDER:Ed448+Dilithium5:initial-entry"
+    lean4_proof: "stub:dns_correctness"
+
+  ci_cd:
+    trigger: "push"
+    action: "append-entry"
+    fields: ["timestamp", "commit-sha", "trustfile-hash", "signature"]
+
+# =============================================================================
+# [SSL_TLS]
+# =============================================================================
+ssl_tls:
+  min_version: "TLSv1.3"
+  max_version: "TLSv1.3"
+
+  ciphers:
+    - "TLS_AES_256_GCM_SHA384"
+    - "TLS_CHACHA20_POLY1305_SHA256"
+
+  groups:
+    - "X25519Kyber768Draft00"
+    - "secp256r1"
+
+  ocsp:
+    stapling: true
+    must_staple: true
+
+  certificate_transparency:
+    scts: true
+    ct_logs:
+      - "Google Argon"
+      - "Cloudflare Nimbus"
+      - "Let's Encrypt Oak"
+
+  headers:
+    strict_transport_security: "max-age=63072000; includeSubDomains; preload"
+    expect_ct: "max-age=86400, enforce"
+
+# =============================================================================
+# [CLOUDFLARE]
+# =============================================================================
+cloudflare:
+  status: "future"
+  notes: "Initial deployment uses Hetzner/Nginx. Cloudflare planned for Phase 2."
+
+  waf:
+    ruleset: "OWASP Core Rule Set"
+    custom_rules:
+      - "block GraphQL introspection in production"
+      - "rate limit /api/graphql to 100 req/min per IP"
+
+  workers:
+    consent_aware:
+      status: "planned"
+      purpose: "Enforce Consent-Aware HTTP at edge."
+    capability_gateway:
+      status: "planned"
+      purpose: "Validate capability tokens at edge."
+
+# =============================================================================
+# [ELIXIR_HARDENING]
+# =============================================================================
+elixir_hardening:
+  beam_vm:
+    remote_shell: "disabled in production"
+    cookie: "generated per-deployment, never committed"
+    distribution: "disabled unless clustering required"
+
+  phoenix:
+    security_headers:
+      content_security_policy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws://localhost:*"
+      x_frame_options: "DENY"
+      x_content_type_options: "nosniff"
+      referrer_policy: "strict-origin-when-cross-origin"
+      permissions_policy: "camera=(), microphone=(), geolocation=()"
+    hsts:
+      max_age: 63072000
+      include_subdomains: true
+      preload: true
+
+  input_validation:
+    strategy: "Ecto changesets for all user input"
+    graphql: "Absinthe type system + custom middleware"
+    rest: "Controller-level validation via changesets"
+
+  banned_functions:
+    - "Code.eval_string/1"
+    - "Code.eval_quoted/2"
+    - ":os.cmd/1 on user input"
+    - "String.to_atom/1 on user input"
+    - ":erlang.binary_to_term/1 on untrusted data"
+
+# =============================================================================
+# [SIGNATURE_BLOCK]
+# =============================================================================
+signature_block:
+  primary:
+    algorithm: "Ed448+Dilithium5"
+    signer: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    timestamp: "2026-02-21T00:00:00Z"
+    signature: "PLACEHOLDER:Ed448+Dilithium5:trustfile-v1.0.0"
+    notes: "Replace with actual signature after key generation."
+
+  fallback:
+    algorithm: "SPHINCS+-SHA2-256f"
+    signer: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    timestamp: "2026-02-21T00:00:00Z"
+    signature: "PLACEHOLDER:SPHINCS+:trustfile-v1.0.0-fallback"
+    notes: "Stateless hash-based fallback signature."

@@ -134,10 +134,14 @@ defmodule EvidenceGraph.Evidence.Evidence do
   defp parse_prompt_scores(nil), do: %PromptScores{}
 
   defp parse_prompt_scores(map) when is_map(map) do
+    known_fields = ~w(provenance replicability objective methodology publication transparency)
+
     atomized =
-      for {k, v} <- map, into: %{} do
-        key = if is_binary(k), do: String.to_existing_atom(k), else: k
-        {key, v}
+      for {k, v} <- map,
+          key_str = if(is_binary(k), do: k, else: to_string(k)),
+          key_str in known_fields,
+          into: %{} do
+        {String.to_existing_atom(key_str), v}
       end
 
     struct(PromptScores, atomized)

@@ -136,7 +136,7 @@ defmodule EvidenceGraph.Relationships.RelationshipTest do
       doc = Relationship.to_arango_doc(rel)
 
       assert doc._key == "rel_test1"
-      assert doc._from == "evidences/evidence_1"
+      assert doc._from == "evidence/evidence_1"
       assert doc._to == "claims/claim_1"
       assert doc.relationship_type == "supports"
       assert doc.weight == 0.8

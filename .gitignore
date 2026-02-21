@@ -31,6 +31,8 @@ Thumbs.db
 /doc/
 *.ez
 erl_crash.dump
+/.elixir_ls/
+/priv/static/assets/
 
 # Julia
 *.jl.cov
@@ -88,3 +90,9 @@ htmlcov/
 
 # Crash recovery artifacts
 ai-cli-crash-capture/
+
+# Podman
+.deno/
+
+# Separate projects (not part of bofig)
+/docudactyl/

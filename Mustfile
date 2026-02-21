@@ -1,13 +1,37 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Mustfile - hyperpolymath mandatory checks
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Mustfile - mandatory checks for Evidence Graph (bofig)
 # See: https://github.com/hyperpolymath/mustfile
 
 version: 1
 
+metadata:
+  name: bofig-state-contract
+  spec: v1.0.0
+  description: "Mandatory invariant checks for bofig v1.0.0 release."
+
 checks:
-  - name: security
-    run: just lint
-  - name: tests
-    run: just test
+  - name: compile
+    description: "Project must compile with zero warnings."
+    run: "mix compile --warnings-as-errors"
+
   - name: format
-    run: just fmt
+    description: "All Elixir code must be formatted."
+    run: "mix format --check-formatted"
+
+  - name: lint
+    description: "Credo strict must pass with zero issues."
+    run: "mix credo --strict"
+
+  - name: tests
+    description: "All tests must pass."
+    run: "mix test"
+
+  - name: security
+    description: "No known dependency vulnerabilities."
+    run: "mix deps.audit"
+
+  - name: spdx
+    description: "All lib/ files must have SPDX license headers."
+    run: "bash -c '[ $(grep -rL \"SPDX-License-Identifier\" lib/ --include=\"*.ex\" | wc -l) -eq 0 ]'"

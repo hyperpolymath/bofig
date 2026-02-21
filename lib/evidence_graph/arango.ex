@@ -5,6 +5,7 @@ defmodule EvidenceGraph.ArangoDB do
   ArangoDB connection and query interface.
 
   Provides a connection pool and helper functions for interacting with ArangoDB.
+  Uses VelocyStream protocol (default Arangox transport) with DBConnection pooling.
   """
 
   use Supervisor
@@ -15,15 +16,33 @@ defmodule EvidenceGraph.ArangoDB do
 
   @impl true
   def init(opts) do
+    # Convert flat username/password config into Arangox :auth tuple
+    auth =
+      case Keyword.get(opts, :auth) do
+        nil ->
+          username = Keyword.get(opts, :username, "root")
+          password = Keyword.get(opts, :password, "")
+          {:basic, username, password}
+
+        auth ->
+          auth
+      end
+
+    arangox_opts =
+      opts
+      |> Keyword.drop([:username, :password])
+      |> Keyword.put(:auth, auth)
+      |> Keyword.put_new(:name, Arangox)
+
     children = [
-      {Arangox, opts}
+      {Arangox, arangox_opts}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
   end
 
   @doc """
-  Execute an AQL query with parameters.
+  Execute an AQL query with parameters (read-write transaction).
 
   ## Examples
 
@@ -35,9 +54,12 @@ defmodule EvidenceGraph.ArangoDB do
       Arangox,
       fn cursor ->
         stream = Arangox.cursor(cursor, aql, vars)
-        {:ok, Enum.to_list(stream)}
+
+        Enum.reduce(stream, [], fn resp, acc ->
+          acc ++ resp.body["result"]
+        end)
       end,
-      write: [:claims, :evidence, :relationships, :investigations, :navigation_paths]
+      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths"]
     )
   end
 
@@ -49,9 +71,12 @@ defmodule EvidenceGraph.ArangoDB do
       Arangox,
       fn cursor ->
         stream = Arangox.cursor(cursor, aql, vars)
-        {:ok, Enum.to_list(stream)}
+
+        Enum.reduce(stream, [], fn resp, acc ->
+          acc ++ resp.body["result"]
+        end)
       end,
-      read: [:claims, :evidence, :relationships, :investigations, :navigation_paths]
+      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths"]
     )
   end
 
@@ -65,11 +90,11 @@ defmodule EvidenceGraph.ArangoDB do
   """
   def insert(collection, document) do
     aql = """
-    INSERT @document INTO #{collection}
+    INSERT @document INTO @@collection
     RETURN NEW
     """
 
-    case query(aql, %{document: document}) do
+    case query(aql, %{document: document, "@collection": collection}) do
       {:ok, [doc]} -> {:ok, doc}
       {:ok, []} -> {:error, :insert_failed}
       error -> error
@@ -81,11 +106,11 @@ defmodule EvidenceGraph.ArangoDB do
   """
   def update(collection, key, updates) do
     aql = """
-    UPDATE @key WITH @updates IN #{collection}
+    UPDATE @key WITH @updates IN @@collection
     RETURN NEW
     """
 
-    case query(aql, %{key: key, updates: updates}) do
+    case query(aql, %{key: key, updates: updates, "@collection": collection}) do
       {:ok, [doc]} -> {:ok, doc}
       {:ok, []} -> {:error, :not_found}
       error -> error
@@ -97,13 +122,13 @@ defmodule EvidenceGraph.ArangoDB do
   """
   def get(collection, key) do
     aql = """
-    FOR doc IN #{collection}
+    FOR doc IN @@collection
       FILTER doc._key == @key
       LIMIT 1
       RETURN doc
     """
 
-    case query_read(aql, %{key: key}) do
+    case query_read(aql, %{key: key, "@collection": collection}) do
       {:ok, [doc]} -> {:ok, doc}
       {:ok, []} -> {:error, :not_found}
       error -> error
@@ -115,11 +140,11 @@ defmodule EvidenceGraph.ArangoDB do
   """
   def delete(collection, key) do
     aql = """
-    REMOVE @key IN #{collection}
+    REMOVE @key IN @@collection
     RETURN OLD
     """
 
-    case query(aql, %{key: key}) do
+    case query(aql, %{key: key, "@collection": collection}) do
       {:ok, [doc]} -> {:ok, doc}
       {:ok, []} -> {:error, :not_found}
       error -> error
@@ -131,10 +156,53 @@ defmodule EvidenceGraph.ArangoDB do
   Run this once during setup.
   """
   def setup_database do
-    with :ok <- create_collections(),
-         :ok <- create_indexes() do
-      :ok
+    with :ok <- create_collections() do
+      create_indexes()
     end
+  end
+
+  @doc """
+  Create the target database if it does not exist.
+
+  Connects to the _system database via a temporary connection to issue
+  the CREATE DATABASE request. Must be called before the main pool starts
+  (or via a Mix task).
+  """
+  def ensure_database(opts) do
+    database = Keyword.get(opts, :database, "evidence_graph")
+
+    # Extract auth from either :auth tuple or legacy :username/:password
+    auth =
+      case Keyword.get(opts, :auth) do
+        {:basic, _u, _p} = a -> a
+        _ -> {:basic, Keyword.get(opts, :username, "root"), Keyword.get(opts, :password, "")}
+      end
+
+    system_opts =
+      opts
+      |> Keyword.drop([:username, :password, :database, :pool_size, :name])
+      |> Keyword.put(:auth, auth)
+
+    {:ok, conn} = Arangox.start_link(system_opts)
+
+    result =
+      case Arangox.request(conn, :post, "/_api/database", %{name: database}) do
+        {:ok, _req, %{status: status}} when status in [200, 201] ->
+          :ok
+
+        {:ok, _req, %{status: 409}} ->
+          # Database already exists
+          :ok
+
+        {:error, %{status: 409}} ->
+          :ok
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+
+    GenServer.stop(conn)
+    result
   end
 
   defp create_collections do
@@ -151,8 +219,8 @@ defmodule EvidenceGraph.ArangoDB do
              name: name,
              type: if(type == :edge, do: 3, else: 2)
            }) do
-        {:ok, _} -> :ok
-        {:error, %{status: 409}} -> :ok  # Already exists
+        {:ok, _req, _resp} -> :ok
+        {:error, %{status: 409}} -> :ok
         error -> IO.warn("Failed to create collection #{name}: #{inspect(error)}")
       end
     end)
@@ -179,20 +247,13 @@ defmodule EvidenceGraph.ArangoDB do
     ]
 
     Enum.each(indexes, fn {collection, type, fields} ->
-      index_type =
-        case type do
-          "fulltext" -> "fulltext"
-          "hash" -> "hash"
-          "skiplist" -> "skiplist"
-        end
-
       body = %{
-        type: index_type,
+        type: type,
         fields: fields
       }
 
       case Arangox.request(Arangox, :post, "/_api/index?collection=#{collection}", body) do
-        {:ok, _} -> :ok
+        {:ok, _req, _resp} -> :ok
         error -> IO.warn("Failed to create index on #{collection}: #{inspect(error)}")
       end
     end)

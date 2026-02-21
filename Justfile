@@ -1,83 +1,135 @@
-# Evidence Graph - Justfile
-# Task automation for development, testing, and deployment
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Evidence Graph (bofig) - Justfile
+# Task automation for development, testing, deployment, and compliance
 # Install: https://github.com/casey/just
 
 # Default recipe (list all tasks)
 default:
     @just --list
 
-# Setup & Installation
-# ====================
+# ─────────────────────────────────────────────────────────────────────────────
+# SETUP & INSTALLATION
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Install all dependencies (Elixir + Node.js)
-install:
+# Install Elixir dependencies
+deps:
     mix deps.get
-    mix deps.compile
-    cd assets && npm install
 
-# Setup development environment from scratch
-setup: install
-    @echo "Starting databases..."
-    docker-compose up -d
-    @echo "Waiting for ArangoDB to be ready..."
+# Full setup: deps, databases, seeds
+setup: deps
+    @echo "Setting up databases..."
+    podman-compose up -d
+    @echo "Waiting for services to be ready..."
     sleep 5
-    @echo "Setting up ArangoDB collections..."
-    mix run -e "EvidenceGraph.ArangoDB.setup_database()"
-    @echo "Creating PostgreSQL database..."
     mix ecto.create
-    @echo "Loading seed data..."
+    mix run -e "EvidenceGraph.ArangoDB.setup_database()"
     mix run priv/repo/seeds.exs
-    @echo "✅ Setup complete! Run 'just dev' to start server."
+    @echo "Setup complete. Run 'just dev' to start server."
 
-# Development
-# ===========
+# Start ArangoDB + PostgreSQL containers via podman-compose
+setup-db:
+    podman-compose up -d
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DATABASE
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Start database containers
+db-start:
+    podman-compose up -d
+
+# Stop database containers
+db-stop:
+    podman-compose stop
+
+# Restart database containers
+db-restart:
+    podman-compose restart
+
+# Reset all data (ArangoDB + PostgreSQL + reseed)
+db-reset:
+    mix run -e "EvidenceGraph.ArangoDB.reset_database()"
+    mix ecto.reset
+    mix run priv/repo/seeds.exs
+
+# Start individual ArangoDB container
+arango-start:
+    podman run -d --name arangodb -p 8529:8529 -e ARANGO_ROOT_PASSWORD=dev docker.io/arangodb/arangodb:3.11
+
+# Start individual PostgreSQL container
+postgres-start:
+    podman run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres docker.io/library/postgres:16-alpine
+
+# Load seed data
+seed:
+    mix run priv/repo/seeds.exs
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEVELOPMENT
+# ─────────────────────────────────────────────────────────────────────────────
 
 # Start development server
 dev:
     mix phx.server
 
 # Start development server with IEx shell
-dev-iex:
+console:
     iex -S mix phx.server
 
-# Start only the databases
-db-start:
-    docker-compose up -d
+# Show all Phoenix routes
+routes:
+    mix phx.routes
 
-# Stop databases
-db-stop:
-    docker-compose stop
+# Open ArangoDB Web UI
+arango-ui:
+    @echo "ArangoDB Web UI: http://localhost:8529"
+    @echo "Username: root | Password: dev"
+    @xdg-open http://localhost:8529 2>/dev/null || true
 
-# Restart databases
-db-restart:
-    docker-compose restart
+# ─────────────────────────────────────────────────────────────────────────────
+# BUILD & COMPILE
+# ─────────────────────────────────────────────────────────────────────────────
 
-# Reset all data (WARNING: destructive!)
-db-reset:
-    @echo "⚠️  This will delete ALL data. Press Ctrl+C to cancel, Enter to continue."
-    @read
-    docker-compose down -v
-    docker-compose up -d
-    sleep 5
-    mix run -e "EvidenceGraph.ArangoDB.setup_database()"
-    mix run priv/repo/seeds.exs
-    @echo "✅ Database reset complete."
+# Compile the project (warnings as errors)
+compile:
+    mix compile --warnings-as-errors
 
-# Code Quality
-# ============
+# Build frontend assets
+assets-build:
+    mix assets.build
 
-# Run all code quality checks
-check: format lint test security-scan
+# Build and minify assets for production
+assets-deploy:
+    mix assets.deploy
 
-# Format all Elixir code
-format:
-    mix format
+# Build OTP release for production
+release:
+    MIX_ENV=prod mix release
 
-# Check if code is formatted (CI)
-format-check:
-    mix format --check-formatted
+# Clean build artifacts
+clean:
+    mix clean
+    rm -rf _build deps doc
 
-# Run linter (Credo)
+# ─────────────────────────────────────────────────────────────────────────────
+# TEST & QUALITY
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Run all tests
+test:
+    mix test
+
+# Run tests with coverage report
+test-cover:
+    mix test --cover
+
+# Run a specific test file
+test-file file:
+    mix test {{file}}
+
+# Run linter (Credo strict mode)
 lint:
     mix credo --strict
 
@@ -85,252 +137,118 @@ lint:
 dialyzer:
     mix dialyzer
 
-# Run security vulnerability scan
-security-scan:
+# Format all Elixir code
+fmt:
+    mix format
+
+# Check formatting (CI-friendly, no changes)
+fmt-check:
+    mix format --check-formatted
+
+# Run CI checks: compile + format + lint + test
+ci: compile fmt-check lint test
+
+# Run full quality suite: format + lint + test + dialyzer
+quality: fmt-check lint test dialyzer
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONTAINERS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Build OCI container image
+container-build tag="latest":
+    podman build -t evidence-graph:{{tag}} -f Containerfile .
+
+# Run containerised application
+container-run tag="latest":
+    podman run -d --name evidence-graph --env-file .env -p 4000:4000 evidence-graph:{{tag}}
+
+# Push container image to registry
+container-push registry tag:
+    podman push evidence-graph:{{tag}} {{registry}}/evidence-graph:{{tag}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECURITY
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Run dependency security audits
+security:
     mix deps.audit
-    @echo "✅ Dependency security scan complete."
+    mix hex.audit
 
-# Testing
-# =======
-
-# Run all tests
-test:
-    mix test
-
-# Run tests with coverage
-test-coverage:
-    mix test --cover
-
-# Run tests in watch mode
-test-watch:
-    mix test.watch
-
-# Run specific test file
-test-file FILE:
-    mix test {{FILE}}
-
-# GraphQL
-# =======
-
-# Start GraphQL Playground (browser will open)
-graphiql:
-    @echo "Opening GraphQL Playground..."
-    @open http://localhost:4000/api/graphiql || xdg-open http://localhost:4000/api/graphiql
-
-# Query GraphQL API with example
-graphql-example:
-    @echo "Querying all claims..."
-    @curl -X POST http://localhost:4000/api/graphql \
-      -H "Content-Type: application/json" \
-      -d '{"query": "{ claims(investigationId: \"uk_inflation_2023\") { id text promptScores { overall } } }"}'
-
-# Database (ArangoDB)
-# ===================
-
-# Open ArangoDB Web UI
-arango-ui:
-    @echo "Opening ArangoDB Web UI..."
-    @open http://localhost:8529 || xdg-open http://localhost:8529
-    @echo "Username: root"
-    @echo "Password: dev"
-
-# Run AQL query (pass query as argument)
-arango-query QUERY:
-    @echo "Running AQL query..."
-    @mix run -e 'EvidenceGraph.ArangoDB.query("{{QUERY}}") |> IO.inspect()'
-
-# Export investigation to JSON
-export-investigation ID:
-    @echo "Exporting investigation {{ID}}..."
-    @mix run -e 'claims = EvidenceGraph.Claims.list_claims("{{ID}}"); IO.inspect(claims)'
-
-# Seeding
-# =======
-
-# Load seed data
-seed:
-    mix run priv/repo/seeds.exs
-
-# Load seed data and reset database first
-seed-fresh: db-reset
-
-# Documentation
-# =============
-
-# Generate HTML documentation
-docs:
-    mix docs
-    @echo "✅ Docs generated in doc/index.html"
-
-# Open generated documentation in browser
-docs-open: docs
-    @open doc/index.html || xdg-open doc/index.html
-
-# Validate documentation links
-docs-check:
-    @echo "Checking for broken links in documentation..."
-    @grep -r "http" docs/ README.md ARCHITECTURE.md ROADMAP.md | grep -v "example.com" | grep -v "TODO" || echo "✅ No obvious broken links"
-
-# Security
-# ========
-
-# Generate new Phoenix secret key base
+# Generate Phoenix secret key base
 secret:
     mix phx.gen.secret
 
 # Check security.txt compliance (RFC 9116)
 security-txt-check:
-    @echo "Checking security.txt compliance..."
-    @test -f .well-known/security.txt && echo "✅ security.txt exists" || echo "❌ security.txt missing"
-    @grep -q "Contact:" .well-known/security.txt && echo "✅ Contact field present" || echo "❌ Contact field missing"
-    @grep -q "Expires:" .well-known/security.txt && echo "✅ Expires field present" || echo "❌ Expires field missing"
+    @test -f .well-known/security.txt && echo "security.txt exists" || echo "security.txt missing"
+    @grep -q "Contact:" .well-known/security.txt && echo "Contact field present" || echo "Contact field missing"
+    @grep -q "Expires:" .well-known/security.txt && echo "Expires field present" || echo "Expires field missing"
 
-# Validate all security documentation
-security-docs-check: security-txt-check
-    @test -f SECURITY.md && echo "✅ SECURITY.md exists" || echo "❌ SECURITY.md missing"
-    @test -f .well-known/ai.txt && echo "✅ ai.txt exists" || echo "❌ ai.txt missing"
+# ─────────────────────────────────────────────────────────────────────────────
+# DOCUMENTATION
+# ─────────────────────────────────────────────────────────────────────────────
 
-# RSR Compliance
-# ==============
+# Generate HTML documentation
+docs:
+    mix docs
 
-# Check RSR (Rhodium Standard Repository) compliance
-rsr-check:
-    @echo "🔍 Checking RSR Framework compliance..."
-    @test -f LICENSE.txt && echo "✅ LICENSE.txt (dual MIT + Palimpsest v0.8)" || echo "❌ LICENSE.txt missing"
-    @test -f SECURITY.md && echo "✅ SECURITY.md" || echo "❌ SECURITY.md missing"
-    @test -f CONTRIBUTING.md && echo "✅ CONTRIBUTING.md (TPCF Perimeter 3)" || echo "❌ CONTRIBUTING.md missing"
-    @test -f CODE_OF_CONDUCT.md && echo "✅ CODE_OF_CONDUCT.md (CCCP)" || echo "❌ CODE_OF_CONDUCT.md missing"
-    @test -f MAINTAINERS.md && echo "✅ MAINTAINERS.md (Governance)" || echo "❌ MAINTAINERS.md missing"
-    @test -f CHANGELOG.md && echo "✅ CHANGELOG.md (SemVer)" || echo "❌ CHANGELOG.md missing"
-    @test -f .well-known/security.txt && echo "✅ .well-known/security.txt (RFC 9116)" || echo "❌ security.txt missing"
-    @test -f .well-known/ai.txt && echo "✅ .well-known/ai.txt (AI policy)" || echo "❌ ai.txt missing"
-    @test -f .well-known/humans.txt && echo "✅ .well-known/humans.txt (Attribution)" || echo "❌ humans.txt missing"
-    @test -f justfile && echo "✅ justfile (Task automation)" || echo "❌ justfile missing"
-    @test -f README.md && echo "✅ README.md (Documentation)" || echo "❌ README.md missing"
-    @test -f ARCHITECTURE.md && echo "✅ ARCHITECTURE.md (Technical docs)" || echo "❌ ARCHITECTURE.md missing"
-    @echo ""
-    @echo "📊 RSR Compliance Score: (count above ✅ / 12)"
-    @echo ""
-    @echo "🎯 RSR Bronze: 8-9/12 ✓"
-    @echo "🥈 RSR Silver: 10-11/12"
-    @echo "🥇 RSR Gold: 12/12 + CI/CD + 80% test coverage"
-
-# Build & Release
-# ===============
-
-# Build production release
-build:
-    MIX_ENV=prod mix release
-
-# Build assets for production
-build-assets:
-    cd assets && npm run deploy
-    mix phx.digest
-
-# Clean build artifacts
-clean:
-    mix clean
-    rm -rf _build
-    rm -rf deps
-    rm -rf doc
-    rm -rf priv/static/assets
-
-# Deployment (Phase 2)
-# ====================
-
-# Deploy to production (placeholder for Phase 2)
-deploy:
-    @echo "❌ Production deployment not yet configured (Phase 2)."
-    @echo "See ROADMAP.md Month 11 for deployment plan."
-
-# Utility
-# =======
-
-# Show project statistics
-stats:
-    @echo "📊 Evidence Graph Statistics"
-    @echo ""
-    @echo "Lines of Code:"
-    @find lib -name "*.ex" -o -name "*.exs" | xargs wc -l | tail -1
-    @echo ""
-    @echo "Test Files:"
-    @find test -name "*_test.exs" | wc -l
-    @echo ""
-    @echo "Documentation Words:"
-    @wc -w README.md ARCHITECTURE.md ROADMAP.md docs/*.md | tail -1
-    @echo ""
-    @echo "Dependencies:"
-    @mix deps | grep -c "*" || echo "Run 'mix deps' first"
-    @echo ""
-    @echo "GraphQL Schema:"
-    @grep -c "field :" lib/evidence_graph_web/schema.ex
-    @echo ""
-
-# Check project health
-health:
-    @echo "🏥 Project Health Check"
-    @echo ""
-    @docker-compose ps || echo "⚠️  Databases not running (run 'just db-start')"
-    @echo ""
-    @curl -s http://localhost:4000/api/graphql -X POST \
-      -H "Content-Type: application/json" \
-      -d '{"query": "{ __schema { types { name } } }"}' \
-      > /dev/null && echo "✅ GraphQL API responding" || echo "❌ GraphQL API down"
-    @echo ""
-    @curl -s http://localhost:8529 > /dev/null && echo "✅ ArangoDB responding" || echo "❌ ArangoDB down"
-    @echo ""
-
-# Show version info
-version:
-    @echo "Evidence Graph v0.1.0 (Phase 1 Month 1)"
-    @echo "Elixir: $(elixir --version | grep Elixir)"
-    @echo "Phoenix: $(mix phx.new --version)"
-    @echo "Node: $(node --version)"
-    @echo "Docker: $(docker --version)"
-
-# Git helpers
-# ===========
-
-# Create new feature branch
-branch NAME:
-    git checkout -b feature/{{NAME}}
-
-# Commit with conventional commit format
-commit TYPE MESSAGE:
-    git add .
-    git commit -m "{{TYPE}}: {{MESSAGE}}"
-
-# Push current branch
-push:
-    git push -u origin $(git branch --show-current)
-
-# Help
-# ====
-
-# Show help for all recipes
-help:
+# List all available recipes with descriptions
+cookbook:
     @just --list
 
-# Quick start guide
-quick-start:
-    @echo "🚀 Evidence Graph - Quick Start"
-    @echo ""
-    @echo "1. Setup (first time only):"
-    @echo "   just setup"
-    @echo ""
-    @echo "2. Start development server:"
-    @echo "   just dev"
-    @echo ""
-    @echo "3. Open GraphQL Playground:"
-    @echo "   just graphiql"
-    @echo ""
-    @echo "4. Run tests:"
-    @echo "   just test"
-    @echo ""
-    @echo "5. Check code quality:"
-    @echo "   just check"
-    @echo ""
-    @echo "6. Check RSR compliance:"
-    @echo "   just rsr-check"
-    @echo ""
-    @echo "See 'just help' for all available commands."
+# ─────────────────────────────────────────────────────────────────────────────
+# VALIDATION & COMPLIANCE
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Check RSR compliance
+validate-rsr:
+    @echo "RSR Compliance Check"
+    @test -f LICENSE && echo "  LICENSE" || echo "  MISSING: LICENSE"
+    @test -f SECURITY.md && echo "  SECURITY.md" || echo "  MISSING: SECURITY.md"
+    @test -f CONTRIBUTING.adoc && echo "  CONTRIBUTING.adoc" || echo "  MISSING: CONTRIBUTING.adoc"
+    @test -f CODE_OF_CONDUCT.md && echo "  CODE_OF_CONDUCT.md" || echo "  MISSING: CODE_OF_CONDUCT.md"
+    @test -f MAINTAINERS.md && echo "  MAINTAINERS.md" || echo "  MISSING: MAINTAINERS.md"
+    @test -f CHANGELOG.md && echo "  CHANGELOG.md" || echo "  MISSING: CHANGELOG.md"
+    @test -f .well-known/security.txt && echo "  .well-known/security.txt" || echo "  MISSING: security.txt"
+    @test -f .well-known/ai.txt && echo "  .well-known/ai.txt" || echo "  MISSING: ai.txt"
+    @test -f 0-AI-MANIFEST.a2ml && echo "  0-AI-MANIFEST.a2ml" || echo "  MISSING: 0-AI-MANIFEST.a2ml"
+    @test -f TOPOLOGY.md && echo "  TOPOLOGY.md" || echo "  MISSING: TOPOLOGY.md"
+    @test -d .machine_readable && echo "  .machine_readable/" || echo "  MISSING: .machine_readable/"
+    @test -f ARCHITECTURE.md && echo "  ARCHITECTURE.md" || echo "  MISSING: ARCHITECTURE.md"
+
+# Validate STATE.scm syntax
+validate-state:
+    @test -f .machine_readable/STATE.scm && echo "STATE.scm exists" || echo "STATE.scm missing"
+
+# Full validation suite
+validate: validate-rsr validate-state compile test
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VERSION CONTROL
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Create annotated release tag
+release-tag version:
+    git tag -a v{{version}} -m "Release v{{version}}"
+
+# Show current version info
+version:
+    @echo "Evidence Graph v1.0.0 (Phase 1 PoC)"
+    @echo "Elixir: $(elixir --version | grep Elixir)"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# GRAPHQL
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Open GraphQL Playground
+graphiql:
+    @echo "GraphQL Playground: http://localhost:4000/api/graphiql"
+    @xdg-open http://localhost:4000/api/graphiql 2>/dev/null || true
+
+# Run example GraphQL query
+graphql-example:
+    @curl -s -X POST http://localhost:4000/api/graphql \
+      -H "Content-Type: application/json" \
+      -d '{"query": "{ claims(investigationId: \"uk_inflation_2023\") { id text promptScores { overall } } }"}' | mix run -e "IO.puts(Jason.Formatter.pretty_print(IO.read(:stdio, :eof)))"

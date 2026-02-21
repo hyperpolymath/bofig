@@ -1,0 +1,333 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= Participant Consent Form: Evidence Graph User Testing
+:author: Jonathan D.A. Jewell
+:email: jonathan.jewell@open.ac.uk
+:revdate: 2026-02-21
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:sectnums:
+:sectanchors:
+
+toc::[]
+
+== Study Information
+
+[cols="1,3"]
+|===
+| Field | Details
+
+| *Study Title*
+| User Testing of the Evidence Graph System for Investigative Journalism
+
+| *Principal Investigator*
+| Jonathan D.A. Jewell
+
+| *Email*
+| jonathan.jewell@open.ac.uk
+
+| *Institution*
+| The Open University, Faculty of Science, Technology, Engineering and Mathematics (STEM)
+
+| *Ethical Approval Reference*
+| [HREC Reference Number -- to be inserted upon approval]
+
+| *Funding*
+| PhD research programme (self-funded / Open University studentship)
+
+| *Date of This Version*
+| 2026-02-21
+|===
+
+== About This Study
+
+=== What is the purpose of the research?
+
+This study is part of a PhD research project investigating infrastructure for
+pragmatic epistemology in investigative journalism. The Evidence Graph system
+combines three concepts:
+
+. *PROMPT scoring*: A six-dimension framework for evaluating evidence quality
+  (Provenance, Replicability, Objective, Methodology, Publication, Transparency).
+. *Boundary objects*: The same evidence can be viewed from different stakeholder
+  perspectives (researcher, policymaker, journalist, etc.).
+. *i-docs navigation*: Interactive, non-linear navigation through evidence,
+  where readers choose their own path.
+
+The purpose of this user testing session is to evaluate whether these concepts
+are usable and useful for working investigative journalists.
+
+=== Why have I been invited?
+
+You have been invited because you are a member of the National Union of
+Journalists (NUJ) with professional journalism experience. We are seeking
+feedback from 25 practising journalists to evaluate the system's usability and
+relevance to investigative journalism practice.
+
+=== What will I be asked to do?
+
+If you agree to participate, you will be asked to:
+
+. Complete a series of tasks using the Evidence Graph prototype system (approximately 60 minutes).
+. Complete a written questionnaire about your experience (approximately 15 minutes).
+. Participate in a brief debrief conversation about your impressions (approximately 20 minutes).
+
+The total session duration is approximately 2 hours.
+
+=== Will I be recorded?
+
+With your explicit consent (see Section 6 below), the following may be recorded:
+
+* *Screen recording*: A recording of your screen while using the system, to
+  capture how you interact with the interface.
+* *Audio recording*: A recording of your spoken comments during the think-aloud
+  tasks and the debrief conversation.
+
+You may participate without being recorded. If you consent to recording, you may
+request that recording be paused or stopped at any time.
+
+== Voluntary Participation and Right to Withdraw
+
+Your participation in this study is entirely voluntary. You are free to:
+
+* Decline to participate without giving a reason.
+* Withdraw from the study at any time during the session without giving a reason.
+* Request that your data be withdrawn after the session, up until the point of
+  anonymisation and aggregation (see Section 4 for the withdrawal deadline).
+
+If you withdraw, any data collected from you will be deleted and will not be
+included in the analysis.
+
+*Withdrawal deadline*: You may request withdrawal of your data up to 14 days
+after your testing session. After this period, your data will have been
+anonymised and aggregated, and it will no longer be possible to identify and
+remove your individual contribution.
+
+To withdraw, contact: jonathan.jewell@open.ac.uk, quoting your participant
+identifier (provided to you at the start of the session).
+
+== Data Handling and Privacy
+
+=== What data will be collected?
+
+[cols="1,2,1"]
+|===
+| Data Type | Description | Identifiable?
+
+| *Task performance data*
+| Task completion rates, time on task, errors, hints used
+| No (recorded by participant ID only)
+
+| *Questionnaire responses*
+| Likert-scale ratings and open-ended text responses
+| No (recorded by participant ID only)
+
+| *Screen recordings*
+| Video of screen during task completion
+| Potentially (if personal information visible on screen)
+
+| *Audio recordings*
+| Voice recordings during think-aloud and debrief
+| Yes (voice is identifiable)
+
+| *Observation notes*
+| Facilitator's notes on participant behaviour
+| No (recorded by participant ID only)
+
+| *Demographic data (optional)*
+| Career stage, outlet type, specialism, technical confidence
+| No (aggregated only)
+|===
+
+=== How will my data be stored?
+
+* All digital data will be stored on encrypted storage (AES-256) on institutional
+  infrastructure or approved cloud services within the European Economic Area
+  (EEA).
+* Participant IDs will be stored separately from any identifying information
+  (name, email). The link between IDs and identities will be held in a separate
+  encrypted file accessible only to the principal investigator.
+* Screen and audio recordings will be stored on encrypted local storage and will
+  not be uploaded to cloud services.
+
+=== How will my data be used?
+
+* Data will be analysed in aggregate to evaluate the usability of the Evidence
+  Graph system.
+* Anonymised quotations from open-ended responses and debrief conversations may
+  be included in the PhD thesis and related academic publications.
+* No individual participant will be identifiable in any published output.
+* Data will not be shared with third parties outside the research team (principal
+  investigator and PhD supervisors).
+
+=== How long will my data be retained?
+
+[cols="1,1"]
+|===
+| Data Type | Retention Period
+
+| *Screen and audio recordings*
+| Deleted within 6 months of the testing session, or upon completion of analysis, whichever is sooner
+
+| *Anonymised task performance data*
+| Retained for the duration of the PhD programme (up to 5 years) and archived per Open University data retention policy
+
+| *Anonymised questionnaire responses*
+| Retained for the duration of the PhD programme (up to 5 years) and archived per Open University data retention policy
+
+| *Identity-to-ID link file*
+| Deleted 14 days after the testing session (after the withdrawal deadline)
+
+| *Consent forms*
+| Retained for the duration of the PhD programme plus 1 year, per Open University policy
+|===
+
+=== Legal basis for processing (GDPR)
+
+The legal basis for processing your personal data under the UK General Data
+Protection Regulation (UK GDPR) is:
+
+* *Article 6(1)(a)*: Consent -- you have given clear consent for the processing
+  of your personal data for the specific purpose of this research.
+* *Article 9(2)(j)*: Processing is necessary for archiving purposes in the
+  public interest, scientific or historical research purposes, or statistical
+  purposes (for anonymised data retained after the withdrawal deadline).
+
+=== Your rights under UK GDPR
+
+You have the right to:
+
+* Access your personal data held by the researcher.
+* Rectify inaccurate personal data.
+* Request erasure of your personal data (subject to the withdrawal deadline above).
+* Restrict or object to the processing of your personal data.
+* Lodge a complaint with the Information Commissioner's Office (ICO) at
+  https://ico.org.uk/ if you believe your data has been mishandled.
+
+To exercise any of these rights, contact: jonathan.jewell@open.ac.uk
+
+== Risks and Benefits
+
+=== Potential risks
+
+The risks of participating in this study are minimal. You may experience:
+
+* Mild frustration if the prototype system is difficult to use (this is expected
+  and is precisely what we are testing).
+* Time commitment of approximately 2 hours.
+
+There are no physical, psychological, or professional risks associated with
+participation.
+
+=== Potential benefits
+
+* You will contribute to the development of a tool designed to support
+  investigative journalism practice.
+* You will gain early exposure to concepts (PROMPT scoring, boundary objects)
+  that may be relevant to evidence evaluation in journalism.
+* You will receive a GBP 50 voucher in recognition of your time.
+
+== Consent
+
+Please read each statement carefully and indicate your consent by ticking the
+appropriate boxes. You must consent to items 1-5 to participate. Items 6-7 are
+optional.
+
+[cols="1,4,1"]
+|===
+| # | Statement | Consent
+
+| 1
+| I confirm that I have read and understood the information provided above, and I have had the opportunity to ask questions.
+| [ ] Yes
+
+| 2
+| I understand that my participation is voluntary and that I am free to withdraw at any time, without giving a reason, up to the withdrawal deadline specified above.
+| [ ] Yes
+
+| 3
+| I consent to the collection and processing of my data as described in Section 4 above.
+| [ ] Yes
+
+| 4
+| I understand that anonymised data from this study may be published in a PhD thesis and related academic publications.
+| [ ] Yes
+
+| 5
+| I agree to take part in the above study.
+| [ ] Yes
+
+| 6
+| *Optional*: I consent to my screen being recorded during the testing session. I understand that screen recordings will be deleted within 6 months.
+| [ ] Yes  [ ] No
+
+| 7
+| *Optional*: I consent to audio recording of my spoken comments during the testing session. I understand that audio recordings will be deleted within 6 months.
+| [ ] Yes  [ ] No
+|===
+
+== Signatures
+
+=== Participant
+
+[cols="1,3"]
+|===
+| *Name (printed)*
+|
+
+| *Signature*
+|
+
+| *Date*
+|
+
+| *Participant ID* (assigned by researcher)
+|
+|===
+
+=== Researcher
+
+[cols="1,3"]
+|===
+| *Name*
+| Jonathan D.A. Jewell
+
+| *Signature*
+|
+
+| *Date*
+|
+|===
+
+== Contact Information
+
+If you have questions about this study, please contact:
+
+[cols="1,3"]
+|===
+| *Principal Investigator*
+| Jonathan D.A. Jewell +
+jonathan.jewell@open.ac.uk
+
+| *PhD Supervisor*
+| [Supervisor name and contact -- to be inserted]
+
+| *Open University Research Ethics*
+| Human Research Ethics Committee (HREC) +
+The Open University +
+Walton Hall, Milton Keynes, MK7 6AA +
+research-ethics@open.ac.uk
+
+| *Data Protection Officer*
+| The Open University +
+data-protection@open.ac.uk
+|===
+
+If you wish to make a complaint about any aspect of this research, please
+contact the Open University Research Ethics Committee at the address above.
+
+---
+
+_Document version: 1.0 | Last updated: 2026-02-21_

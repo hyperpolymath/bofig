@@ -7,13 +7,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned (Phase 1 Month 2-6)
-- Zotero browser extension (two-way sync)
-- Phoenix LiveView UI pages
-- PROMPT scoring interface
-- User authentication (Phase 2)
-- Comprehensive test suite
-- IPFS provenance integration (Phase 2)
+### Planned (Phase 2)
+- Zotero browser extension (one-click import)
+- Multi-investigation dashboard with cross-referencing
+- Real-time collaborative editing via Phoenix PubSub
+- Advanced D3.js visualisations (timeline, heatmap, Sankey)
+- Role-based access control
+- IPFS provenance integration
+- Hetzner Cloud deployment
+
+## [1.0.0] - 2026-02-21 - "Phase 1 PoC" (Evidence Graph v1)
+
+### Added
+
+#### LiveView Frontend
+- **5 LiveView pages**: Dashboard (investigation list), Investigation detail, Graph visualisation, PROMPT scoring, Navigation paths
+- **Core components**: layouts, navigation, responsive design
+- **D3.js hooks**: Force-directed graph + radar chart visualisations
+
+#### User Authentication
+- **phx.gen.auth**: Registration, login, settings, magic link confirmation
+- **bcrypt**: Password hashing via bcrypt_elixir
+- **Swoosh**: Email delivery for magic links
+- **Session-based auth**: CSRF protection on all state-changing operations
+
+#### Zotero REST API
+- `POST /api/evidence/import` - Import single evidence from Zotero
+- `POST /api/evidence/batch-import` - Batch import multiple items
+- `GET /api/evidence/:id/export` - Export evidence to Zotero format
+- `GET /api/investigations/:id/sync-status` - Check Zotero sync status
+
+#### Production Deployment
+- **Containerfile**: Multi-stage OCI build (Elixir 1.18/OTP 27 + Debian bookworm)
+- **podman-compose.yml**: ArangoDB + PostgreSQL + app with health checks
+- **nginx config**: Reverse proxy with WebSocket support
+- **systemd service**: Production process management
+- **runtime.exs**: Production configuration from environment variables
+- **Health endpoint**: `GET /api/health` for container orchestration
+
+#### Data & Seeds
+- Expanded seed data: 7 claims, 30 evidence items, 38 relationships, 6 navigation paths
+- Audience-weighted navigation for 6 types (journalist, researcher, policymaker, skeptic, affected person, activist)
+
+#### NUJ Testing Protocols
+- Task script for user testing sessions
+- Consent form for participants
+- Feedback form with SUS scale
+- Decision matrix for Month 3 go/no-go
+- 5 AsciiDoc protocol documents in docs/testing/
+
+#### Compliance & Trust
+- **A2ML v2.1 Trustfile**: Full cyberwar-ready trustfile (bofig.trustfile.a2ml)
+- **Contractiles**: Updated Mustfile, Dustfile, Intentfile, Trustfile
+- **RSR compliance**: All 12 required files present
+- **19 GitHub Actions workflows**: Security, quality, mirroring, enforcement
+- **TOPOLOGY.md**: Architecture diagram + completion dashboard
+
+### Changed
+- Bumped Phoenix from 1.7.10 to 1.8.3
+- Bumped Phoenix LiveView to 1.1.19
+- Replaced docker-compose.yml with podman-compose.yml
+- Replaced Justfile (legacy Docker references) with comprehensive Podman-based recipes
+- Expanded Mustfile from 3 to 6 mandatory checks
+- Updated SECURITY.md to reflect implemented authentication
+- Updated ROADMAP.adoc with actual 18-month plan
+
+### Removed
+- `docker-compose.yml` (replaced by podman-compose.yml)
+- `Podmanfile.md` (superseded by Containerfile)
+- `rescript.json` (ReScript not used in Elixir project)
+- `CHANGELOG.adoc` (duplicate of CHANGELOG.md)
+- `CONTRIBUTING.md` (kept CONTRIBUTING.adoc)
+- `MAINTAINERS.adoc` (kept MAINTAINERS.md)
+- `LICENSE.txt` (kept LICENSE)
+- `contractiles/trust/Trustfile.hs` (replaced by A2ML Trustfile)
+
+### Security
+- User authentication implemented (phx.gen.auth)
+- All browser routes require authentication
+- CSRF protection on all forms
+- Parameterized AQL queries (unchanged)
+- Ecto changesets for all input validation
+- Health endpoint unauthenticated (for container orchestration)
+- `mix deps.audit` integrated into CI
 
 ## [0.1.0] - 2025-11-22 - "Foundation" (Phase 1 Month 1)
 
@@ -105,10 +181,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Project Metadata
 
 **Repository**: https://github.com/Hyperpolymath/bofig
-**Branch**: `claude/create-claude-md-01CXemscniZhkZyW9ZqZLAfS`
 **Contributors**: @Hyperpolymath, Claude (AI assistant)
-**License**: MIT + Palimpsest v0.8
-**Status**: Phase 1 PoC (Month 1/18 complete)
+**License**: PMPL-1.0-or-later
+**Status**: Phase 1 PoC v1.0.0 complete
 
 ## Version Numbering
 
@@ -119,9 +194,9 @@ We use **Semantic Versioning** (SemVer):
 - **PATCH**: Bug fixes, documentation, security patches
 
 **Phase Mapping:**
-- 0.1.x = Phase 1 (PoC, Months 1-6)
-- 0.2.x = Phase 2 (Platform, Months 7-12)
-- 1.0.0 = Phase 3 launch (Ecosystem, Month 18)
+- 1.0.x = Phase 1 PoC (Months 1-6)
+- 2.0.x = Phase 2 Platform (Months 7-12)
+- 3.0.0 = Phase 3 Production (Month 18)
 
 ## Contribution Credits
 
@@ -157,24 +232,18 @@ See README.md for detailed instructions.
 
 ## Roadmap Preview
 
-**Next Release (0.2.0) - Phase 1 Month 2-3:**
-- Zotero browser extension working prototype
-- Phoenix LiveView pages (investigation list, claim editor)
-- Test suite (ExUnit + GraphQL integration tests)
-- User testing preparation (25 NUJ participants)
+**Next Release (1.1.0) - Phase 1 Month 3-4:**
+- Zotero browser extension (one-click import)
+- Two-way sync between Zotero library and Evidence Graph
+- Month 3 decision point: Continue or pivot based on NUJ testing
 
-**Future (0.3.0+) - Phase 1 Month 4-6:**
-- PROMPT scoring UI (6 sliders with radar chart)
-- Navigation path playback interface
-- Month 3 decision point: Continue or pivot
+**Future (2.0.0) - Phase 2:**
+- Multi-investigation dashboard
+- Real-time collaborative editing
+- IPFS provenance integration
+- Hetzner Cloud deployment
 
-**Future (1.0.0) - Phase 3:**
-- User authentication & authorization
-- Real-time collaboration
-- IPFS provenance
-- Production deployment
-
-See ROADMAP.md for full 18-month plan.
+See ROADMAP.adoc for full 18-month plan.
 
 ## Contact & Support
 
@@ -189,4 +258,4 @@ See ROADMAP.md for full 18-month plan.
 
 *Format: [Keep a Changelog](https://keepachangelog.com/)*
 *Versioning: [Semantic Versioning](https://semver.org/)*
-*Last Updated: 2025-11-22*
+*Last Updated: 2026-02-21*

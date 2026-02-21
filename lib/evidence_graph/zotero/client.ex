@@ -128,7 +128,7 @@ defmodule EvidenceGraph.Zotero.Client do
   Update an existing item. Requires the item's current version for
   conflict detection via `If-Unmodified-Since-Version` header.
   """
-  def update_item(client \\ new(), item_key, item_data, version) do
+  def update_item(_client \\ new(), item_key, item_data, version) do
     path = library_path() <> "/items/#{item_key}"
 
     headers_client =
@@ -161,7 +161,7 @@ defmodule EvidenceGraph.Zotero.Client do
   @doc """
   Delete an item by key. Requires current version for conflict detection.
   """
-  def delete_item(client \\ new(), item_key, version) do
+  def delete_item(_client \\ new(), item_key, version) do
     path = library_path() <> "/items/#{item_key}"
 
     headers_client =

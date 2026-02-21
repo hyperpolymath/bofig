@@ -15,8 +15,8 @@ defmodule EvidenceGraph.Zotero.Sync do
 
   require Logger
 
-  alias EvidenceGraph.Evidence
   alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Evidence
   alias EvidenceGraph.Zotero.{Client, Mapper}
 
   @doc """

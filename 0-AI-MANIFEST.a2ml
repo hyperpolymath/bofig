@@ -1,0 +1,46 @@
+; SPDX-License-Identifier: PMPL-1.0-or-later
+; Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+;
+; AI Manifest for Evidence Graph (bofig)
+; Format: A2ML (AI Agent Markup Language)
+
+(ai-manifest
+  (version "1.0.0")
+  (repository "hyperpolymath/bofig")
+  (canonical-name "Evidence Graph for Investigative Journalism")
+
+  (entry-points
+    (primary "CLAUDE.md")
+    (machine-readable ".machine_readable/")
+    (architecture "ARCHITECTURE.md")
+    (roadmap "ROADMAP.md"))
+
+  (canonical-locations
+    (scm-files ".machine_readable/ ONLY (never root)")
+    (elixir-source "lib/evidence_graph/ and lib/evidence_graph_web/")
+    (config "config/")
+    (tests "test/")
+    (assets "assets/")
+    (static "priv/static/")
+    (seeds "priv/repo/seeds.exs")
+    (deploy "deploy/ (nginx, systemd, env)")
+    (testing-docs "docs/testing/ (NUJ protocols)")
+    (well-known "priv/static/.well-known/ and .well-known/"))
+
+  (critical-invariants
+    (invariant "SCM files MUST be in .machine_readable/ directory ONLY")
+    (invariant "PROMPT scores have exactly 6 dimensions: provenance, replicability, objective, methodology, publication, transparency")
+    (invariant "Audience types are: researcher, policymaker, skeptic, activist, affected_person, journalist")
+    (invariant "ArangoDB collection 'evidence' is SINGULAR (not 'evidences')")
+    (invariant "Relationship edges use _from/_to format: 'claims/{key}' or 'evidence/{key}'")
+    (invariant "All files require SPDX-License-Identifier: PMPL-1.0-or-later header")
+    (invariant "PostgreSQL is for user auth ONLY — all domain data lives in ArangoDB")
+    (invariant "Never use Docker/Dockerfile — use Podman/Containerfile"))
+
+  (lifecycle-hooks
+    (on-enter
+      (read "0-AI-MANIFEST.a2ml")
+      (read ".machine_readable/STATE.scm")
+      (read "CLAUDE.md"))
+    (on-exit
+      (update ".machine_readable/STATE.scm"))))

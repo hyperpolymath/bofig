@@ -1,0 +1,303 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= NUJ User Testing Plan: Evidence Graph (Month 3)
+:author: Jonathan D.A. Jewell
+:email: jonathan.jewell@open.ac.uk
+:revdate: 2026-02-21
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:sectnums:
+:sectanchors:
+:source-highlighter: rouge
+
+toc::[]
+
+== Purpose and Scope
+
+=== Purpose
+
+This document describes the Month 3 user testing plan for the Binary-Origami
+Figurator (bofig) Evidence Graph system. The testing programme evaluates whether
+the system's core concepts -- PROMPT epistemological scoring, boundary objects
+theory, and i-docs navigation -- are usable by working investigative journalists
+and whether the system adds value to their professional practice.
+
+Month 3 constitutes a formal decision point in the project's 18-month PhD
+research programme. The results of this testing round will determine whether the
+project continues on its current trajectory, pivots to an alternative approach,
+or undergoes modification.
+
+=== Scope
+
+The testing covers the following system capabilities:
+
+[cols="1,3"]
+|===
+| Capability | Description
+
+| *User registration and authentication*
+| Account creation, login, and session management
+
+| *Investigation dashboard*
+| Browsing and selecting investigations
+
+| *Claims and evidence navigation*
+| Exploring claims, evidence items, and their relationships
+
+| *Boundary object audience switching*
+| Viewing the same evidence through different audience lenses (researcher, policymaker, journalist, skeptic, activist, affected person)
+
+| *Evidence graph visualisation*
+| D3.js interactive graph rendering of claims, evidence, and relationships
+
+| *PROMPT scoring*
+| Six-dimension epistemological scoring displayed via radar chart (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
+
+| *Navigation paths*
+| Audience-specific paths through the evidence graph
+
+| *Zotero integration (optional)*
+| Importing evidence from Zotero reference manager
+|===
+
+=== Out of Scope
+
+The following are explicitly excluded from Month 3 testing:
+
+* Real-time collaboration features (Phase 2)
+* IPFS provenance integration (Phase 2)
+* Custom PROMPT score authoring by participants
+* Mobile device testing
+* Accessibility audit (scheduled separately)
+* Performance benchmarking under load
+
+== Participants
+
+=== Recruitment
+
+Twenty-five (25) participants will be recruited from the National Union of
+Journalists (NUJ). All participants must meet the following criteria:
+
+[cols="1,3"]
+|===
+| Criterion | Requirement
+
+| *Professional status*
+| Current NUJ member in good standing
+
+| *Experience*
+| Minimum 2 years of professional journalism experience
+
+| *Domain relevance*
+| Experience with investigative, data, or long-form journalism preferred (not required)
+
+| *Technical literacy*
+| Comfortable using web applications (no specialist technical skills required)
+
+| *Independence*
+| No prior involvement with the bofig project or the researcher's supervisory team
+|===
+
+=== Participant Demographics
+
+The recruitment process will aim for diversity across the following dimensions:
+
+* *Outlet type*: National, regional, local, freelance, digital-native
+* *Specialism*: Political, economic, social affairs, science, general
+* *Career stage*: Early-career (2-5 years), mid-career (5-15 years), senior (15+ years)
+* *Gender*: Balanced representation
+* *Geography*: UK-wide (sessions conducted remotely via video call or in-person in London/Milton Keynes)
+
+=== Compensation
+
+Each participant will receive a GBP 50 Amazon voucher or equivalent for
+completing the 2-hour testing session, in accordance with Open University
+research ethics guidelines for participant compensation.
+
+== Schedule
+
+=== Session Structure
+
+Each testing session accommodates five (5) participants and follows this
+structure:
+
+[cols="1,1,3"]
+|===
+| Time | Duration | Activity
+
+| 00:00 - 00:15
+| 15 min
+| Welcome, consent form review and signing, introduction to the session
+
+| 00:15 - 00:25
+| 10 min
+| Brief orientation to the system (no guided tour -- participants should discover functionality)
+
+| 00:25 - 01:25
+| 60 min
+| Task-based testing (see link:task-script.adoc[Task Script])
+
+| 01:25 - 01:40
+| 15 min
+| Post-session questionnaire (see link:feedback-form.adoc[Feedback Form])
+
+| 01:40 - 02:00
+| 20 min
+| Semi-structured debrief interview and open discussion
+|===
+
+=== Session Calendar
+
+Five sessions of five participants each:
+
+[cols="1,1,1,1"]
+|===
+| Session | Participants | Format | Facilitator
+
+| Session 1
+| P01 - P05
+| In-person (London)
+| Jonathan D.A. Jewell
+
+| Session 2
+| P06 - P10
+| Remote (video call)
+| Jonathan D.A. Jewell
+
+| Session 3
+| P11 - P15
+| Remote (video call)
+| Jonathan D.A. Jewell
+
+| Session 4
+| P16 - P20
+| In-person (Milton Keynes)
+| Jonathan D.A. Jewell
+
+| Session 5
+| P21 - P25
+| Remote (video call)
+| Jonathan D.A. Jewell
+|===
+
+Sessions will be scheduled across a two-week window. Exact dates will be
+confirmed with participants at least 14 days in advance.
+
+=== Test Environment
+
+All sessions will use a staging instance of the system with the following
+configuration:
+
+* *Investigation*: UK Inflation 2023 (7 claims, 30 evidence items, 10 relationships, 3 navigation paths)
+* *Database*: Pre-seeded ArangoDB with complete test dataset
+* *Server*: Hetzner Cloud staging instance (EU-hosted)
+* *Browser*: Participants use their own browser (Chrome, Firefox, or Safari recommended)
+* *Screen recording*: With participant consent, screen and audio will be recorded for analysis
+
+== Data Collection Methods
+
+=== Quantitative Data
+
+[cols="1,3"]
+|===
+| Instrument | Description
+
+| *System Usability Scale (SUS)*
+| 10-item standardised usability questionnaire adapted for the Evidence Graph context (see link:feedback-form.adoc[Feedback Form])
+
+| *Task completion rates*
+| Binary success/failure for each task, plus time-on-task
+
+| *PROMPT comprehension score*
+| Custom 5-item scale measuring participant understanding of the six PROMPT dimensions
+
+| *Navigation intuitiveness score*
+| Custom 5-item scale measuring ease of audience switching and path following
+|===
+
+=== Qualitative Data
+
+[cols="1,3"]
+|===
+| Method | Description
+
+| *Think-aloud protocol*
+| Participants narrate their thought process during task completion
+
+| *Post-session interview*
+| Semi-structured interview covering overall impressions, professional relevance, and suggestions
+
+| *Open-ended questionnaire items*
+| Written responses about usefulness for investigative journalism
+
+| *Observation notes*
+| Facilitator records hesitations, errors, workarounds, and expressed confusion
+|===
+
+== Ethical Considerations
+
+All testing will be conducted under Open University Human Research Ethics
+Committee (HREC) approval. Key ethical provisions:
+
+* Informed consent required before participation (see link:consent-form.adoc[Consent Form])
+* Right to withdraw at any time without penalty
+* All data anonymised before analysis
+* Screen recordings stored encrypted and deleted after analysis
+* No personally identifiable information in published results
+* GDPR-compliant data handling throughout
+
+== Decision Point Criteria
+
+Month 3 is a formal decision point in the 18-month research programme. The
+decision framework is detailed in link:decision-matrix.adoc[Decision Matrix] and
+summarised below:
+
+[cols="1,1,3"]
+|===
+| Decision | Threshold | Action
+
+| *Continue*
+| SUS >= 68, positive PROMPT feedback, >80% task completion
+| Proceed to Phase 2 (Zotero extension, real-time collaboration, expanded testing)
+
+| *Modify*
+| SUS 50-67, mixed feedback, 60-80% task completion
+| Redesign specific components based on feedback, re-test at Month 4.5
+
+| *Pivot*
+| SUS < 50, negative navigation feedback, <60% task completion
+| Fundamental redesign of interface paradigm; consult supervisory team
+|===
+
+== Related Documents
+
+* link:task-script.adoc[Task Script] -- Step-by-step testing tasks
+* link:feedback-form.adoc[Feedback Form] -- Post-session questionnaire
+* link:consent-form.adoc[Consent Form] -- Research ethics consent
+* link:decision-matrix.adoc[Decision Matrix] -- Month 3 decision framework
+* link:../../ARCHITECTURE.md[ARCHITECTURE.md] -- System architecture
+* link:../../wiki/prompt.adoc[PROMPT Scoring Wiki] -- PROMPT framework explanation
+* link:../../wiki/boundary-objects.adoc[Boundary Objects Wiki] -- Boundary objects theory
+* link:../../wiki/navigation.adoc[Navigation Wiki] -- i-docs navigation
+
+== Contact
+
+[cols="1,3"]
+|===
+| Role | Contact
+
+| *Principal Investigator*
+| Jonathan D.A. Jewell (jonathan.jewell@open.ac.uk)
+
+| *Institution*
+| The Open University, Faculty of Science, Technology, Engineering and Mathematics
+
+| *Project Repository*
+| https://github.com/Hyperpolymath/bofig
+|===
+
+---
+
+_Document version: 1.0 | Last updated: 2026-02-21_

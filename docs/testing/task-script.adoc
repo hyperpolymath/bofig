@@ -1,0 +1,559 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= NUJ User Testing: Task Script
+:author: Jonathan D.A. Jewell
+:email: jonathan.jewell@open.ac.uk
+:revdate: 2026-02-21
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:sectnums:
+:sectanchors:
+:source-highlighter: rouge
+
+toc::[]
+
+== Facilitator Instructions
+
+=== Before Each Session
+
+. Verify the staging environment is running and the UK Inflation 2023
+  investigation is loaded with complete seed data (7 claims, 30 evidence items,
+  10 relationships, 3 navigation paths).
+. Confirm screen recording software is ready (with participant consent).
+. Have printed copies of the consent form and feedback form available (in-person
+  sessions) or digital versions shared via screen (remote sessions).
+. Reset any test accounts from previous sessions.
+. Note the session start time.
+
+=== During Each Session
+
+* Encourage participants to think aloud throughout all tasks.
+* Do not guide participants toward the correct action. If they are stuck for more
+  than 2 minutes on a task, offer a single neutral prompt (e.g., "What are you
+  looking for?") before providing a hint.
+* Record the start and end time of each task.
+* Note any errors, hesitations, workarounds, or verbal expressions of confusion
+  or satisfaction.
+* If a participant cannot complete a task after exhausting hints, mark it as
+  incomplete and move to the next task.
+
+=== Participant Briefing Script
+
+Read the following to participants before beginning:
+
+[quote]
+____
+Thank you for participating in this testing session. You will be using a
+prototype system called the Evidence Graph. It is designed to help investigative
+journalists navigate, evaluate, and share evidence.
+
+During this session, I will ask you to complete a series of tasks. Please think
+aloud as you work -- tell me what you are looking for, what you expect to happen,
+and what you notice. There are no right or wrong answers. We are testing the
+system, not you.
+
+You may stop at any time. If a task feels impossible, say so and we will move on.
+
+The session will take approximately two hours. Do you have any questions before
+we begin?
+____
+
+== Task 1: Register and Login
+
+=== Description
+
+Create a new account on the Evidence Graph system and log in.
+
+=== Instructions to Participant
+
+[quote]
+____
+Please create an account on the system using your email address and a password of
+your choice, then log in.
+____
+
+=== Expected Outcome
+
+* Participant successfully creates an account with email and password.
+* Participant receives confirmation (visual feedback on screen).
+* Participant is logged in and sees the main dashboard.
+
+=== Time Estimate
+
+*3 - 5 minutes*
+
+=== Things to Observe
+
+* Does the participant find the registration/login page without difficulty?
+* Are the form fields and labels clear?
+* Does the participant encounter any validation errors? If so, are the error
+  messages understandable?
+* How long does the process take from first click to dashboard?
+* Does the participant express any confusion about what information is required?
+
+=== Hints (Use Only If Stuck)
+
+. "Can you see a way to create a new account?"
+. "Look for a 'Register' or 'Sign Up' link."
+
+---
+
+== Task 2: Browse Dashboard and Find the UK Inflation Investigation
+
+=== Description
+
+Navigate the investigation dashboard and locate the UK Inflation 2023
+investigation.
+
+=== Instructions to Participant
+
+[quote]
+____
+You are now on the dashboard. Please find and open the investigation about UK
+inflation in 2023.
+____
+
+=== Expected Outcome
+
+* Participant identifies the UK Inflation 2023 investigation from the dashboard
+  listing.
+* Participant clicks through to the investigation detail view.
+* The investigation overview is displayed, showing its title, description, and
+  summary of claims and evidence.
+
+=== Time Estimate
+
+*2 - 4 minutes*
+
+=== Things to Observe
+
+* Is the dashboard layout clear? Can the participant distinguish between
+  different investigations?
+* Does the participant use search, browse, or another method to find the
+  investigation?
+* How does the participant interpret the investigation summary information
+  (number of claims, evidence items, relationships)?
+* Does the participant express any expectations about what an "investigation"
+  should contain?
+
+=== Hints (Use Only If Stuck)
+
+. "What do you see on this page?"
+. "Is there an investigation listed that relates to inflation?"
+
+---
+
+== Task 3: Navigate Claims and Evidence
+
+=== Description
+
+Explore the claims within the UK Inflation investigation, select a claim, and
+examine the evidence linked to it.
+
+=== Instructions to Participant
+
+[quote]
+____
+Within the UK Inflation investigation, please find the main claim about what
+drove inflation. Then, look at the evidence that supports or contradicts that
+claim.
+____
+
+=== Expected Outcome
+
+* Participant locates the primary claim ("Energy prices drove UK inflation higher
+  than headline CPI suggests").
+* Participant views the list of evidence items linked to the claim.
+* Participant distinguishes between supporting evidence, contradicting evidence,
+  and contextualising evidence.
+* Participant can identify at least one relationship type (supports, contradicts,
+  or contextualises).
+
+=== Time Estimate
+
+*5 - 8 minutes*
+
+=== Things to Observe
+
+* Can the participant distinguish between claims and evidence?
+* Does the participant understand the relationship types (supports, contradicts,
+  contextualises)?
+* Does the participant attempt to follow evidence chains (i.e., navigate from one
+  claim to linked evidence to another claim)?
+* How does the participant interpret confidence levels and relationship weights?
+* Does the visual presentation of claims versus evidence cause any confusion?
+
+=== Hints (Use Only If Stuck)
+
+. "Can you see a list of claims for this investigation?"
+. "Try clicking on one of the claims to see what evidence is connected."
+. "Look for labels like 'supports' or 'contradicts' near the evidence items."
+
+---
+
+== Task 4: Switch Audience Type and Observe Changes
+
+=== Description
+
+Change the active audience type and observe how the presentation of evidence
+changes. This task directly tests the boundary objects concept.
+
+=== Instructions to Participant
+
+[quote]
+____
+The system allows you to view evidence from different perspectives. Please switch
+between the following audience types and tell me what changes you notice:
+
+1. Start as a *Researcher*
+2. Switch to *Policymaker*
+3. Switch to *Journalist*
+
+For each switch, describe what looks different.
+____
+
+=== Expected Outcome
+
+* Participant locates the audience type selector.
+* Participant switches between Researcher, Policymaker, and Journalist views.
+* Participant observes and articulates at least two of the following changes:
+  ** Navigation path order changes (different evidence appears first).
+  ** PROMPT score weighting changes (different dimensions are emphasised).
+  ** Evidence emphasis changes (different items are highlighted or prioritised).
+  ** Contextual framing changes (descriptions or guidance text adapts).
+
+=== Time Estimate
+
+*8 - 12 minutes*
+
+=== Things to Observe
+
+* Can the participant find the audience type selector?
+* Does the participant understand _why_ the view changes? (Boundary objects
+  concept comprehension.)
+* Does the participant notice subtle changes (e.g., re-ordering of evidence) or
+  only obvious ones (e.g., different highlighted items)?
+* Does the participant express surprise, interest, confusion, or scepticism about
+  audience-dependent views?
+* Does the participant relate the feature to their own professional practice?
+  (e.g., "I could use this to show an editor versus a source.")
+
+=== Hints (Use Only If Stuck)
+
+. "Is there a way to change who you are viewing the evidence as?"
+. "Look for a dropdown or selector that mentions audience types."
+. "Try comparing what you see as a Researcher versus what you see as a
+   Policymaker."
+
+---
+
+== Task 5: View Evidence Graph Visualisation
+
+=== Description
+
+Open and interact with the D3.js evidence graph visualisation.
+
+=== Instructions to Participant
+
+[quote]
+____
+Please find and open the graph view of this investigation. Once you can see the
+graph, try the following:
+
+1. Identify a claim node and an evidence node.
+2. Find a relationship between them.
+3. Try zooming in or out.
+4. Click on a node to see its details.
+____
+
+=== Expected Outcome
+
+* Participant opens the graph visualisation view.
+* Participant can distinguish between claim nodes and evidence nodes (by colour,
+  shape, or label).
+* Participant identifies at least one edge (relationship) and its type.
+* Participant successfully zooms and/or pans.
+* Participant clicks a node and views its detail panel (including PROMPT scores
+  if available).
+
+=== Time Estimate
+
+*5 - 8 minutes*
+
+=== Things to Observe
+
+* Is the graph rendering performant? Any lag or visual glitches?
+* Can the participant read node labels at the default zoom level?
+* Does the participant intuitively try to interact with the graph (drag, click,
+  zoom) or wait for instructions?
+* Does the participant understand what the graph is representing?
+* Does the participant find the graph useful or overwhelming?
+* Does the participant relate the graph to the claims and evidence they explored
+  in Task 3?
+
+=== Hints (Use Only If Stuck)
+
+. "Is there a 'Graph' or 'Visualise' option in the investigation view?"
+. "Try scrolling to zoom, or clicking and dragging to move around."
+. "The coloured circles represent claims and evidence. Try clicking one."
+
+---
+
+== Task 6: Examine PROMPT Scores on the Radar Chart
+
+=== Description
+
+Locate and interpret PROMPT scores displayed as a radar chart for a specific
+piece of evidence.
+
+=== Instructions to Participant
+
+[quote]
+____
+Please find the PROMPT scores for the ONS CPI Data evidence item. You should see
+a radar chart showing six dimensions. Please tell me:
+
+1. Which dimension scores highest?
+2. Which dimension scores lowest?
+3. What do you think these scores mean?
+4. How useful would this information be in your work?
+____
+
+=== Expected Outcome
+
+* Participant locates the PROMPT radar chart for the ONS CPI Data item.
+* Participant correctly identifies the highest-scoring dimension(s) (Provenance:
+  100, Replicability: 100, Publication: 100).
+* Participant correctly identifies the lowest-scoring dimension(s) (Objective:
+  95, Methodology: 95, Transparency: 95 -- all are high for this item).
+* Participant articulates an understanding of what the dimensions mean (even if
+  approximate).
+* Participant offers an opinion on professional usefulness.
+
+=== Time Estimate
+
+*5 - 8 minutes*
+
+=== Things to Observe
+
+* Can the participant find the PROMPT scores without assistance?
+* Does the participant understand the radar chart format? (Six axes, 0-100
+  scale.)
+* Can the participant read the dimension labels on the radar chart?
+* Does the participant understand the difference between individual dimension
+  scores and the overall score?
+* Does the participant compare PROMPT scores across different evidence items
+  (unprompted)?
+* Does the participant express opinions about the scoring criteria? (e.g., "I
+  would weight Provenance higher" or "What counts as Transparency?")
+* Does the "nutrition label" metaphor resonate?
+
+=== Hints (Use Only If Stuck)
+
+. "Look for a chart with six axes, like a spider web or radar."
+. "Each axis represents a quality dimension. The further from the centre, the
+   higher the score."
+. "Try looking at the detail panel for the ONS CPI Data evidence item."
+
+---
+
+== Task 7: Follow a Navigation Path as a Specific Audience
+
+=== Description
+
+Select an audience-specific navigation path and follow it through the evidence
+graph from start to finish.
+
+=== Instructions to Participant
+
+[quote]
+____
+Please select the *Policymaker* audience type and follow the suggested navigation
+path from beginning to end. As you move through each step, please tell me:
+
+1. What you see at each step.
+2. Whether the order makes sense for a policymaker.
+3. Whether you would change anything about the path.
+____
+
+=== Expected Outcome
+
+* Participant selects the Policymaker audience type.
+* Participant identifies and begins the Policymaker navigation path.
+* Participant navigates through each path node in sequence (expected order:
+  official statistics first, then authoritative claims, then recommendations).
+* Participant articulates whether the ordering is appropriate for a policymaker
+  audience.
+* Participant completes the path or explains why they stopped.
+
+=== Time Estimate
+
+*8 - 12 minutes*
+
+=== Things to Observe
+
+* Does the participant understand what a "navigation path" is?
+* Does the participant find it natural to follow a prescribed sequence, or do
+  they want to deviate?
+* Does the participant understand the contextual notes at each path node (the
+  "why am I seeing this now?" text)?
+* Does the participant agree that the path ordering suits a policymaker?
+* Does the participant spontaneously compare this path to how they would navigate
+  the evidence independently?
+* Does the participant suggest improvements to the path content or ordering?
+
+=== Hints (Use Only If Stuck)
+
+. "Look for a 'Paths' or 'Navigation' section within the investigation."
+. "There should be a path labelled for policymakers. Try selecting it."
+. "Follow the numbered steps in order, reading the context provided at each
+   step."
+
+---
+
+== Task 8: Import Evidence from Zotero (Optional)
+
+=== Description
+
+Import a reference from Zotero into the investigation. This task is optional and
+is only attempted if the participant uses Zotero or is willing to try.
+
+=== Instructions to Participant
+
+[quote]
+____
+If you use Zotero for reference management, or are willing to try, please attempt
+to import a reference into the UK Inflation investigation. A sample Zotero JSON
+file is provided.
+
+If you do not use Zotero, you may skip this task.
+____
+
+=== Expected Outcome
+
+* Participant locates the import functionality.
+* Participant either uploads the sample JSON file or enters reference details
+  manually.
+* The imported reference appears in the investigation's evidence list.
+* PROMPT scores are either auto-populated (partially) or left blank for manual
+  entry.
+
+=== Time Estimate
+
+*5 - 10 minutes* (if attempted)
+
+=== Things to Observe
+
+* Does the participant use Zotero in their current workflow?
+* Is the import process intuitive for someone unfamiliar with JSON?
+* Does the participant understand how imported references relate to the evidence
+  graph?
+* Does the participant expect bi-directional sync (changes in Zotero reflected in
+  the Evidence Graph and vice versa)?
+* What file formats does the participant expect to be able to import (BibTeX,
+  RIS, CSV, etc.)?
+
+=== Hints (Use Only If Stuck)
+
+. "Look for an 'Import' or 'Add Evidence' button."
+. "There is a sample file provided. Try uploading it."
+. "If the import button is not obvious, it may be in a menu or toolbar."
+
+---
+
+== Post-Task Debrief
+
+After completing all tasks (or as many as time permits), proceed to the
+link:feedback-form.adoc[Feedback Form] questionnaire, followed by a semi-structured
+debrief conversation.
+
+=== Debrief Questions
+
+Ask the following questions during the 20-minute debrief:
+
+. *Overall impression*: "What is your overall impression of the system?"
+. *Professional relevance*: "Can you see yourself using a system like this in
+  your investigative work? Why or why not?"
+. *PROMPT scoring*: "Did the six-dimension scoring make sense to you? Would you
+  trust scores generated this way?"
+. *Audience switching*: "What did you think about seeing the same evidence from
+  different perspectives? Is that useful?"
+. *Navigation paths*: "Did the suggested paths add value, or would you prefer to
+  explore freely?"
+. *Missing features*: "What is missing that would make this useful for your
+  work?"
+. *Comparison*: "How does this compare to tools you currently use for managing
+  evidence or sources?"
+. *Adoption barriers*: "What would prevent you or your colleagues from adopting a
+  system like this?"
+
+== Task Completion Tracking
+
+Use the following table to record task outcomes for each participant:
+
+[cols="1,1,1,1,1,1"]
+|===
+| Task | Completed? | Time (min) | Hints Used | Errors | Notes
+
+| Task 1: Register/Login
+|
+|
+|
+|
+|
+
+| Task 2: Find Investigation
+|
+|
+|
+|
+|
+
+| Task 3: Claims & Evidence
+|
+|
+|
+|
+|
+
+| Task 4: Audience Switching
+|
+|
+|
+|
+|
+
+| Task 5: Graph Visualisation
+|
+|
+|
+|
+|
+
+| Task 6: PROMPT Radar Chart
+|
+|
+|
+|
+|
+
+| Task 7: Navigation Path
+|
+|
+|
+|
+|
+
+| Task 8: Zotero Import
+|
+|
+|
+|
+|
+|===
+
+---
+
+_Document version: 1.0 | Last updated: 2026-02-21_

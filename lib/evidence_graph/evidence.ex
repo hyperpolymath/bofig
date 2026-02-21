@@ -226,15 +226,13 @@ defmodule EvidenceGraph.Evidence do
   defp format_creators(nil), do: nil
 
   defp format_creators(creators) when is_list(creators) do
-    creators
-    |> Enum.map(fn creator ->
+    Enum.map_join(creators, "; ", fn creator ->
       if creator["firstName"] && creator["lastName"] do
         "#{creator["firstName"]} #{creator["lastName"]}"
       else
         creator["name"]
       end
     end)
-    |> Enum.join("; ")
   end
 
   @doc """

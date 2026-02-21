@@ -6,8 +6,8 @@ Currently supported versions for security updates:
 
 | Version | Support Status | EOL Date |
 |---------|---------------|----------|
-| 0.1.x (Phase 1) | ✅ Active Development | TBD (Month 6) |
-| Future versions | Planning | - |
+| 1.0.x (Phase 1 PoC) | Active Development | TBD (Month 6) |
+| 0.1.x | Superseded by 1.0.0 | 2026-02-21 |
 
 ## Security Model
 
@@ -35,8 +35,8 @@ Currently supported versions for security updates:
 1. **Type Safety**: Elixir compile-time checks, Ecto schemas, GraphQL type system
 2. **Memory Safety**: BEAM VM memory isolation, no manual memory management
 3. **Input Validation**: Ecto changesets, GraphQL schema validation, AQL parameterization
-4. **Authentication**: (Phase 2) JWT tokens, BCrypt password hashing
-5. **Authorization**: (Phase 2) Role-based access control (admin, journalist, reviewer, reader)
+4. **Authentication**: phx.gen.auth with BCrypt password hashing, magic link login
+5. **Authorization**: Session-based auth with CSRF protection (RBAC planned Phase 2)
 6. **Data Protection**: EU GDPR compliance, anonymized interview subjects
 7. **Transport Security**: HTTPS/TLS in production (Phase 2)
 8. **Audit Logging**: All mutations logged with user attribution
@@ -107,30 +107,27 @@ We commit to:
 - .well-known/humans.txt
 - Security Hall of Fame (if program established)
 
-## Known Security Limitations (Phase 1)
+## Known Security Limitations (v1.0.0)
 
 ### Current Gaps
 
-1. **No Authentication**: Phase 1 PoC has no user authentication
-   - GraphQL API is publicly accessible
-   - **Mitigation**: Only run locally, use network firewall
-   - **Fix**: Phase 2 Month 7 (JWT auth)
+1. **No Rate Limiting**: API can be abused
+   - **Mitigation**: Reverse proxy with rate limits (Nginx config provided)
+   - **Fix**: Phase 2 (Phoenix rate limiting plug)
 
-2. **No Rate Limiting**: API can be abused
-   - **Mitigation**: Reverse proxy with rate limits (Nginx)
-   - **Fix**: Phase 2 Month 8 (Phoenix rate limiting)
+2. **No RBAC**: All authenticated users have equal access
+   - **Mitigation**: Authentication required for all routes
+   - **Fix**: Phase 2 (role-based access control)
 
-3. **No Input Sanitization**: Beyond Ecto validation
-   - **Mitigation**: Use parameterized queries (already done)
-   - **Fix**: Add content security policy, stricter validation
+3. **Security Headers**: Basic headers via Phoenix, full CSP pending
+   - **Mitigation**: Nginx adds HSTS, X-Frame-Options in production
+   - **Fix**: Phase 2 (comprehensive CSP policy)
 
-4. **Dependency Vulnerabilities**: Not auto-scanned yet
-   - **Mitigation**: Manual `mix deps.audit` checks
-   - **Fix**: CI/CD integration (see justfile)
+### Resolved Since v0.1.0
 
-5. **No Security Headers**: Missing CSP, HSTS, X-Frame-Options
-   - **Mitigation**: Add in production deployment
-   - **Fix**: Phoenix security headers plug (Phase 2)
+1. **Authentication**: Implemented via phx.gen.auth (bcrypt, sessions, CSRF)
+2. **Dependency Scanning**: Automated via `mix deps.audit` in CI and Justfile
+3. **Input Validation**: Ecto changesets on all user input, parameterized AQL queries
 
 ### Secure Coding Practices
 
@@ -293,7 +290,7 @@ If sensitive investigative data is compromised:
 ### Audit Trail
 
 All security-relevant events logged:
-- Authentication attempts (Phase 2)
+- Authentication attempts
 - Authorization failures
 - Data access (GDPR Article 30)
 - Configuration changes
@@ -331,8 +328,8 @@ We thank the following security researchers:
 
 ---
 
-**Last Updated**: 2025-11-22
-**Policy Version**: 1.0 (Phase 1)
-**Next Review**: 2025-12-22 (monthly during Phase 1)
+**Last Updated**: 2026-02-21
+**Policy Version**: 1.1 (v1.0.0 Release)
+**Next Review**: 2026-03-21 (monthly during Phase 1)
 
 *This security policy is maintained in accordance with RSR (Rhodium Standard Repository) framework requirements and RFC 9116 (security.txt).*

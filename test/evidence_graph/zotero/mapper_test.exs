@@ -3,8 +3,8 @@
 defmodule EvidenceGraph.Zotero.MapperTest do
   use ExUnit.Case, async: true
 
-  alias EvidenceGraph.Zotero.Mapper
   alias EvidenceGraph.PromptScores
+  alias EvidenceGraph.Zotero.Mapper
   import EvidenceGraph.Fixtures
 
   describe "zotero_to_evidence/2" do

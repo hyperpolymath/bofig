@@ -77,8 +77,8 @@ defmodule EvidenceGraph.Relationships.Relationship do
   def to_arango_doc(%__MODULE__{} = rel) do
     %{
       _key: rel.id,
-      _from: "#{rel.from_type}s/#{rel.from_id}",
-      _to: "#{rel.to_type}s/#{rel.to_id}",
+      _from: "#{collection_for(rel.from_type)}/#{rel.from_id}",
+      _to: "#{collection_for(rel.to_type)}/#{rel.to_id}",
       relationship_type: to_string(rel.relationship_type),
       weight: rel.weight,
       confidence: rel.confidence,
@@ -88,6 +88,9 @@ defmodule EvidenceGraph.Relationships.Relationship do
       inserted_at: rel.inserted_at
     }
   end
+
+  defp collection_for(:claim), do: "claims"
+  defp collection_for(:evidence), do: "evidence"
 
   @doc """
   Convert from ArangoDB edge document to Relationship struct.

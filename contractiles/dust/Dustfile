@@ -1,29 +1,52 @@
-# SPDX-License-Identifier: PLMP-1.0-or-later
-# Dustfile template - recovery and rollback semantics
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Dustfile - recovery and rollback semantics for Evidence Graph (bofig)
 
 version: 1
 
 recovery:
-  logs:
-    - name: decision-log
-      path: logs/decisions.json
-      reversible: true
-      handler: "log-replay --reverse logs/decisions.json"
+  database:
+    - name: arango-rollback
+      path: "ArangoDB evidence graph"
+      rollback: "mix run -e 'EvidenceGraph.ArangoDB.reset_database()' && mix run priv/repo/seeds.exs"
+      notes: "Reset ArangoDB to seed data state."
 
-  policy:
-    - name: policy-rollback
-      path: policy/policy.ncl
-      rollback: "git checkout HEAD~1 -- policy/policy.ncl"
-      notes: "Rollback policy to the previous known-good revision."
+    - name: postgres-rollback
+      path: "PostgreSQL user auth"
+      rollback: "mix ecto.rollback"
+      notes: "Roll back the last Ecto migration."
 
-  gateway:
-    - name: bad-deployment
+    - name: full-db-reset
+      path: "All databases"
+      rollback: "just db-reset"
+      notes: "Full destructive reset of ArangoDB + PostgreSQL + reseed."
+
+  container:
+    - name: container-rollback
       event: "deploy.failure"
-      undo: "kubectl rollout undo deployment/gateway"
-      notes: "Undo a failed deployment while preserving audit logs."
+      undo: "podman stop evidence-graph && podman rm evidence-graph"
+      notes: "Stop and remove failed container deployment."
+
+    - name: compose-rollback
+      event: "compose.failure"
+      undo: "podman-compose down"
+      notes: "Tear down all compose services."
+
+  config:
+    - name: config-rollback
+      path: "config/runtime.exs"
+      rollback: "git checkout HEAD~1 -- config/runtime.exs"
+      notes: "Revert runtime config to previous known-good revision."
+
+  evidence:
+    - name: evidence-import-undo
+      event: "batch-import.failure"
+      undo: "mix run -e 'EvidenceGraph.Evidence.rollback_last_import()'"
+      notes: "Undo a failed batch import, preserving existing evidence."
 
   dust-events:
-    - name: decision-log-to-dust
-      source: logs/decisions.json
-      transform: "dustify --input logs/decisions.json --output logs/dust-events.json"
-      notes: "Map gateway decision logs into reversible dust events."
+    - name: mutation-log
+      source: "ArangoDB audit collection"
+      transform: "Export mutation log for forensic review."
+      notes: "All GraphQL mutations are logged for reversibility analysis."

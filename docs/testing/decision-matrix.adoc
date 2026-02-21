@@ -1,0 +1,425 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= Month 3 Decision Matrix: Evidence Graph User Testing
+:author: Jonathan D.A. Jewell
+:email: jonathan.jewell@open.ac.uk
+:revdate: 2026-02-21
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:sectnums:
+:sectanchors:
+:source-highlighter: rouge
+
+toc::[]
+
+== Purpose
+
+Month 3 of the 18-month PhD research programme is a formal decision point. The
+results of the NUJ user testing (25 participants, 5 sessions) will determine the
+project's trajectory. This document defines the criteria, thresholds, and actions
+for each possible outcome.
+
+The decision is not binary. Three outcomes are defined: *Continue*, *Modify*, and
+*Pivot*. Each outcome is linked to specific quantitative thresholds and
+qualitative indicators.
+
+== Decision Framework Overview
+
+[cols="1,1,1,1"]
+|===
+| Outcome | SUS Score | Task Completion | PROMPT Feedback
+
+| *Continue*
+| >= 68
+| > 80%
+| Positive (mean B1-B10 >= 3.5)
+
+| *Modify*
+| 50 - 67
+| 60% - 80%
+| Mixed (mean B1-B10 = 2.5 - 3.4)
+
+| *Pivot*
+| < 50
+| < 60%
+| Negative (mean B1-B10 < 2.5)
+|===
+
+== Outcome 1: Continue
+
+=== Quantitative Thresholds
+
+All of the following must be met:
+
+[cols="1,2,1"]
+|===
+| Metric | Threshold | Source
+
+| *SUS Score*
+| >= 68 (above average usability)
+| Feedback Form, Section A
+
+| *Task Completion Rate*
+| > 80% of tasks completed across all participants (Tasks 1-7; Task 8 excluded as optional)
+| Task Script, completion tracking table
+
+| *PROMPT Comprehension*
+| Mean of B1-B5 >= 3.5 (participants understood the scoring system)
+| Feedback Form, Section B
+
+| *PROMPT Usefulness*
+| Mean of B6-B10 >= 3.5 (participants found scoring useful)
+| Feedback Form, Section B
+
+| *Navigation Intuitiveness*
+| Mean of C1-C10 >= 3.5 (audience switching and path following were intuitive)
+| Feedback Form, Section C
+
+| *Overall Professional Relevance*
+| Mean of E1-E5 >= 3.5 (participants see value for journalism)
+| Feedback Form, Section E
+|===
+
+=== Qualitative Indicators
+
+At least three of the following should be present in debrief conversations:
+
+* Participants spontaneously relate the system to their existing workflow.
+* Participants identify specific use cases for PROMPT scoring in their work.
+* Participants express interest in audience switching as a communication tool.
+* Participants request additional features (indicating engagement, not rejection).
+* Participants compare the system favourably to existing evidence management
+  tools.
+
+=== Action Plan (If Continue)
+
+. Proceed to Phase 2 development:
+  * Zotero browser extension (bidirectional sync)
+  * Real-time collaboration (Phoenix Channels/LiveView)
+  * Expanded evidence graph (30+ evidence items per investigation)
+  * Custom navigation path creation by users
+. Schedule Month 6 testing (repeat with 25 NUJ participants, extended feature
+  set).
+. Prepare interim PhD report with Month 3 findings.
+. Publish preliminary usability results at a relevant conference (e.g., Computation
+  + Journalism, CSCW, or DIS).
+
+== Outcome 2: Modify
+
+=== Quantitative Thresholds
+
+Any of the following indicate a Modify decision:
+
+[cols="1,2,1"]
+|===
+| Metric | Threshold | Source
+
+| *SUS Score*
+| 50 - 67 (below average but not failing)
+| Feedback Form, Section A
+
+| *Task Completion Rate*
+| 60% - 80%
+| Task Script, completion tracking table
+
+| *PROMPT Comprehension*
+| Mean of B1-B5 = 2.5 - 3.4
+| Feedback Form, Section B
+
+| *PROMPT Usefulness*
+| Mean of B6-B10 = 2.5 - 3.4
+| Feedback Form, Section B
+
+| *Navigation Intuitiveness*
+| Mean of C1-C10 = 2.5 - 3.4
+| Feedback Form, Section C
+
+| *Overall Professional Relevance*
+| Mean of E1-E5 = 2.5 - 3.4
+| Feedback Form, Section E
+|===
+
+=== Qualitative Indicators
+
+The following patterns suggest modification rather than continuation or pivot:
+
+* Participants understand the concepts but struggle with specific interface
+  elements.
+* Participants express interest in the system's goals but find the execution
+  lacking.
+* Specific tasks consistently fail while others succeed (localised problems).
+* Participants suggest concrete improvements (rather than expressing fundamental
+  confusion about purpose).
+* The PROMPT concept is understood but the radar chart is not effective.
+* Audience switching is valued in principle but the interface is not discoverable.
+
+=== Action Plan (If Modify)
+
+. Identify the specific components that need redesign based on:
+  * Which tasks had the lowest completion rates.
+  * Which questionnaire sections scored lowest.
+  * Common themes in open-ended responses.
+. Prioritise modifications using the following severity classification:
+
+[cols="1,3,2"]
+|===
+| Severity | Description | Timeline
+
+| *Critical*
+| Blocks core functionality; participants cannot complete basic tasks
+| Fix within 2 weeks
+
+| *Major*
+| Significantly impairs usability; participants complete tasks with difficulty
+| Fix within 4 weeks
+
+| *Minor*
+| Cosmetic or preference-based; does not block task completion
+| Fix within 8 weeks
+|===
+
+[start=3]
+. Implement modifications.
+. Conduct a follow-up testing round at Month 4.5 (abbreviated: 10 participants,
+  2 sessions) to validate that modifications resolve identified issues.
+. If follow-up testing passes Continue thresholds, proceed to Phase 2.
+. If follow-up testing still shows Modify or Pivot indicators, escalate to
+  supervisory team.
+
+=== Potential Modification Areas
+
+Based on the system architecture, the following areas are most likely to require
+modification:
+
+[cols="1,3"]
+|===
+| Area | Potential Modifications
+
+| *PROMPT radar chart*
+| Replace with bar chart, table, or simplified "traffic light" display; add
+  tooltips explaining each dimension; provide an introductory tutorial
+
+| *Audience type selector*
+| Increase visual prominence; add before/after comparison view; provide preview
+  thumbnails of each audience's view
+
+| *Navigation paths*
+| Add progress indicators; improve contextual notes; allow skipping between
+  nodes; add a "path overview" map
+
+| *Graph visualisation*
+| Simplify initial view; add guided tour overlay; improve node labels and legend;
+  reduce visual complexity for small screens
+
+| *Evidence-claim relationships*
+| Improve visual distinction between supports/contradicts/contextualises; add
+  relationship explanations; provide filtering by relationship type
+
+| *Onboarding*
+| Add a brief interactive tutorial for first-time users; include example
+  walkthroughs
+|===
+
+== Outcome 3: Pivot
+
+=== Quantitative Thresholds
+
+Any of the following indicate a Pivot decision:
+
+[cols="1,2,1"]
+|===
+| Metric | Threshold | Source
+
+| *SUS Score*
+| < 50 (significant usability problems)
+| Feedback Form, Section A
+
+| *Task Completion Rate*
+| < 60%
+| Task Script, completion tracking table
+
+| *PROMPT Comprehension*
+| Mean of B1-B5 < 2.5 (participants did not understand the scoring)
+| Feedback Form, Section B
+
+| *Navigation Intuitiveness*
+| Mean of C1-C10 < 2.5 (audience switching was not intuitive)
+| Feedback Form, Section C
+
+| *Overall Professional Relevance*
+| Mean of E1-E5 < 2.5 (participants do not see value for journalism)
+| Feedback Form, Section E
+|===
+
+=== Qualitative Indicators
+
+The following patterns indicate a fundamental problem rather than an interface
+issue:
+
+* Participants do not understand the purpose of the system even after using it.
+* Participants find the boundary objects concept confusing rather than valuable.
+* PROMPT scoring is perceived as arbitrary, paternalistic, or unhelpful.
+* Participants express no interest in adopting the system or anything like it.
+* The system is compared unfavourably to existing tools without any compensating
+  advantages identified.
+
+=== Action Plan (If Pivot)
+
+. Convene an emergency meeting with the PhD supervisory team within 1 week of
+  completing data analysis.
+. Present the findings and discuss the following pivot options:
+
+[cols="1,3"]
+|===
+| Pivot Option | Description
+
+| *Pivot A: Simplify*
+| Retain the evidence graph but remove PROMPT scoring and audience switching.
+  Focus on a simpler tool for evidence management with graph visualisation only.
+  This tests whether the graph structure alone adds value.
+
+| *Pivot B: Refocus audience*
+| Retain all three concepts (PROMPT, boundary objects, i-docs) but target a
+  different user population (e.g., academic researchers, policy analysts, fact-
+  checkers) where epistemological infrastructure may be better received.
+
+| *Pivot C: API-first*
+| Abandon the user-facing interface and pivot to a PROMPT scoring API and data
+  standard. Other tools (Zotero plugins, CMS integrations, browser extensions)
+  would consume the API. This tests whether the concepts are useful even if the
+  specific interface is not.
+
+| *Pivot D: Conceptual redesign*
+| Retain the theoretical framework but fundamentally redesign the system's
+  interaction paradigm based on participant feedback. This may involve a 3-month
+  redesign cycle before retesting.
+|===
+
+[start=3]
+. Select a pivot option with supervisory approval.
+. Develop a revised timeline and testing plan for the chosen pivot.
+. Schedule the next decision point (typically 3 months after pivot implementation
+  begins).
+
+== Data Analysis Plan
+
+=== Quantitative Analysis
+
+[cols="1,3"]
+|===
+| Analysis | Method
+
+| *SUS scoring*
+| Calculate per-participant SUS scores using the standard formula (odd items:
+  score - 1; even items: 5 - score; multiply sum by 2.5). Report mean, median,
+  standard deviation, and range across all 25 participants.
+
+| *Task completion rates*
+| Calculate percentage of participants who completed each task (Tasks 1-7).
+  Report overall completion rate (total tasks completed / total tasks attempted).
+  Note: Task 8 (Zotero) is optional and excluded from the overall rate.
+
+| *Time on task*
+| Report mean and median time per task. Identify tasks that consistently exceed
+  time estimates (indicating usability problems).
+
+| *Likert-scale items*
+| Calculate mean, median, and standard deviation for each section (B, C, D, E).
+  Report individual item scores and section means.
+
+| *Correlation analysis*
+| Test for correlations between SUS scores and PROMPT comprehension scores
+  (Spearman's rho). Test for correlations between career stage and system
+  usability ratings.
+
+| *Subgroup analysis*
+| Compare scores across participant demographics (career stage, specialism,
+  technical confidence) using Kruskal-Wallis H test for non-parametric data with
+  small subgroups.
+|===
+
+=== Qualitative Analysis
+
+[cols="1,3"]
+|===
+| Analysis | Method
+
+| *Thematic analysis*
+| Code open-ended responses and debrief transcripts using reflexive thematic
+  analysis (Braun & Clarke, 2006). Identify themes related to usability,
+  professional relevance, conceptual understanding, and adoption barriers.
+
+| *Affinity diagramming*
+| Group observation notes and participant suggestions into clusters to identify
+  common pain points and feature requests.
+
+| *Critical incident analysis*
+| Identify moments where participants experienced significant difficulty,
+  confusion, or insight. Map these to specific interface elements.
+|===
+
+=== Reporting
+
+The analysis will produce the following outputs:
+
+. *Internal report* (within 2 weeks of completing all sessions): Summary of
+  quantitative metrics and preliminary qualitative themes. This report informs
+  the Continue/Modify/Pivot decision.
+. *PhD thesis chapter*: Detailed methodology, results, and discussion. Includes
+  all quantitative data, thematic analysis, and decision justification.
+. *Conference paper* (if Continue): Preliminary findings submitted to a relevant
+  venue.
+
+== Timeline
+
+[cols="1,1,3"]
+|===
+| Week | Date (approx.) | Activity
+
+| Week 1-2
+| Sessions scheduled
+| Conduct 5 testing sessions (5 participants each)
+
+| Week 3
+| +1 week after final session
+| Data entry, transcription of audio recordings, initial coding
+
+| Week 4
+| +2 weeks after final session
+| Quantitative analysis (SUS scores, task completion, Likert means)
+
+| Week 5
+| +3 weeks after final session
+| Qualitative analysis (thematic coding, affinity diagramming)
+
+| Week 6
+| +4 weeks after final session
+| Internal report completed; decision meeting with supervisory team
+
+| Week 7
+| +5 weeks after final session
+| Action plan confirmed; modifications or pivot initiated
+|===
+
+== References
+
+* Brooke, J. (1996). "SUS: A 'Quick and Dirty' Usability Scale." In P.W. Jordan,
+  B. Thomas, B.A. Weerdmeester, & A.L. McClelland (Eds.), _Usability Evaluation
+  in Industry_, pp. 189-194. London: Taylor & Francis.
+* Braun, V. & Clarke, V. (2006). "Using Thematic Analysis in Psychology."
+  _Qualitative Research in Psychology_, 3(2), 77-101.
+* Bangor, A., Kortum, P.T., & Miller, J.T. (2008). "An Empirical Evaluation of
+  the System Usability Scale." _International Journal of Human-Computer
+  Interaction_, 24(6), 574-594.
+* Star, S.L. & Griesemer, J.R. (1989). "Institutional Ecology, 'Translations'
+  and Boundary Objects." _Social Studies of Science_, 19(3), 387-420.
+* Sauro, J. (2011). _A Practical Guide to the System Usability Scale_. Denver:
+  Measuring Usability LLC.
+* Nielsen, J. (2000). "Why You Only Need to Test with 5 Users." _Nielsen Norman
+  Group_.
+
+---
+
+_Document version: 1.0 | Last updated: 2026-02-21_

@@ -2,6 +2,19 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
 import Config
 
+config :evidence_graph, :scopes,
+  user: [
+    default: true,
+    module: EvidenceGraph.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :binary_id,
+    schema_table: :users,
+    test_data_fixture: EvidenceGraph.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 # General application configuration
 config :evidence_graph,
   ecto_repos: [EvidenceGraph.Repo],
@@ -48,12 +61,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Silence Tesla soft-deprecation warning
+config :tesla, disable_deprecated_builder_warning: true
+
 # ArangoDB configuration
 config :evidence_graph, EvidenceGraph.ArangoDB,
+  client: Arangox.MintClient,
   endpoints: System.get_env("ARANGO_ENDPOINT") || "http://localhost:8529",
   database: System.get_env("ARANGO_DATABASE") || "evidence_graph",
-  username: System.get_env("ARANGO_USERNAME") || "root",
-  password: System.get_env("ARANGO_PASSWORD") || "dev"
+  auth: {:basic, System.get_env("ARANGO_USERNAME") || "root", System.get_env("ARANGO_PASSWORD") || "dev"}
 
 # Zotero Web API v3 configuration
 config :evidence_graph, EvidenceGraph.Zotero.Client,
@@ -72,6 +88,9 @@ config :evidence_graph, Oban,
        {"*/15 * * * *", EvidenceGraph.Workers.ZoteroSync}
      ]}
   ]
+
+# Swoosh mailer configuration
+config :evidence_graph, EvidenceGraph.Mailer, adapter: Swoosh.Adapters.Local
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

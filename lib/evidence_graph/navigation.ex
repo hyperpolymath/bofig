@@ -145,7 +145,7 @@ defmodule EvidenceGraph.Navigation do
     with {:ok, claims} <- EvidenceGraph.Claims.list_claims(investigation_id),
          {:ok, evidence} <- EvidenceGraph.Evidence.list_evidence(investigation_id) do
       # Score each piece of evidence for this audience
-      scored_evidence =
+      _scored_evidence =
         evidence
         |> Enum.map(fn ev ->
           score = PromptScores.calculate_for_audience(ev.prompt_scores, audience_type)
@@ -160,15 +160,17 @@ defmodule EvidenceGraph.Navigation do
           {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
 
           avg_evidence_score =
-            if length(supporting) > 0 do
-              supporting
-              |> Enum.map(fn %{evidence: ev} ->
-                PromptScores.calculate_for_audience(ev.prompt_scores, audience_type)
-              end)
-              |> Enum.sum()
-              |> Kernel./(length(supporting))
-            else
-              0.0
+            case supporting do
+              [] ->
+                0.0
+
+              _ ->
+                supporting
+                |> Enum.map(fn %{evidence: ev} ->
+                  PromptScores.calculate_for_audience(ev.prompt_scores, audience_type)
+                end)
+                |> Enum.sum()
+                |> Kernel./(length(supporting))
             end
 
           claim_score = PromptScores.calculate_for_audience(claim.prompt_scores, audience_type)
@@ -196,7 +198,7 @@ defmodule EvidenceGraph.Navigation do
           {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
 
           evidence_node =
-            if length(supporting) > 0 do
+            if supporting != [] do
               top_evidence = hd(supporting).evidence
 
               %{

@@ -40,6 +40,9 @@ config :evidence_graph, EvidenceGraphWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :evidence_graph, dev_routes: true
 
+# Disable Swoosh API client in dev (use local mailbox)
+config :swoosh, :api_client, false
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
@@ -50,13 +53,10 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
-
 # ArangoDB development settings
 config :evidence_graph, EvidenceGraph.ArangoDB,
+  client: Arangox.MintClient,
   endpoints: "http://localhost:8529",
   database: "evidence_graph_dev",
-  username: "root",
-  password: "dev",
+  auth: {:basic, "root", "dev"},
   pool_size: 5

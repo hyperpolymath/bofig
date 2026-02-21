@@ -11,7 +11,7 @@ defmodule EvidenceGraphWeb.Schema do
   import_types(EvidenceGraphWeb.Schema.Types.RelationshipTypes)
   import_types(EvidenceGraphWeb.Schema.Types.NavigationTypes)
 
-  alias EvidenceGraph.{Claims, Evidence, Relationships, Navigation}
+  alias EvidenceGraph.{Claims, Evidence, Navigation, Relationships}
 
   query do
     @desc "Get a claim by ID"

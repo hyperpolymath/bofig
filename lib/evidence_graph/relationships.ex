@@ -167,7 +167,7 @@ defmodule EvidenceGraph.Relationships do
 
   Uses ArangoDB's shortest path algorithm.
   """
-  def find_path(from_id, from_type, to_id, to_type, max_depth \\ 5) do
+  def find_path(from_id, from_type, to_id, to_type, _max_depth \\ 5) do
     from_collection = if from_type == :claim, do: "claims", else: "evidence"
     to_collection = if to_type == :claim, do: "claims", else: "evidence"
 

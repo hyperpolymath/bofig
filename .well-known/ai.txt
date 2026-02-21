@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# ai.txt - AI Usage Policy (Spawning format)
+# https://site.spawning.ai/spawning-ai-txt
+
+User-Agent: *
+Disallow-Training: yes
+Disallow-Summarization: no
+Disallow-Generation: yes
+
+# This project is licensed under PMPL-1.0-or-later (Palimpsest License).
+# Training on this code is explicitly disallowed.
+# Summarisation for research/reference is permitted.
+# Generative reproduction is disallowed.

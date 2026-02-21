@@ -1,0 +1,455 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= NUJ User Testing: Post-Session Feedback Form
+:author: Jonathan D.A. Jewell
+:email: jonathan.jewell@open.ac.uk
+:revdate: 2026-02-21
+:toc: macro
+:toc-title: Contents
+:toclevels: 3
+:icons: font
+:sectnums:
+:sectanchors:
+
+toc::[]
+
+== Instructions
+
+Thank you for participating in this testing session. Please complete the
+following questionnaire honestly. There are no right or wrong answers. Your
+feedback will directly shape the development of this system.
+
+All responses are anonymous. Your answers will be aggregated with those of other
+participants and no individual will be identifiable in any published results.
+
+*Rating scale for quantitative questions:*
+
+[cols="1,1,1,1,1"]
+|===
+| 1 | 2 | 3 | 4 | 5
+
+| Strongly Disagree
+| Disagree
+| Neutral
+| Agree
+| Strongly Agree
+|===
+
+== Section A: System Usability Scale (SUS)
+
+The following ten statements are adapted from the standard System Usability Scale
+(Brooke, 1996). Please rate each statement from 1 (Strongly Disagree) to 5
+(Strongly Agree).
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| A1
+| I think I would like to use this system frequently in my journalism work.
+|
+
+| A2
+| I found the system unnecessarily complex.
+|
+
+| A3
+| I thought the system was easy to use.
+|
+
+| A4
+| I think I would need the support of a technical person to be able to use this system.
+|
+
+| A5
+| I found the various functions in this system were well integrated.
+|
+
+| A6
+| I thought there was too much inconsistency in this system.
+|
+
+| A7
+| I would imagine that most journalists would learn to use this system very quickly.
+|
+
+| A8
+| I found the system very cumbersome to use.
+|
+
+| A9
+| I felt very confident using the system.
+|
+
+| A10
+| I needed to learn a lot of things before I could get going with this system.
+|
+|===
+
+[NOTE]
+====
+*SUS Scoring Method (for researchers only -- not shown to participants):*
+
+For odd-numbered items (A1, A3, A5, A7, A9): score = response - 1
+
+For even-numbered items (A2, A4, A6, A8, A10): score = 5 - response
+
+SUS Score = sum of all scores x 2.5 (yields 0-100 scale)
+
+*Interpretation:* Score >= 68 is above average usability. Score >= 80.3 is
+Grade A. Score < 50 indicates significant usability problems.
+====
+
+== Section B: PROMPT Scoring Comprehension and Usefulness
+
+The following questions assess your understanding of and opinions about the
+PROMPT epistemological scoring framework (Provenance, Replicability, Objective,
+Methodology, Publication, Transparency).
+
+=== Comprehension
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| B1
+| I understood what each of the six PROMPT dimensions measures.
+|
+
+| B2
+| The radar chart was an effective way to display the six PROMPT scores.
+|
+
+| B3
+| I could distinguish between high-quality and low-quality evidence based on PROMPT scores.
+|
+
+| B4
+| The meaning of the overall PROMPT score was clear to me.
+|
+
+| B5
+| The "nutrition label for evidence" metaphor helped me understand the scoring system.
+|
+|===
+
+=== Usefulness
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| B6
+| PROMPT scores would be useful in my investigative journalism work.
+|
+
+| B7
+| I would trust PROMPT scores to help me evaluate evidence quality.
+|
+
+| B8
+| I found the scoring transparent -- I could understand why evidence received its scores.
+|
+
+| B9
+| The six dimensions (Provenance, Replicability, Objective, Methodology, Publication, Transparency) cover the most important aspects of evidence quality.
+|
+
+| B10
+| I would be willing to assign PROMPT scores to evidence I collect.
+|
+|===
+
+=== PROMPT Open-Ended
+
+[cols="1,4"]
+|===
+| # | Question
+
+| B11
+| Are there any dimensions of evidence quality that PROMPT does not capture but should? Please describe.
+
+| _Response:_
+| {empty}
+
+| B12
+| Which PROMPT dimension do you consider most important for your work, and why?
+
+| _Response:_
+| {empty}
+
+| B13
+| Would you change anything about how the scores are displayed?
+
+| _Response:_
+| {empty}
+|===
+
+== Section C: Navigation and Audience Switching
+
+The following questions assess the usability and usefulness of i-docs navigation
+and the boundary objects concept (viewing evidence from different audience
+perspectives).
+
+=== Navigation Paths
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| C1
+| The concept of guided navigation paths through evidence was clear to me.
+|
+
+| C2
+| Following a navigation path was intuitive and easy.
+|
+
+| C3
+| The contextual notes at each step of the path were helpful.
+|
+
+| C4
+| I preferred following a guided path over free exploration.
+|
+
+| C5
+| I could see how different paths would serve different audiences.
+|
+|===
+
+=== Audience Switching
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| C6
+| Switching between audience types (e.g., researcher, policymaker, journalist) was intuitive.
+|
+
+| C7
+| I noticed meaningful differences when switching audience types.
+|
+
+| C8
+| The concept of the same evidence being presented differently to different audiences is valuable.
+|
+
+| C9
+| I understood why the evidence ordering changed when I switched audience type.
+|
+
+| C10
+| This feature (audience switching) would be useful for communicating findings to different stakeholders.
+|
+|===
+
+=== Navigation Open-Ended
+
+[cols="1,4"]
+|===
+| # | Question
+
+| C11
+| When you switched audience types, what changes did you notice? Were any surprising?
+
+| _Response:_
+| {empty}
+
+| C12
+| In your investigative work, do you currently adapt how you present evidence for different audiences? If so, how?
+
+| _Response:_
+| {empty}
+
+| C13
+| Would you prefer to create your own navigation paths, follow suggested ones, or both?
+
+| _Response:_
+| {empty}
+|===
+
+== Section D: Evidence Graph Visualisation
+
+The following questions assess the evidence graph (D3.js network diagram).
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| D1
+| The evidence graph visualisation was easy to understand.
+|
+
+| D2
+| I could distinguish between claims and evidence in the graph.
+|
+
+| D3
+| The relationships between items (supports, contradicts, contextualises) were clearly shown.
+|
+
+| D4
+| Interacting with the graph (clicking, zooming, panning) was intuitive.
+|
+
+| D5
+| The graph helped me understand the structure of the investigation in a way that a list view could not.
+|
+|===
+
+=== Graph Open-Ended
+
+[cols="1,4"]
+|===
+| # | Question
+
+| D6
+| Did the graph visualisation help you understand the investigation? If so, how?
+
+| _Response:_
+| {empty}
+
+| D7
+| Was there anything about the graph that was confusing or unhelpful?
+
+| _Response:_
+| {empty}
+|===
+
+== Section E: Overall Assessment and Professional Relevance
+
+[cols="1,4,1"]
+|===
+| # | Statement | Rating (1-5)
+
+| E1
+| This system addresses a real need in investigative journalism.
+|
+
+| E2
+| I would recommend this system to a colleague.
+|
+
+| E3
+| The system improved my understanding of the UK Inflation 2023 evidence.
+|
+
+| E4
+| I could see this system being used in a real newsroom.
+|
+
+| E5
+| The system makes the basis of claims more transparent than current tools.
+|
+|===
+
+=== Overall Open-Ended
+
+[cols="1,4"]
+|===
+| # | Question
+
+| E6
+| What did you find most useful about the system?
+
+| _Response:_
+| {empty}
+
+| E7
+| What did you find most frustrating or confusing?
+
+| _Response:_
+| {empty}
+
+| E8
+| What features or improvements would make this system more useful for investigative journalism?
+
+| _Response:_
+| {empty}
+
+| E9
+| How does this system compare to the tools you currently use for managing evidence and sources (e.g., spreadsheets, Zotero, note-taking apps, databases)?
+
+| _Response:_
+| {empty}
+
+| E10
+| Any other comments or suggestions?
+
+| _Response:_
+| {empty}
+|===
+
+== Section F: Participant Demographics (Optional)
+
+These questions help us understand the diversity of our testing cohort. All
+responses are optional and will be reported only in aggregate.
+
+[cols="1,3"]
+|===
+| # | Question
+
+| F1
+| How many years have you worked in journalism? +
+[ ] 2-5 years [ ] 5-10 years [ ] 10-15 years [ ] 15-20 years [ ] 20+ years
+
+| F2
+| What type of outlet do you primarily work for? +
+[ ] National newspaper/magazine [ ] Regional/local newspaper +
+[ ] Broadcast (TV/radio) [ ] Digital-native publication +
+[ ] Freelance [ ] Other: ________
+
+| F3
+| What is your primary specialism? +
+[ ] Investigative [ ] Political [ ] Economic/business +
+[ ] Social affairs [ ] Science/health [ ] General/features +
+[ ] Data journalism [ ] Other: ________
+
+| F4
+| How would you rate your technical confidence with digital tools? +
+[ ] Low [ ] Below average [ ] Average [ ] Above average [ ] High
+|===
+
+== Scoring Summary (Researcher Use Only)
+
+[cols="1,1,1"]
+|===
+| Section | Metric | Score
+
+| A (SUS)
+| SUS Score (0-100)
+|
+
+| B (PROMPT)
+| Mean of B1-B10 (1.0-5.0)
+|
+
+| C (Navigation)
+| Mean of C1-C10 (1.0-5.0)
+|
+
+| D (Graph)
+| Mean of D1-D5 (1.0-5.0)
+|
+
+| E (Overall)
+| Mean of E1-E5 (1.0-5.0)
+|
+|===
+
+== References
+
+* Brooke, J. (1996). "SUS: A 'Quick and Dirty' Usability Scale." In P.W. Jordan,
+  B. Thomas, B.A. Weerdmeester, & A.L. McClelland (Eds.), _Usability Evaluation
+  in Industry_, pp. 189-194. London: Taylor & Francis.
+* Bangor, A., Kortum, P.T., & Miller, J.T. (2008). "An Empirical Evaluation of
+  the System Usability Scale." _International Journal of Human-Computer
+  Interaction_, 24(6), 574-594.
+* Sauro, J. (2011). _A Practical Guide to the System Usability Scale: Background,
+  Benchmarks & Best Practices_. Denver: Measuring Usability LLC.
+
+---
+
+_Document version: 1.0 | Last updated: 2026-02-21_

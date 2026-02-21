@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="[scrollbar-gutter:stable]">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" · Evidence Graph">
+      {assigns[:page_title] || "Investigation"}
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script phx-track-static type="text/javascript" src={~p"/assets/d3.v7.min.js"}>
+    </script>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
+    </script>
+  </head>
+  <body class="bg-white dark:bg-gray-950 antialiased">
+    <header class="border-b border-gray-200 dark:border-gray-800">
+      <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-14 items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a href={~p"/"} class="text-lg font-bold text-gray-900 dark:text-white">
+              Evidence Graph
+            </a>
+            <span class="hidden sm:inline text-sm text-gray-500 dark:text-gray-400">
+              Pragmatic epistemology for investigative journalism
+            </span>
+          </div>
+          <div class="flex items-center gap-3 text-sm">
+            <%= if EvidenceGraphWeb.Layouts.dev_routes?() do %>
+              <a
+                href="/api/graphiql"
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                GraphiQL
+              </a>
+            <% end %>
+            <%= if @current_scope do %>
+              <span class="text-gray-500 dark:text-gray-400">{@current_scope.user.email}</span>
+              <.link
+                href={~p"/users/settings"}
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                Settings
+              </.link>
+              <.link
+                href={~p"/users/log-out"}
+                method="delete"
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                Log out
+              </.link>
+            <% else %>
+              <.link
+                href={~p"/users/register"}
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                Register
+              </.link>
+              <.link
+                href={~p"/users/log-in"}
+                class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                Log in
+              </.link>
+            <% end %>
+          </div>
+        </div>
+      </nav>
+    </header>
+    {@inner_content}
+  </body>
+</html>

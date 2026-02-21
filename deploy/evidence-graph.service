@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+#
+# Systemd unit file for Evidence Graph (bofig)
+# Install: cp deploy/evidence-graph.service /etc/systemd/system/
+#          systemctl daemon-reload
+#          systemctl enable --now evidence-graph
+
+[Unit]
+Description=Evidence Graph - Pragmatic Epistemology Infrastructure
+Documentation=https://github.com/Hyperpolymath/bofig
+After=network.target postgresql.service
+Requires=network.target
+
+[Service]
+Type=exec
+User=evidence_graph
+Group=evidence_graph
+
+# Environment configuration
+EnvironmentFile=/etc/evidence-graph/env
+
+# Working directory (where the release is installed)
+WorkingDirectory=/opt/evidence-graph
+
+# Start the Phoenix release
+ExecStart=/opt/evidence-graph/bin/evidence_graph start
+ExecStop=/opt/evidence-graph/bin/evidence_graph stop
+
+# Graceful shutdown: allow LiveView connections to drain
+TimeoutStopSec=30
+
+# Restart policy
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/evidence-graph/tmp
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=false
+RestrictRealtime=true
+
+# Resource limits
+LimitNOFILE=65536
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=evidence-graph
+
+[Install]
+WantedBy=multi-user.target

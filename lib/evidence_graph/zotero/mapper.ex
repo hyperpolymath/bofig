@@ -155,9 +155,7 @@ defmodule EvidenceGraph.Zotero.Mapper do
   defp format_creators(nil), do: nil
 
   defp format_creators(creators) when is_list(creators) do
-    creators
-    |> Enum.map(&format_creator_name/1)
-    |> Enum.join("; ")
+    Enum.map_join(creators, "; ", &format_creator_name/1)
   end
 
   defp format_creator_name(%{"firstName" => first, "lastName" => last})

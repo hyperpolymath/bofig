@@ -12,8 +12,8 @@ image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,
 
 An evidence graph for investigative journalism.
 
-*Status:* Phase 1 (PoC) - Month 1 Complete
-*Version:* 0.1.0
+*Status:* Phase 1 (PoC) - v1.0.0 Release
+*Version:* 1.0.0
 
 == New Here? Start with the Wiki
 
@@ -76,10 +76,10 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
 
 === Prerequisites
 
-- *Elixir 1.16+* & *Erlang/OTP 26+*
-- *Phoenix 1.7+*
-- *Docker* or *Podman*
-- *Node.js 20+* (for assets)
+- *Elixir 1.18+* & *Erlang/OTP 27+*
+- *Phoenix 1.8+*
+- *Podman* & *podman-compose*
+- *just* (task runner): https://github.com/casey/just
 
 === 1. Clone Repository
 
@@ -90,54 +90,36 @@ cd bofig
 
 === 2. Start Databases
 
-*Using Docker Compose:*
 ```bash
-docker-compose up -d
+podman-compose up -d
 ```
-
-*Using Podman:* See [Podmanfile.md](Podmanfile.md)
 
 Verify ArangoDB is running: http://localhost:8529 (root/dev)
 
-=== 3. Install Dependencies
+=== 3. Full Setup (deps, databases, seeds)
 
 ```bash
-= Elixir dependencies
-
-mix deps.get
-mix deps.compile
-
-= Frontend assets
-
-cd assets && npm install && cd ..
+just setup
 ```
 
-=== 4. Setup Database
-
+Or manually:
 ```bash
-= Create PostgreSQL database (for user auth)
-
+mix deps.get
 mix ecto.create
-
-= Setup ArangoDB collections and indexes
-
-iex -S mix
-iex> EvidenceGraph.ArangoDB.setup_database()
-
-= Load UK Inflation 2023 test data
-
+mix run -e "EvidenceGraph.ArangoDB.setup_database()"
 mix run priv/repo/seeds.exs
 ```
 
-=== 5. Start Phoenix Server
+=== 4. Start Phoenix Server
 
 ```bash
-mix phx.server
+just dev
 ```
 
 Visit:
-- *GraphQL Playground*: http://localhost:4000/api/graphiql
-- *LiveDashboard*: http://localhost:4000/dev/dashboard
+- *Application*: http://localhost:4000 (register/login required)
+- *GraphQL Playground*: http://localhost:4000/api/graphiql (dev only)
+- *Health Check*: http://localhost:4000/api/health
 
 == GraphQL API Examples
 
@@ -319,7 +301,8 @@ bofig/
 ├── ARCHITECTURE.md                # Data model, API design
 ├── ROADMAP.md                     # 18-month plan
 ├── CLAUDE.md                      # AI assistant context
-└── docker-compose.yml             # Container setup
+├── Containerfile                  # OCI container build
+└── podman-compose.yml             # Container orchestration
 ```
 
 == UK Inflation 2023 Test Dataset
@@ -416,27 +399,32 @@ mix dialyzer
 
 == Key Features
 
-=== Implemented (Phase 1 Month 1)
+=== Implemented (v1.0.0)
 
-- ✅ Multi-model ArangoDB integration (document + graph)
-- ✅ GraphQL API with Absinthe (15 queries, 11 mutations)
-- ✅ PROMPT epistemological scoring (6 dimensions, audience weighting)
-- ✅ Claims, Evidence, Relationships data models
-- ✅ Navigation Paths (boundary objects concept)
-- ✅ Graph traversal algorithms (evidence chains, shortest path)
-- ✅ Zotero metadata mapping (Dublin Core, Schema.org)
-- ✅ UK Inflation 2023 test dataset
-- ✅ Auto-generate navigation paths
+* Multi-model ArangoDB integration (document + graph)
+* GraphQL API with Absinthe (15 queries, 11 mutations)
+* PROMPT epistemological scoring (6 dimensions, audience weighting)
+* Claims, Evidence, Relationships, Navigation Paths data models
+* Graph traversal algorithms (evidence chains, shortest path, contradiction detection)
+* Zotero REST API (import, export, batch-import, sync-status)
+* Phoenix 1.8 LiveView frontend (5 pages: Dashboard, Investigation, Graph, PROMPT, Navigation)
+* User authentication (phx.gen.auth with bcrypt, magic links)
+* D3.js force-directed graph + radar chart visualisations
+* Audience-weighted navigation paths (6 types)
+* UK Inflation 2023 test dataset (7 claims, 30 evidence, 38 relationships)
+* Production deployment (Containerfile, nginx, systemd)
+* NUJ user testing protocols
+* A2ML v2.1 Cyberwar-Ready Trustfile
+* 257 tests, 0 failures, full RSR compliance
 
-=== Coming Next (Phase 1 Month 2-6)
+=== Coming Next (Phase 2)
 
-- 🚧 Zotero browser extension (import/export)
-- 🚧 D3.js graph visualization
-- 🚧 Phoenix LiveView UI
-- 🚧 PROMPT scoring interface
-- 🚧 User authentication
-- 🚧 Real-time collaboration
-- 🚧 IPFS provenance integration
+* Zotero browser extension (one-click import)
+* Multi-investigation dashboard
+* Real-time collaborative editing
+* Advanced visualisations (timeline, heatmap, Sankey)
+* IPFS provenance integration
+* Hetzner Cloud deployment
 
 == Philosophy
 
@@ -462,7 +450,7 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 == License
 
-[To be determined]
+link:LICENSE[PMPL-1.0-or-later] (Palimpsest License)
 
 == Contact
 
@@ -476,7 +464,7 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 *Inspired by:* i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
 
-*Last Updated:* 2025-11-22
+*Last Updated:* 2026-02-21
 
 
 == Architecture

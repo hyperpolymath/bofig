@@ -141,6 +141,8 @@ defmodule EvidenceGraph.PromptScores do
   @doc """
   Convert to map for JSON/GraphQL.
   """
+  def to_map(nil), do: to_map(%__MODULE__{})
+
   def to_map(%__MODULE__{} = scores) do
     %{
       provenance: scores.provenance,

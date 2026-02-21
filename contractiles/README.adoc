@@ -1,19 +1,45 @@
-= Contractiles Template Set
+= Contractiles - Evidence Graph (bofig)
 :toc:
 :sectnums:
 
-This directory contains the generalized contractiles templates. Copy the `contractiles/` directory into a new repo to establish a consistent operational, validation, trust, recovery, and intent framework.
-
-== Fill-In Instructions
-
-1. Update the Mustfile to reflect your real invariants (paths, schema versions, ports).
-2. Replace Trustfile.hs placeholders with your actual key paths and verification commands.
-3. Adjust Dustfile handlers to match your rollback and recovery tooling.
-4. Update Intentfile to mirror the roadmap you want the system to evolve toward.
+This directory contains the contractiles for bofig (Evidence Graph for Investigative Journalism). Contractiles define the operational, validation, trust, recovery, and intent framework for the project.
 
 == Contents
 
-* `must/Mustfile` - required invariants and validations.
-* `trust/Trustfile.hs` - cryptographic verification steps.
-* `dust/Dustfile` - rollback and recovery semantics.
-* `lust/Intentfile` - future intent and roadmap direction.
+* `must/Mustfile` - Required invariants and validation checks (compile, test, lint, security, SPDX).
+* `trust/Trustfile` - Cryptographic verification reference (points to `bofig.trustfile.a2ml` in repo root).
+* `dust/Dustfile` - Recovery and rollback semantics (database, container, config, evidence).
+* `lust/Intentfile` - Future intent and roadmap direction (Phase 2, Phase 3, trust engine, epistemology).
+
+== Quick Reference
+
+[cols="1,3"]
+|===
+| Contractile | Purpose
+
+| *Must*
+| What MUST be true at all times (invariants, CI gates).
+
+| *Trust*
+| How cryptographic integrity is verified (A2ML v2.1 Trustfile).
+
+| *Dust*
+| How to recover from failures (rollback procedures).
+
+| *Lust*
+| Where the project intends to go (declared future intent).
+|===
+
+== Validation
+
+Run all Mustfile checks:
+[source,bash]
+----
+just ci
+----
+
+Verify trustfile integrity:
+[source,bash]
+----
+sha3sum -a 512 bofig.trustfile.a2ml
+----

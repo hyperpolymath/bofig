@@ -12,8 +12,14 @@ defmodule EvidenceGraphWeb.Schema do
   import_types(EvidenceGraphWeb.Schema.Types.NavigationTypes)
   import_types(EvidenceGraphWeb.Schema.Types.EntityTypes)
   import_types(EvidenceGraphWeb.Schema.Types.FinancialTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.SearchTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.InvestigationTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.TestimonyTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.ContradictionTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.AuthorizationTypes)
 
   alias EvidenceGraph.{Claims, Evidence, Navigation, Relationships}
+  alias EvidenceGraph.{Investigations, Testimony, Contradictions, Search, Authorization}
   alias EvidenceGraphWeb.Schema.Resolvers.EntityResolver
   alias EvidenceGraphWeb.Schema.Resolvers.FinancialResolver
 
@@ -176,6 +182,151 @@ defmodule EvidenceGraphWeb.Schema do
     field :sankey_data, :sankey_data do
       arg(:investigation_id, non_null(:string))
       resolve(&FinancialResolver.sankey_data/2)
+    end
+
+    # -- Investigation queries -------------------------------------------------
+
+    @desc "Get an investigation by ID"
+    field :investigation, :investigation do
+      arg(:id, non_null(:id))
+
+      resolve(fn %{id: id}, _ ->
+        Investigations.get_investigation(id)
+      end)
+    end
+
+    @desc "List investigations"
+    field :investigations, list_of(:investigation) do
+      arg(:status, :string)
+      arg(:limit, :integer, default_value: 50)
+      arg(:offset, :integer, default_value: 0)
+
+      resolve(fn args, _ ->
+        Investigations.list_investigations(
+          status: args[:status],
+          limit: args.limit,
+          offset: args.offset
+        )
+      end)
+    end
+
+    @desc "Get aggregate statistics for an investigation"
+    field :investigation_stats, :investigation_stats do
+      arg(:id, non_null(:id))
+
+      resolve(fn %{id: id}, _ ->
+        Investigations.investigation_stats(id)
+      end)
+    end
+
+    # -- Search queries --------------------------------------------------------
+
+    @desc "Unified full-text search across evidence, claims, and entities"
+    field :search_all, non_null(:search_results) do
+      arg(:query, non_null(:string))
+      arg(:investigation_id, :string)
+      arg(:limit, :integer, default_value: 20)
+
+      resolve(fn args, _ ->
+        Search.search_all(args.query, args[:investigation_id], limit: args.limit)
+      end)
+    end
+
+    # -- Testimony queries -----------------------------------------------------
+
+    @desc "Cross-reference claims by a witness entity"
+    field :cross_reference_claims, list_of(:cross_reference_result) do
+      arg(:investigation_id, non_null(:string))
+      arg(:entity_id, non_null(:string))
+
+      resolve(fn args, _ ->
+        Testimony.cross_reference_claims(args.investigation_id, args.entity_id)
+      end)
+    end
+
+    @desc "Calculate witness reliability"
+    field :witness_reliability, :witness_reliability do
+      arg(:entity_id, non_null(:string))
+
+      resolve(fn %{entity_id: id}, _ ->
+        Testimony.witness_reliability(id)
+      end)
+    end
+
+    @desc "Find self-contradictions (impeachment check) for a witness"
+    field :impeachment_check, list_of(:impeachment_result) do
+      arg(:entity_id, non_null(:string))
+
+      resolve(fn %{entity_id: id}, _ ->
+        case Testimony.impeachment_check(id) do
+          {:ok, results} ->
+            {:ok,
+             Enum.map(results, fn r ->
+               Map.update!(r, :contradiction_type, &to_string/1)
+             end)}
+
+          error ->
+            error
+        end
+      end)
+    end
+
+    @desc "Chronological testimony timeline for a witness"
+    field :testimony_timeline, list_of(:testimony_timeline_entry) do
+      arg(:entity_id, non_null(:string))
+
+      resolve(fn %{entity_id: id}, _ ->
+        Testimony.testimony_timeline(id)
+      end)
+    end
+
+    # -- Contradiction queries -------------------------------------------------
+
+    @desc "List all contradictions in an investigation"
+    field :contradictions, list_of(:contradiction) do
+      arg(:investigation_id, non_null(:string))
+
+      resolve(fn %{investigation_id: id}, _ ->
+        case Contradictions.find_contradictions(id) do
+          {:ok, results} ->
+            {:ok,
+             Enum.map(results, fn c ->
+               %{
+                 id: c.id,
+                 claim_a: c.claim_a,
+                 claim_b: c.claim_b,
+                 type: to_string(c.type),
+                 severity: c.severity,
+                 detected_by: to_string(c.detected_by),
+                 resolved: c.resolved,
+                 resolution: c.resolution
+               }
+             end)}
+
+          error ->
+            error
+        end
+      end)
+    end
+
+    # -- Authorization queries -------------------------------------------------
+
+    @desc "List collaborators on an investigation"
+    field :collaborators, list_of(:access_grant) do
+      arg(:investigation_id, non_null(:string))
+
+      resolve(fn %{investigation_id: id}, _ ->
+        Authorization.list_collaborators(id)
+      end)
+    end
+
+    @desc "List investigations accessible by a user"
+    field :user_investigations, list_of(:access_grant) do
+      arg(:user_id, non_null(:string))
+
+      resolve(fn %{user_id: id}, _ ->
+        Authorization.user_investigations(id)
+      end)
     end
   end
 
@@ -350,6 +501,92 @@ defmodule EvidenceGraphWeb.Schema do
     field :create_transaction, :transaction do
       arg(:input, non_null(:create_transaction_input))
       resolve(&FinancialResolver.create_transaction/2)
+    end
+
+    # -- Investigation mutations -----------------------------------------------
+
+    @desc "Create a new investigation"
+    field :create_investigation, :investigation do
+      arg(:input, non_null(:create_investigation_input))
+
+      resolve(fn %{input: input}, _ ->
+        Investigations.create_investigation(input)
+      end)
+    end
+
+    @desc "Update an investigation"
+    field :update_investigation, :investigation do
+      arg(:id, non_null(:id))
+      arg(:input, non_null(:update_investigation_input))
+
+      resolve(fn %{id: id, input: input}, _ ->
+        Investigations.update_investigation(id, input)
+      end)
+    end
+
+    @desc "Archive an investigation"
+    field :archive_investigation, :investigation do
+      arg(:id, non_null(:id))
+
+      resolve(fn %{id: id}, _ ->
+        Investigations.archive_investigation(id)
+      end)
+    end
+
+    @desc "Share evidence between investigations"
+    field :share_evidence, :investigation do
+      arg(:input, non_null(:share_evidence_input))
+
+      resolve(fn %{input: input}, _ ->
+        Investigations.share_evidence(
+          input.from_investigation_id,
+          input.to_investigation_id,
+          input.evidence_ids
+        )
+      end)
+    end
+
+    # -- Contradiction mutations -----------------------------------------------
+
+    @desc "Resolve a contradiction"
+    field :resolve_contradiction, :boolean do
+      arg(:input, non_null(:resolve_contradiction_input))
+
+      resolve(fn %{input: input}, _ ->
+        resolution = %{
+          status: String.to_existing_atom(input.status),
+          rationale: Map.get(input, :rationale, ""),
+          resolved_by: Map.get(input, :resolved_by)
+        }
+
+        case Contradictions.resolve_contradiction(input.contradiction_id, resolution) do
+          :ok -> {:ok, true}
+          error -> error
+        end
+      end)
+    end
+
+    # -- Authorization mutations -----------------------------------------------
+
+    @desc "Grant access to an investigation"
+    field :grant_access, :access_grant do
+      arg(:input, non_null(:grant_access_input))
+
+      resolve(fn %{input: input}, _ ->
+        Authorization.grant_access(input.investigation_id, input.user_id, input.role)
+      end)
+    end
+
+    @desc "Revoke access from an investigation"
+    field :revoke_access, :boolean do
+      arg(:input, non_null(:revoke_access_input))
+
+      resolve(fn %{input: input}, _ ->
+        case Authorization.revoke_access(input.investigation_id, input.user_id) do
+          :ok -> {:ok, true}
+          error -> error
+        end
+      end)
     end
   end
 

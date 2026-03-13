@@ -20,6 +20,12 @@ defmodule EvidenceGraphWeb.Router do
     plug Corsica, origins: ["http://localhost:4000", "http://localhost:3000"]
   end
 
+  pipeline :public_api do
+    plug :accepts, ["json"]
+    plug Corsica, origins: "*"
+    plug EvidenceGraphWeb.Plugs.ApiKeyAuth
+  end
+
   scope "/", EvidenceGraphWeb do
     pipe_through [:browser, :require_authenticated_user]
 
@@ -30,6 +36,7 @@ defmodule EvidenceGraphWeb.Router do
     live "/investigations/:id/timeline", TimelineLive, :show
     live "/investigations/:id/navigate", NavigationLive, :show
     live "/investigations/:id/navigate/:audience", NavigationLive, :audience
+    live "/investigations/:id/contradictions", ContradictionsLive, :show
   end
 
   # Health check endpoint (unauthenticated, used by container health checks)
@@ -66,6 +73,17 @@ defmodule EvidenceGraphWeb.Router do
         interface: :playground,
         json_codec: Jason
     end
+  end
+
+  # Public API: API key-authenticated export endpoints
+  scope "/api/export", EvidenceGraphWeb do
+    pipe_through :public_api
+
+    get "/:investigation_id/zotero", ExportController, :zotero
+    get "/:investigation_id/csv/:collection", ExportController, :csv
+    get "/:investigation_id/iiif", ExportController, :iiif
+    get "/:investigation_id/graphml", ExportController, :graphml
+    get "/:investigation_id/json-ld", ExportController, :json_ld
   end
 
   # Enable LiveDashboard in development

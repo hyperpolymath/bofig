@@ -59,7 +59,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions"]
+      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions", "access_grants", "investigation_links", "annotations", "redactions", "provenance_log", "api_keys"]
     )
   end
 
@@ -76,7 +76,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions"]
+      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions", "access_grants", "investigation_links", "annotations", "redactions", "provenance_log", "api_keys"]
     )
   end
 
@@ -156,8 +156,9 @@ defmodule EvidenceGraph.ArangoDB do
   Run this once during setup.
   """
   def setup_database do
-    with :ok <- create_collections() do
-      create_indexes()
+    with :ok <- create_collections(),
+         :ok <- create_indexes() do
+      EvidenceGraph.Search.setup_search_views()
     end
   end
 
@@ -212,6 +213,13 @@ defmodule EvidenceGraph.ArangoDB do
       {"evidence", :document},
       {"navigation_paths", :document},
       {"entities", :document},
+      {"access_grants", :document},
+      # Phase D collections
+      {"investigation_links", :document},
+      {"annotations", :document},
+      {"redactions", :document},
+      {"provenance_log", :document},
+      {"api_keys", :document},
       {"financial_transactions", :edge},
       {"relationships", :edge}
     ]
@@ -258,7 +266,34 @@ defmodule EvidenceGraph.ArangoDB do
       # Entity resolution
       {"entities", "hash", ["investigation_id"]},
       {"entities", "hash", ["primary_name"]},
-      {"entities", "fulltext", ["primary_name"]}
+      {"entities", "fulltext", ["primary_name"]},
+
+      # RBAC access grants
+      {"access_grants", "hash", ["investigation_id"]},
+      {"access_grants", "hash", ["user_id"]},
+      {"access_grants", "hash", ["investigation_id", "user_id"]},
+
+      # Phase D: Investigation links
+      {"investigation_links", "hash", ["investigation_a_id"]},
+      {"investigation_links", "hash", ["investigation_b_id"]},
+
+      # Phase D: Annotations
+      {"annotations", "hash", ["target_id"]},
+      {"annotations", "hash", ["target_type"]},
+      {"annotations", "hash", ["user_id"]},
+
+      # Phase D: Redactions
+      {"redactions", "hash", ["evidence_id"]},
+
+      # Phase D: Provenance log
+      {"provenance_log", "hash", ["target_id"]},
+      {"provenance_log", "hash", ["actor"]},
+      {"provenance_log", "hash", ["action_type"]},
+      {"provenance_log", "skiplist", ["timestamp"]},
+
+      # Phase D: API keys
+      {"api_keys", "hash", ["key_hash"]},
+      {"api_keys", "hash", ["user_id"]}
     ]
 
     Enum.each(indexes, fn {collection, type, fields} ->

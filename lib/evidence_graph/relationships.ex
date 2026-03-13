@@ -88,7 +88,12 @@ defmodule EvidenceGraph.Relationships do
   Get all relationships for a node (claim or evidence).
   """
   def get_node_relationships(node_id, node_type) do
-    collection = if node_type == :claim, do: "claims", else: "evidence"
+    collection =
+      case node_type do
+        :claim -> "claims"
+        :evidence -> "evidence"
+        :entity -> "entities"
+      end
 
     aql = """
     FOR node IN #{collection}
@@ -156,6 +161,9 @@ defmodule EvidenceGraph.Relationships do
         String.starts_with?(node["_id"], "evidence/") ->
           {:evidence, EvidenceGraph.Evidence.Evidence.from_arango_doc(node)}
 
+        String.starts_with?(node["_id"], "entities/") ->
+          {:entity, EvidenceGraph.Entities.Entity.from_arango_doc(node)}
+
         true ->
           {:unknown, node}
       end
@@ -168,8 +176,14 @@ defmodule EvidenceGraph.Relationships do
   Uses ArangoDB's shortest path algorithm.
   """
   def find_path(from_id, from_type, to_id, to_type, _max_depth \\ 5) do
-    from_collection = if from_type == :claim, do: "claims", else: "evidence"
-    to_collection = if to_type == :claim, do: "claims", else: "evidence"
+    collection_name = fn
+      :claim -> "claims"
+      :evidence -> "evidence"
+      :entity -> "entities"
+    end
+
+    from_collection = collection_name.(from_type)
+    to_collection = collection_name.(to_type)
 
     aql = """
     FOR path IN ANY SHORTEST_PATH

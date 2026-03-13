@@ -30,8 +30,11 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
   require Logger
 
   alias EvidenceGraph.Lithoglyph.Client, as: LithClient
+  alias EvidenceGraph.Lithoglyph.NERExtractor
   alias EvidenceGraph.ArangoDB
   alias EvidenceGraph.Evidence
+  alias EvidenceGraph.Entities
+  alias EvidenceGraph.Relationships
 
   @batch_size 100
   @progress_interval 50
@@ -204,6 +207,8 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
         # Step 3: Create evidence in ArangoDB
         case Evidence.create_evidence(attrs) do
           {:ok, evidence} ->
+            # Step 4: Extract entities and create evidence→entity edges
+            link_entities_to_evidence(evidence, attrs, investigation_id)
             {:imported, evidence.id}
 
           {:error, reason} ->
@@ -212,6 +217,68 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
 
       {:error, reason} ->
         {:failed, sha256, reason}
+    end
+  end
+
+  # Extract named entities from evidence content and link them via graph edges.
+  # Failures here are logged but do NOT fail the overall import — entity linking
+  # is best-effort enrichment, not a hard requirement.
+  defp link_entities_to_evidence(evidence, attrs, investigation_id) do
+    ner_strings = NERExtractor.extract_from_evidence(attrs)
+
+    if ner_strings == [] do
+      Logger.debug("No entities extracted for evidence=#{evidence.id}")
+    else
+      Logger.info("Extracted #{length(ner_strings)} entity candidates for evidence=#{evidence.id}")
+
+      resolved = Entities.resolve_ner_output(ner_strings, investigation_id)
+
+      Enum.each(resolved, fn {ner_string, result} ->
+        case result do
+          {:existing, entity} ->
+            create_mentions_edge(evidence.id, entity.id, ner_string, 1.0)
+
+          {:created, entity} ->
+            create_mentions_edge(evidence.id, entity.id, ner_string, 0.8)
+
+          {:suggest_merge, entity, similarity} ->
+            # Link to the existing entity but with lower confidence (fuzzy match)
+            create_mentions_edge(evidence.id, entity.id, ner_string, similarity * 0.9)
+            Logger.info(
+              "Fuzzy match for '#{ner_string}' → '#{entity.primary_name}' " <>
+                "(similarity=#{Float.round(similarity, 3)})"
+            )
+
+          {:error, reason} ->
+            Logger.warning("Failed to resolve entity '#{ner_string}': #{inspect(reason)}")
+        end
+      end)
+    end
+  rescue
+    error ->
+      Logger.warning("Entity linking failed for evidence=#{evidence.id}: #{inspect(error)}")
+  end
+
+  defp create_mentions_edge(evidence_id, entity_id, ner_string, confidence) do
+    case Relationships.create_relationship(%{
+           from_id: evidence_id,
+           from_type: :evidence,
+           to_id: entity_id,
+           to_type: :entity,
+           relationship_type: :mentions,
+           weight: 1.0,
+           confidence: confidence,
+           reasoning: "NER extraction matched '#{ner_string}'",
+           created_by: "lithoglyph_importer",
+           metadata: %{"ner_source" => ner_string, "extraction_method" => "regex"}
+         }) do
+      {:ok, _rel} ->
+        :ok
+
+      {:error, reason} ->
+        Logger.warning(
+          "Failed to create mentions edge evidence=#{evidence_id} → entity=#{entity_id}: #{inspect(reason)}"
+        )
     end
   end
 

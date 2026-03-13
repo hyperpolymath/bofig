@@ -561,5 +561,55 @@ Virtuoso.import_turtle(jsonld_to_turtle(data))
 
 ---
 
-**Last Updated:** 2025-11-22
-**Status:** Phase 0 (Architecture) → Phase 1 (PoC) beginning
+**Last Updated:** 2026-03-13
+**Status:** Phase 1 complete (v1.0.0). Phase 2 in progress: migrating to Lithoglyph as primary evidence store.
+
+## Lithoglyph Migration (Phase 2→3)
+
+### Current Architecture (Phase 1)
+```
+Browser → nginx → Phoenix (LiveView + REST + GraphQL)
+                      ↓                    ↓
+                 PostgreSQL            ArangoDB 3.11+
+                (user auth)     (evidence, claims, entities,
+                                 relationships, navigation)
+```
+
+### Target Architecture (Phase 2, in progress)
+```
+Browser → nginx → Phoenix (LiveView + REST + GraphQL)
+                      ↓           ↓              ↓
+                 PostgreSQL   Lithoglyph      ArangoDB
+                (user auth)  (evidence,    (relationships
+                              claims,       edge collection
+                              entities)     only)
+```
+
+### Final Architecture (Phase 3)
+```
+Browser → nginx → Phoenix (LiveView + REST + GraphQL)
+                      ↓              ↓
+                 PostgreSQL      Lithoglyph
+                (user auth)   (all domain data:
+                               evidence, claims,
+                               entities, relationships)
+```
+
+### Why Lithoglyph
+
+ArangoDB was the right choice for Phase 1 (quick to prototype, multi-model).
+Lithoglyph is the right choice long-term because:
+
+1. **Provenance is mandatory** — every mutation is a story event with actor + rationale
+2. **PROMPT scores as first-class types** — `BoundedNat 0 100` verified at compile time
+3. **GQL-DT dependent types** — type-safe queries with proof obligations
+4. **Audit-grade WAL** — every write is journaled, reversible
+5. **No data duplication** — Docudactyl → Lithoglyph → bofig queries directly (no import step)
+
+### Migration Strategy
+
+Each collection migrates independently:
+1. **Evidence** (first) — highest value, most data, Lithoglyph already stores it
+2. **Entities** — NER-resolved entities with aliases and merge history
+3. **Claims** — with PROMPT scores as GQL-DT types
+4. **Relationships** (last) — requires Factor GQL graph traversal support

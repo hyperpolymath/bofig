@@ -25,27 +25,32 @@ Combining:
 
 ```
 bofig/
-├── .git/                      # Git repository
 ├── CLAUDE.md                  # This file
 ├── ARCHITECTURE.md            # Core data model, database design, API specs
-├── ROADMAP.md                 # 18-month implementation plan
+├── ROADMAP.adoc               # 18-month implementation plan (3 phases)
+├── TOPOLOGY.md                # ASCII architecture diagram + completion dashboard
+├── 0-AI-MANIFEST.a2ml         # AI agent entry point
+├── .machine_readable/         # STATE.scm, META.scm, ECOSYSTEM.scm
 ├── docs/
 │   ├── database-evaluation.md # ArangoDB vs SurrealDB vs Virtuoso
-│   └── zotero-integration.md  # Two-way sync design
-├── lib/                       # Legacy Zotero extension (2017, to be updated)
-│   └── exporter.js
-├── config/                    # Elixir config (to be created)
-├── lib/evidence_graph/        # Elixir backend
-│   ├── claims.ex
-│   ├── evidence.ex
-│   ├── arango.ex
+│   ├── zotero-integration.md  # Two-way sync design
+│   └── testing/               # NUJ user testing protocols
+├── config/                    # Elixir config (dev, test, prod, runtime)
+├── lib/evidence_graph/        # Elixir backend (43 modules)
+│   ├── claims.ex              # Claim CRUD + PROMPT scoring
+│   ├── evidence.ex            # Evidence CRUD + metadata
+│   ├── entities.ex            # Entity resolution + NER co-reference
+│   ├── relationships.ex       # Graph edges (supports/contradicts/mentions)
+│   ├── arango.ex              # ArangoDB client (being superseded by Lithoglyph)
 │   └── lithoglyph/
 │       ├── client.ex          # Lithoglyph HTTP client (Req)
-│       └── importer.ex        # GenServer for batch Lithoglyph import
+│       ├── importer.ex        # GenServer for batch Lithoglyph import
+│       └── ner_extractor.ex   # Regex-based NER extraction
 ├── lib/evidence_graph_web/    # Phoenix web layer
 │   ├── schema.ex              # Absinthe GraphQL schema
-│   └── live/                  # LiveView UIs
-├── test/                      # ExUnit tests
+│   ├── live/                  # LiveView UIs (7 pages)
+│   └── plugs/                 # API key auth, authorization
+├── test/                      # ExUnit tests (257 tests)
 ├── assets/                    # Frontend (D3.js visualizations)
 └── priv/
     ├── repo/seeds.exs         # UK Inflation 2023 test data
@@ -134,7 +139,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for full data model.
 
 | Decision | Rationale |
 |----------|-----------|
-| ArangoDB over SurrealDB | Production-proven, strong Elixir support, managed hosting |
+| Lithoglyph over ArangoDB (ADR-006) | Mandatory provenance, GQL-DT dependent types, no data duplication |
+| ArangoDB for graph edges (Phase 2) | Retained temporarily for relationship traversals only |
 | Elixir over Node/Python | Concurrency, fault tolerance, LiveView for real-time |
 | LiveView over React | Progressive enhancement, less JavaScript |
 | Optional PROMPT scoring | Reduce adoption friction initially |
@@ -448,9 +454,9 @@ New API endpoints for Lithoglyph evidence import:
 Lithoglyph client (`EvidenceGraph.Lithoglyph.Client`) uses `Req` to communicate with the Lithoglyph HTTP API. The importer GenServer (`EvidenceGraph.Lithoglyph.Importer`) manages background batch imports with progress tracking via PubSub.
 
 **Last Updated:** 2026-03-13
-**Current Phase:** Phase 2 — Lithoglyph integration started
+**Current Phase:** Phase 2 — Lithoglyph migration (ADR-006: ArangoDB superseded)
 **Maintained By:** @Hyperpolymath
-**Status:** Architecture complete, moving to implementation
+**Status:** Phase 1 complete (v1.0.0). Phase 2: migrating domain data to Lithoglyph.
 
 ## Questions or Issues?
 

@@ -23,7 +23,7 @@
 * D3.js force-directed graph visualisation
 * RSR compliance: LICENSE, SECURITY.md, CONTRIBUTING, CHANGELOG
 
-=== v1.0.0 - Phase 1 PoC [THIS RELEASE]
+=== v1.0.0 - Phase 1 PoC [RELEASED]
 
 *Released: 2026-02-21*
 
@@ -54,19 +54,39 @@
 * *Pivot:* If core assumptions about evidence navigation are wrong
 * *Metrics:* Task completion rate, time-on-task, System Usability Scale (SUS)
 
-== Phase 2: Platform (Months 7-12)
+== Phase 2: Platform + Lithoglyph Integration (Months 7-12)
+
+=== v1.2.0 - Lithoglyph as Evidence Store [IN PROGRESS]
+
+*Started: 2026-03-13*
+
+The critical architectural shift: Lithoglyph becomes the primary evidence store,
+replacing ArangoDB for domain data. ArangoDB is retained only for graph edges
+(relationships) until Lithoglyph's Factor GQL runtime supports graph traversals.
+
+* Lithoglyph HTTP client (Req) for evidence CRUD -- *DONE*
+* Batch importer GenServer with progress tracking via PubSub -- *DONE*
+* NER entity extraction wired into import pipeline -- *DONE*
+* Entity resolution (exact + fuzzy Jaro-Winkler + auto-create) -- *DONE*
+* Evidence→entity `:mentions` relationship edges -- *DONE*
+* **Migrate evidence reads to Lithoglyph GQL queries** (stop reading from ArangoDB `evidence` collection)
+* **Migrate evidence writes to Lithoglyph** (insert via GQL-DT with provenance, not ArangoDB)
+* **Migrate entity reads/writes to Lithoglyph** (entities collection)
+* **Migrate claims to Lithoglyph** (claims collection with PROMPT as first-class types)
+* **Keep ArangoDB for `relationships` edge collection only** (graph traversals)
+* PROMPT scores stored as GQL-DT `BoundedNat 0 100` types (compile-time verified)
 
 === v2.0.0 - Multi-Investigation Platform
 
 * Multi-investigation dashboard with cross-referencing
 * Real-time collaborative editing via Phoenix PubSub
 * Advanced D3.js visualisations (timeline, heatmap, Sankey diagrams)
-* Full-text search across evidence corpus
+* Full-text search across evidence corpus (via Lithoglyph Factor GQL)
 * Role-based access control (admin, journalist, reviewer, reader)
 * API rate limiting and key management
 * IPFS provenance integration for tamper-evident storage
 * Deployment to Hetzner Cloud (EU data sovereignty)
-* ArangoDB Oasis managed database
+* Lithoglyph managed instance (replaces ArangoDB Oasis)
 
 === Decision Point: Month 9
 
@@ -75,15 +95,36 @@
 * *Scale:* If 50+ active users and stable infrastructure
 * *Consolidate:* Focus on reliability before new features
 
-== Phase 3: Production Ecosystem (Months 13-18)
+== Phase 3: Lithoglyph-Native + Production (Months 13-18)
 
-=== v3.0.0 - Production Launch
+=== v3.0.0 - Full Lithoglyph Migration
 
-* Public API with documentation and SDK
+The long-term architecture: bofig is a pure Lithoglyph client. ArangoDB is
+fully removed. All data lives in Lithoglyph with GQL/GQL-DT queries.
+
+==== 3A: Graph Edges → Lithoglyph (v3.0.0-alpha)
+
+* Migrate `relationships` edge collection from ArangoDB to Lithoglyph
+* Implement graph traversals (evidence chains, shortest path, contradiction detection) in Factor GQL
+* Requires: Lithoglyph Factor GQL runtime gains graph query support (TRAVERSE, SHORTEST_PATH)
+* **ArangoDB fully removed** -- no more multi-database architecture
+* PostgreSQL retained for user auth only (phx.gen.auth)
+
+==== 3B: GQL-DT Query Integration (v3.0.0-beta)
+
+* Replace raw GQL queries with GQL-DT (dependently typed) queries
+* PROMPT scores verified at compile-time: `BoundedNat 0 100` instead of runtime range checks
+* Evidence insertions require `Rationale` (NonEmptyString) -- enforced by Lean 4 type checker
+* Proof certificates for evidence integrity (SHA-256 hash verification via GQL-DT)
+* Type-safe evidence chain traversals with proof obligations
+
+==== 3C: Production Launch (v3.0.0)
+
+* Public API with documentation and SDK (GQL endpoint, not REST)
 * Formal security audit and penetration testing
-* LEAN4 formal proofs for cryptographic protocols
-* Integration with academic citation databases
-* Cross-investigation evidence linking
+* Lean 4 formal proofs for PROMPT score calculation correctness
+* Integration with academic citation databases (via Lithoglyph provenance)
+* Cross-investigation evidence linking (Lithoglyph multi-tenancy)
 * EU funding application
 * Academic paper on boundary objects in journalism tooling
 * NUJ partnership formalisation
@@ -95,6 +136,33 @@
 * *Open:* If community contributors emerge, open governance model
 * *Sustain:* If grant funding secured, dedicated development
 * *Archive:* If insufficient adoption, document lessons learned
+
+== Database Migration Path
+
+[cols="1,2,2,2"]
+|===
+| Phase | Evidence/Claims/Entities | Relationships (Graph) | Auth
+
+| Phase 1 (v1.0.0)
+| ArangoDB
+| ArangoDB (edge collection)
+| PostgreSQL
+
+| Phase 2 (v1.2.0–v2.0.0)
+| **Lithoglyph** (primary), ArangoDB (read fallback during migration)
+| ArangoDB (edge collection)
+| PostgreSQL
+
+| Phase 3 (v3.0.0)
+| **Lithoglyph** (sole store)
+| **Lithoglyph** (Factor GQL graph queries)
+| PostgreSQL
+
+|===
+
+The migration is incremental: each collection moves independently. Evidence
+moves first (highest value), then entities, then claims, then graph edges last
+(requires Lithoglyph graph query support).
 
 == Success Metrics
 
@@ -118,8 +186,10 @@
 == Technology Stack
 
 * *Backend:* Elixir 1.18+ / Phoenix 1.8+ / OTP 27
-* *Graph DB:* ArangoDB 3.11+ (multi-model)
+* *Evidence Store:* Lithoglyph (GQL/GQL-DT, narrative-first, audit-grade)
+* *Graph DB:* ArangoDB 3.11+ (relationships only, Phase 2; removed in Phase 3)
 * *Auth DB:* PostgreSQL 16 (user accounts only)
+* *Query Language:* GQL (user tier) / GQL-DT (admin tier, Lean 4 verified)
 * *API:* GraphQL (Absinthe) + REST (Zotero)
 * *Frontend:* Phoenix LiveView + D3.js
 * *Container:* Podman + podman-compose

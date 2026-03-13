@@ -25,14 +25,14 @@ defmodule EvidenceGraph.Relationships.Relationship do
           inserted_at: DateTime.t() | nil
         }
 
-  @relationship_types [:supports, :contradicts, :contextualizes]
+  @relationship_types [:supports, :contradicts, :contextualizes, :mentions]
 
   @primary_key {:id, :string, autogenerate: false}
   schema "relationships" do
     field :from_id, :string
-    field :from_type, Ecto.Enum, values: [:claim, :evidence]
+    field :from_type, Ecto.Enum, values: [:claim, :evidence, :entity]
     field :to_id, :string
-    field :to_type, Ecto.Enum, values: [:claim, :evidence]
+    field :to_type, Ecto.Enum, values: [:claim, :evidence, :entity]
     field :relationship_type, Ecto.Enum, values: @relationship_types
     field :weight, :float, default: 0.5
     field :confidence, :float, default: 0.5
@@ -91,6 +91,7 @@ defmodule EvidenceGraph.Relationships.Relationship do
 
   defp collection_for(:claim), do: "claims"
   defp collection_for(:evidence), do: "evidence"
+  defp collection_for(:entity), do: "entities"
 
   @doc """
   Convert from ArangoDB edge document to Relationship struct.
@@ -122,6 +123,7 @@ defmodule EvidenceGraph.Relationships.Relationship do
       case collection do
         "claims" -> :claim
         "evidence" -> :evidence
+        "entities" -> :entity
         _ -> :unknown
       end
 

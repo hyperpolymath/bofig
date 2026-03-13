@@ -199,6 +199,40 @@ defmodule EvidenceGraph.Contradictions do
   end
 
   # ---------------------------------------------------------------------------
+  # Get a single contradiction
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Look up a contradiction (relationship edge) by ID and return it with
+  the investigation_id derived from its connected claims.
+
+  Returns `{:ok, %{id: ..., investigation_id: ...}}` or `{:error, :not_found}`.
+  """
+  def get_contradiction(contradiction_id) do
+    aql = """
+    LET edge = DOCUMENT(CONCAT("relationships/", @id))
+    FILTER edge != null
+    FILTER edge.relationship_type == "contradicts"
+    LET from_doc = DOCUMENT(edge._from)
+    RETURN {
+      id: edge._key,
+      investigation_id: from_doc.investigation_id
+    }
+    """
+
+    case ArangoDB.query_read(aql, %{id: contradiction_id}) do
+      {:ok, [doc]} when is_map(doc) ->
+        {:ok, %{id: doc["id"], investigation_id: doc["investigation_id"]}}
+
+      {:ok, _} ->
+        {:error, :not_found}
+
+      error ->
+        error
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   # Resolve contradiction
   # ---------------------------------------------------------------------------
 

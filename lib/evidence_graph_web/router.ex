@@ -60,8 +60,15 @@ defmodule EvidenceGraphWeb.Router do
     get "/evidence/lithoglyph-import/status", EvidenceApiController, :lithoglyph_import_status
   end
 
+  pipeline :graphql do
+    plug :accepts, ["json"]
+    plug Corsica, origins: ["http://localhost:4000", "http://localhost:3000"]
+    plug :fetch_session
+    plug EvidenceGraphWeb.Plugs.GraphQLContext
+  end
+
   scope "/api" do
-    pipe_through :api
+    pipe_through :graphql
 
     forward "/graphql", Absinthe.Plug,
       schema: EvidenceGraphWeb.Schema,

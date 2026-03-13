@@ -20,16 +20,25 @@ defmodule EvidenceGraphWeb.Schema do
 
   alias EvidenceGraph.{Claims, Evidence, Navigation, Relationships}
   alias EvidenceGraph.{Investigations, Testimony, Contradictions, Search, Authorization}
+  alias EvidenceGraph.Entities
   alias EvidenceGraphWeb.Schema.Resolvers.EntityResolver
   alias EvidenceGraphWeb.Schema.Resolvers.FinancialResolver
+
+  # ---------------------------------------------------------------------------
+  # Queries
+  # ---------------------------------------------------------------------------
 
   query do
     @desc "Get a claim by ID"
     field :claim, :claim do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Claims.get_claim(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, claim} <- Claims.get_claim(id),
+             :ok <- Authorization.check_access(claim.investigation_id, user_id, :view) do
+          {:ok, claim}
+        end
       end)
     end
 
@@ -39,8 +48,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:limit, :integer, default_value: 100)
       arg(:offset, :integer, default_value: 0)
 
-      resolve(fn args, _ ->
-        Claims.list_claims(args.investigation_id, limit: args.limit, offset: args.offset)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(args.investigation_id, user_id, :view) do
+          Claims.list_claims(args.investigation_id, limit: args.limit, offset: args.offset)
+        end
       end)
     end
 
@@ -49,8 +61,17 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:query, non_null(:string))
       arg(:investigation_id, :string)
 
-      resolve(fn args, _ ->
-        Claims.search_claims(args.query, args[:investigation_id])
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          if inv_id = args[:investigation_id] do
+            with :ok <- Authorization.check_access(inv_id, user_id, :view) do
+              Claims.search_claims(args.query, inv_id)
+            end
+          else
+            # No investigation_id: search across all, filtered by user's accessible investigations
+            Claims.search_claims(args.query, nil)
+          end
+        end
       end)
     end
 
@@ -58,8 +79,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :evidence, :evidence do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Evidence.get_evidence(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, ev} <- Evidence.get_evidence(id),
+             :ok <- Authorization.check_access(ev.investigation_id, user_id, :view) do
+          {:ok, ev}
+        end
       end)
     end
 
@@ -67,8 +92,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :evidence_by_zotero_key, :evidence do
       arg(:zotero_key, non_null(:string))
 
-      resolve(fn %{zotero_key: key}, _ ->
-        Evidence.get_evidence_by_zotero_key(key)
+      resolve(fn %{zotero_key: key}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, ev} <- Evidence.get_evidence_by_zotero_key(key),
+             :ok <- Authorization.check_access(ev.investigation_id, user_id, :view) do
+          {:ok, ev}
+        end
       end)
     end
 
@@ -78,8 +107,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:limit, :integer, default_value: 100)
       arg(:offset, :integer, default_value: 0)
 
-      resolve(fn args, _ ->
-        Evidence.list_evidence(args.investigation_id, limit: args.limit, offset: args.offset)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(args.investigation_id, user_id, :view) do
+          Evidence.list_evidence(args.investigation_id, limit: args.limit, offset: args.offset)
+        end
       end)
     end
 
@@ -88,8 +120,16 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:query, non_null(:string))
       arg(:investigation_id, :string)
 
-      resolve(fn args, _ ->
-        Evidence.search_evidence(args.query, args[:investigation_id])
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          if inv_id = args[:investigation_id] do
+            with :ok <- Authorization.check_access(inv_id, user_id, :view) do
+              Evidence.search_evidence(args.query, inv_id)
+            end
+          else
+            Evidence.search_evidence(args.query, nil)
+          end
+        end
       end)
     end
 
@@ -98,8 +138,12 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:claim_id, non_null(:id))
       arg(:max_depth, :integer, default_value: 3)
 
-      resolve(fn args, _ ->
-        Relationships.evidence_chain(args.claim_id, args.max_depth)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, claim} <- Claims.get_claim(args.claim_id),
+             :ok <- Authorization.check_access(claim.investigation_id, user_id, :view) do
+          Relationships.evidence_chain(args.claim_id, args.max_depth)
+        end
       end)
     end
 
@@ -107,8 +151,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :navigation_path, :navigation_path do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Navigation.get_path(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, path} <- Navigation.get_path(id),
+             :ok <- Authorization.check_access(path.investigation_id, user_id, :view) do
+          {:ok, path}
+        end
       end)
     end
 
@@ -117,8 +165,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:investigation_id, non_null(:string))
       arg(:audience_type, :audience_type_enum)
 
-      resolve(fn args, _ ->
-        Navigation.list_paths(args.investigation_id, audience_type: args[:audience_type])
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(args.investigation_id, user_id, :view) do
+          Navigation.list_paths(args.investigation_id, audience_type: args[:audience_type])
+        end
       end)
     end
 
@@ -190,23 +241,43 @@ defmodule EvidenceGraphWeb.Schema do
     field :investigation, :investigation do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Investigations.get_investigation(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(id, user_id, :view) do
+          Investigations.get_investigation(id)
+        end
       end)
     end
 
-    @desc "List investigations"
+    @desc "List investigations accessible to the current user"
     field :investigations, list_of(:investigation) do
       arg(:status, :string)
       arg(:limit, :integer, default_value: 50)
       arg(:offset, :integer, default_value: 0)
 
-      resolve(fn args, _ ->
-        Investigations.list_investigations(
-          status: args[:status],
-          limit: args.limit,
-          offset: args.offset
-        )
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          # Fetch all investigation IDs the user has access to, then filter
+          case Authorization.user_investigations(user_id) do
+            {:ok, grants} ->
+              accessible_ids = Enum.map(grants, & &1.investigation_id)
+
+              case Investigations.list_investigations(
+                     status: args[:status],
+                     limit: args.limit,
+                     offset: args.offset
+                   ) do
+                {:ok, investigations} ->
+                  {:ok, Enum.filter(investigations, &(&1.id in accessible_ids))}
+
+                error ->
+                  error
+              end
+
+            error ->
+              error
+          end
+        end
       end)
     end
 
@@ -214,8 +285,11 @@ defmodule EvidenceGraphWeb.Schema do
     field :investigation_stats, :investigation_stats do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Investigations.investigation_stats(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(id, user_id, :view) do
+          Investigations.investigation_stats(id)
+        end
       end)
     end
 
@@ -227,8 +301,16 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:investigation_id, :string)
       arg(:limit, :integer, default_value: 20)
 
-      resolve(fn args, _ ->
-        Search.search_all(args.query, args[:investigation_id], limit: args.limit)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          if inv_id = args[:investigation_id] do
+            with :ok <- Authorization.check_access(inv_id, user_id, :view) do
+              Search.search_all(args.query, inv_id, limit: args.limit)
+            end
+          else
+            Search.search_all(args.query, nil, limit: args.limit)
+          end
+        end
       end)
     end
 
@@ -239,8 +321,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:investigation_id, non_null(:string))
       arg(:entity_id, non_null(:string))
 
-      resolve(fn args, _ ->
-        Testimony.cross_reference_claims(args.investigation_id, args.entity_id)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(args.investigation_id, user_id, :view) do
+          Testimony.cross_reference_claims(args.investigation_id, args.entity_id)
+        end
       end)
     end
 
@@ -248,8 +333,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :witness_reliability, :witness_reliability do
       arg(:entity_id, non_null(:string))
 
-      resolve(fn %{entity_id: id}, _ ->
-        Testimony.witness_reliability(id)
+      resolve(fn %{entity_id: entity_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, entity} <- Entities.get_entity(entity_id),
+             :ok <- Authorization.check_access(entity.investigation_id, user_id, :view) do
+          Testimony.witness_reliability(entity_id)
+        end
       end)
     end
 
@@ -257,16 +346,20 @@ defmodule EvidenceGraphWeb.Schema do
     field :impeachment_check, list_of(:impeachment_result) do
       arg(:entity_id, non_null(:string))
 
-      resolve(fn %{entity_id: id}, _ ->
-        case Testimony.impeachment_check(id) do
-          {:ok, results} ->
-            {:ok,
-             Enum.map(results, fn r ->
-               Map.update!(r, :contradiction_type, &to_string/1)
-             end)}
+      resolve(fn %{entity_id: entity_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, entity} <- Entities.get_entity(entity_id),
+             :ok <- Authorization.check_access(entity.investigation_id, user_id, :view) do
+          case Testimony.impeachment_check(entity_id) do
+            {:ok, results} ->
+              {:ok,
+               Enum.map(results, fn r ->
+                 Map.update!(r, :contradiction_type, &to_string/1)
+               end)}
 
-          error ->
-            error
+            error ->
+              error
+          end
         end
       end)
     end
@@ -275,8 +368,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :testimony_timeline, list_of(:testimony_timeline_entry) do
       arg(:entity_id, non_null(:string))
 
-      resolve(fn %{entity_id: id}, _ ->
-        Testimony.testimony_timeline(id)
+      resolve(fn %{entity_id: entity_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, entity} <- Entities.get_entity(entity_id),
+             :ok <- Authorization.check_access(entity.investigation_id, user_id, :view) do
+          Testimony.testimony_timeline(entity_id)
+        end
       end)
     end
 
@@ -286,25 +383,28 @@ defmodule EvidenceGraphWeb.Schema do
     field :contradictions, list_of(:contradiction) do
       arg(:investigation_id, non_null(:string))
 
-      resolve(fn %{investigation_id: id}, _ ->
-        case Contradictions.find_contradictions(id) do
-          {:ok, results} ->
-            {:ok,
-             Enum.map(results, fn c ->
-               %{
-                 id: c.id,
-                 claim_a: c.claim_a,
-                 claim_b: c.claim_b,
-                 type: to_string(c.type),
-                 severity: c.severity,
-                 detected_by: to_string(c.detected_by),
-                 resolved: c.resolved,
-                 resolution: c.resolution
-               }
-             end)}
+      resolve(fn %{investigation_id: inv_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(inv_id, user_id, :view) do
+          case Contradictions.find_contradictions(inv_id) do
+            {:ok, results} ->
+              {:ok,
+               Enum.map(results, fn c ->
+                 %{
+                   id: c.id,
+                   claim_a: c.claim_a,
+                   claim_b: c.claim_b,
+                   type: to_string(c.type),
+                   severity: c.severity,
+                   detected_by: to_string(c.detected_by),
+                   resolved: c.resolved,
+                   resolution: c.resolution
+                 }
+               end)}
 
-          error ->
-            error
+            error ->
+              error
+          end
         end
       end)
     end
@@ -315,28 +415,45 @@ defmodule EvidenceGraphWeb.Schema do
     field :collaborators, list_of(:access_grant) do
       arg(:investigation_id, non_null(:string))
 
-      resolve(fn %{investigation_id: id}, _ ->
-        Authorization.list_collaborators(id)
+      resolve(fn %{investigation_id: inv_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(inv_id, user_id, :view) do
+          Authorization.list_collaborators(inv_id)
+        end
       end)
     end
 
-    @desc "List investigations accessible by a user"
+    @desc "List investigations accessible by the current user"
     field :user_investigations, list_of(:access_grant) do
       arg(:user_id, non_null(:string))
 
-      resolve(fn %{user_id: id}, _ ->
-        Authorization.user_investigations(id)
+      resolve(fn %{user_id: requested_user_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          # Users can only list their own accessible investigations
+          if user_id == requested_user_id do
+            Authorization.user_investigations(requested_user_id)
+          else
+            {:error, :forbidden}
+          end
+        end
       end)
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Mutations
+  # ---------------------------------------------------------------------------
 
   mutation do
     @desc "Create a new claim"
     field :create_claim, :claim do
       arg(:input, non_null(:create_claim_input))
 
-      resolve(fn %{input: input}, _ ->
-        Claims.create_claim(input)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.investigation_id, user_id, :edit) do
+          Claims.create_claim(input)
+        end
       end)
     end
 
@@ -345,8 +462,12 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:id, non_null(:id))
       arg(:input, non_null(:update_claim_input))
 
-      resolve(fn %{id: id, input: input}, _ ->
-        Claims.update_claim(id, input)
+      resolve(fn %{id: id, input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, claim} <- Claims.get_claim(id),
+             :ok <- Authorization.check_access(claim.investigation_id, user_id, :edit) do
+          Claims.update_claim(id, input)
+        end
       end)
     end
 
@@ -354,10 +475,14 @@ defmodule EvidenceGraphWeb.Schema do
     field :delete_claim, :boolean do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        case Claims.delete_claim(id) do
-          :ok -> {:ok, true}
-          error -> error
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, claim} <- Claims.get_claim(id),
+             :ok <- Authorization.check_access(claim.investigation_id, user_id, :delete) do
+          case Claims.delete_claim(id) do
+            :ok -> {:ok, true}
+            error -> error
+          end
         end
       end)
     end
@@ -366,8 +491,11 @@ defmodule EvidenceGraphWeb.Schema do
     field :create_evidence, :evidence do
       arg(:input, non_null(:create_evidence_input))
 
-      resolve(fn %{input: input}, _ ->
-        Evidence.create_evidence(input)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.investigation_id, user_id, :edit) do
+          Evidence.create_evidence(input)
+        end
       end)
     end
 
@@ -376,8 +504,12 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:id, non_null(:id))
       arg(:input, non_null(:update_evidence_input))
 
-      resolve(fn %{id: id, input: input}, _ ->
-        Evidence.update_evidence(id, input)
+      resolve(fn %{id: id, input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, ev} <- Evidence.get_evidence(id),
+             :ok <- Authorization.check_access(ev.investigation_id, user_id, :edit) do
+          Evidence.update_evidence(id, input)
+        end
       end)
     end
 
@@ -386,8 +518,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:zotero_json, non_null(:json))
       arg(:investigation_id, non_null(:string))
 
-      resolve(fn %{zotero_json: json, investigation_id: inv_id}, _ ->
-        Evidence.import_from_zotero(json, inv_id)
+      resolve(fn %{zotero_json: json, investigation_id: inv_id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(inv_id, user_id, :edit) do
+          Evidence.import_from_zotero(json, inv_id)
+        end
       end)
     end
 
@@ -395,8 +530,12 @@ defmodule EvidenceGraphWeb.Schema do
     field :create_relationship, :relationship do
       arg(:input, non_null(:create_relationship_input))
 
-      resolve(fn %{input: input}, _ ->
-        Relationships.create_relationship(input)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, inv_id} <- lookup_investigation_for_node(input.from_id, input.from_type),
+             :ok <- Authorization.check_access(inv_id, user_id, :edit) do
+          Relationships.create_relationship(input)
+        end
       end)
     end
 
@@ -406,8 +545,13 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:weight, :float)
       arg(:confidence, :float)
 
-      resolve(fn args, _ ->
-        Relationships.update_relationship(args.id, Map.drop(args, [:id]))
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, rel} <- Relationships.get_relationship(args.id),
+             {:ok, inv_id} <- lookup_investigation_for_node(rel.from_id, rel.from_type),
+             :ok <- Authorization.check_access(inv_id, user_id, :edit) do
+          Relationships.update_relationship(args.id, Map.drop(args, [:id]))
+        end
       end)
     end
 
@@ -415,10 +559,15 @@ defmodule EvidenceGraphWeb.Schema do
     field :delete_relationship, :boolean do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        case Relationships.delete_relationship(id) do
-          :ok -> {:ok, true}
-          error -> error
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, rel} <- Relationships.get_relationship(id),
+             {:ok, inv_id} <- lookup_investigation_for_node(rel.from_id, rel.from_type),
+             :ok <- Authorization.check_access(inv_id, user_id, :delete) do
+          case Relationships.delete_relationship(id) do
+            :ok -> {:ok, true}
+            error -> error
+          end
         end
       end)
     end
@@ -427,20 +576,23 @@ defmodule EvidenceGraphWeb.Schema do
     field :create_navigation_path, :navigation_path do
       arg(:input, non_null(:create_navigation_path_input))
 
-      resolve(fn %{input: input}, _ ->
-        # Convert path_nodes input to map format
-        path_nodes =
-          Enum.map(input[:path_nodes] || [], fn node ->
-            %{
-              "entity_id" => node.entity_id,
-              "entity_type" => node.entity_type,
-              "order" => node.order,
-              "context" => node[:context],
-              "emphasis" => node[:emphasis]
-            }
-          end)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.investigation_id, user_id, :edit) do
+          # Convert path_nodes input to map format
+          path_nodes =
+            Enum.map(input[:path_nodes] || [], fn node ->
+              %{
+                "entity_id" => node.entity_id,
+                "entity_type" => node.entity_type,
+                "order" => node.order,
+                "context" => node[:context],
+                "emphasis" => node[:emphasis]
+              }
+            end)
 
-        Navigation.create_path(Map.put(input, :path_nodes, path_nodes))
+          Navigation.create_path(Map.put(input, :path_nodes, path_nodes))
+        end
       end)
     end
 
@@ -449,8 +601,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:investigation_id, non_null(:string))
       arg(:audience_type, non_null(:audience_type_enum))
 
-      resolve(fn args, _ ->
-        Navigation.auto_generate_path(args.investigation_id, args.audience_type)
+      resolve(fn args, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(args.investigation_id, user_id, :edit) do
+          Navigation.auto_generate_path(args.investigation_id, args.audience_type)
+        end
       end)
     end
 
@@ -509,8 +664,20 @@ defmodule EvidenceGraphWeb.Schema do
     field :create_investigation, :investigation do
       arg(:input, non_null(:create_investigation_input))
 
-      resolve(fn %{input: input}, _ ->
-        Investigations.create_investigation(input)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution) do
+          # Any authenticated user can create an investigation;
+          # they automatically become the owner.
+          case Investigations.create_investigation(input) do
+            {:ok, investigation} = ok ->
+              # Grant owner access to the creator
+              Authorization.grant_access(investigation.id, user_id, :owner)
+              ok
+
+            error ->
+              error
+          end
+        end
       end)
     end
 
@@ -519,8 +686,11 @@ defmodule EvidenceGraphWeb.Schema do
       arg(:id, non_null(:id))
       arg(:input, non_null(:update_investigation_input))
 
-      resolve(fn %{id: id, input: input}, _ ->
-        Investigations.update_investigation(id, input)
+      resolve(fn %{id: id, input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(id, user_id, :edit) do
+          Investigations.update_investigation(id, input)
+        end
       end)
     end
 
@@ -528,8 +698,11 @@ defmodule EvidenceGraphWeb.Schema do
     field :archive_investigation, :investigation do
       arg(:id, non_null(:id))
 
-      resolve(fn %{id: id}, _ ->
-        Investigations.archive_investigation(id)
+      resolve(fn %{id: id}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(id, user_id, :manage) do
+          Investigations.archive_investigation(id)
+        end
       end)
     end
 
@@ -537,12 +710,16 @@ defmodule EvidenceGraphWeb.Schema do
     field :share_evidence, :investigation do
       arg(:input, non_null(:share_evidence_input))
 
-      resolve(fn %{input: input}, _ ->
-        Investigations.share_evidence(
-          input.from_investigation_id,
-          input.to_investigation_id,
-          input.evidence_ids
-        )
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.from_investigation_id, user_id, :share),
+             :ok <- Authorization.check_access(input.to_investigation_id, user_id, :edit) do
+          Investigations.share_evidence(
+            input.from_investigation_id,
+            input.to_investigation_id,
+            input.evidence_ids
+          )
+        end
       end)
     end
 
@@ -552,16 +729,20 @@ defmodule EvidenceGraphWeb.Schema do
     field :resolve_contradiction, :boolean do
       arg(:input, non_null(:resolve_contradiction_input))
 
-      resolve(fn %{input: input}, _ ->
-        resolution = %{
-          status: String.to_existing_atom(input.status),
-          rationale: Map.get(input, :rationale, ""),
-          resolved_by: Map.get(input, :resolved_by)
-        }
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             {:ok, contradiction} <- Contradictions.get_contradiction(input.contradiction_id),
+             :ok <- Authorization.check_access(contradiction.investigation_id, user_id, :edit) do
+          resolution_data = %{
+            status: String.to_existing_atom(input.status),
+            rationale: Map.get(input, :rationale, ""),
+            resolved_by: Map.get(input, :resolved_by)
+          }
 
-        case Contradictions.resolve_contradiction(input.contradiction_id, resolution) do
-          :ok -> {:ok, true}
-          error -> error
+          case Contradictions.resolve_contradiction(input.contradiction_id, resolution_data) do
+            :ok -> {:ok, true}
+            error -> error
+          end
         end
       end)
     end
@@ -572,8 +753,11 @@ defmodule EvidenceGraphWeb.Schema do
     field :grant_access, :access_grant do
       arg(:input, non_null(:grant_access_input))
 
-      resolve(fn %{input: input}, _ ->
-        Authorization.grant_access(input.investigation_id, input.user_id, input.role)
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.investigation_id, user_id, :manage) do
+          Authorization.grant_access(input.investigation_id, input.user_id, input.role)
+        end
       end)
     end
 
@@ -581,12 +765,52 @@ defmodule EvidenceGraphWeb.Schema do
     field :revoke_access, :boolean do
       arg(:input, non_null(:revoke_access_input))
 
-      resolve(fn %{input: input}, _ ->
-        case Authorization.revoke_access(input.investigation_id, input.user_id) do
-          :ok -> {:ok, true}
-          error -> error
+      resolve(fn %{input: input}, resolution ->
+        with {:ok, user_id} <- require_auth(resolution),
+             :ok <- Authorization.check_access(input.investigation_id, user_id, :manage) do
+          case Authorization.revoke_access(input.investigation_id, input.user_id) do
+            :ok -> {:ok, true}
+            error -> error
+          end
         end
       end)
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Authorization helpers
+  # ---------------------------------------------------------------------------
+
+  @doc false
+  def require_auth(%{context: %{current_user_id: user_id}}) when is_binary(user_id) do
+    {:ok, user_id}
+  end
+
+  def require_auth(_resolution) do
+    {:error, "Authentication required. Please log in or provide valid credentials."}
+  end
+
+  @doc """
+  Look up the investigation_id for a graph node (claim or evidence) by its ID and type.
+  Used for relationship authorization where the relationship itself does not carry
+  an investigation_id.
+  """
+  def lookup_investigation_for_node(node_id, node_type) do
+    case node_type do
+      t when t in [:claim, "claim"] ->
+        case Claims.get_claim(node_id) do
+          {:ok, claim} -> {:ok, claim.investigation_id}
+          error -> error
+        end
+
+      t when t in [:evidence, "evidence"] ->
+        case Evidence.get_evidence(node_id) do
+          {:ok, ev} -> {:ok, ev.investigation_id}
+          error -> error
+        end
+
+      _ ->
+        {:error, :unknown_node_type}
     end
   end
 

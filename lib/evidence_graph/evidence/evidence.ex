@@ -19,6 +19,7 @@ defmodule EvidenceGraph.Evidence.Evidence do
           evidence_type: atom(),
           source_url: String.t() | nil,
           local_path: String.t() | nil,
+          sha256_hash: String.t() | nil,
           ipfs_hash: String.t() | nil,
           zotero_key: String.t() | nil,
           zotero_version: integer() | nil,
@@ -40,6 +41,7 @@ defmodule EvidenceGraph.Evidence.Evidence do
     field :evidence_type, Ecto.Enum, values: @evidence_types
     field :source_url, :string
     field :local_path, :string
+    field :sha256_hash, :string
     field :ipfs_hash, :string
     field :zotero_key, :string
     field :zotero_version, :integer
@@ -62,6 +64,7 @@ defmodule EvidenceGraph.Evidence.Evidence do
       :evidence_type,
       :source_url,
       :local_path,
+      :sha256_hash,
       :ipfs_hash,
       :zotero_key,
       :zotero_version,
@@ -94,6 +97,7 @@ defmodule EvidenceGraph.Evidence.Evidence do
       evidence_type: to_string(evidence.evidence_type),
       source_url: evidence.source_url,
       local_path: evidence.local_path,
+      sha256_hash: evidence.sha256_hash,
       ipfs_hash: evidence.ipfs_hash,
       zotero_key: evidence.zotero_key,
       zotero_version: evidence.zotero_version,
@@ -118,6 +122,7 @@ defmodule EvidenceGraph.Evidence.Evidence do
       evidence_type: String.to_existing_atom(doc["evidence_type"]),
       source_url: doc["source_url"],
       local_path: doc["local_path"],
+      sha256_hash: doc["sha256_hash"],
       ipfs_hash: doc["ipfs_hash"],
       zotero_key: doc["zotero_key"],
       zotero_version: doc["zotero_version"],

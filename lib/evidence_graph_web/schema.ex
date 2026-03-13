@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 defmodule EvidenceGraphWeb.Schema do
   use Absinthe.Schema
@@ -10,8 +10,12 @@ defmodule EvidenceGraphWeb.Schema do
   import_types(EvidenceGraphWeb.Schema.Types.EvidenceTypes)
   import_types(EvidenceGraphWeb.Schema.Types.RelationshipTypes)
   import_types(EvidenceGraphWeb.Schema.Types.NavigationTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.EntityTypes)
+  import_types(EvidenceGraphWeb.Schema.Types.FinancialTypes)
 
   alias EvidenceGraph.{Claims, Evidence, Navigation, Relationships}
+  alias EvidenceGraphWeb.Schema.Resolvers.EntityResolver
+  alias EvidenceGraphWeb.Schema.Resolvers.FinancialResolver
 
   query do
     @desc "Get a claim by ID"
@@ -110,6 +114,68 @@ defmodule EvidenceGraphWeb.Schema do
       resolve(fn args, _ ->
         Navigation.list_paths(args.investigation_id, audience_type: args[:audience_type])
       end)
+    end
+
+    # -- Entity queries -------------------------------------------------------
+
+    @desc "Get an entity by ID"
+    field :entity, :entity do
+      arg(:id, non_null(:id))
+      resolve(&EntityResolver.get_entity/2)
+    end
+
+    @desc "List entities for an investigation"
+    field :entities, list_of(:entity) do
+      arg(:investigation_id, non_null(:string))
+      arg(:limit, :integer, default_value: 100)
+      arg(:offset, :integer, default_value: 0)
+      resolve(&EntityResolver.list_entities/2)
+    end
+
+    @desc "Search entities by name or alias"
+    field :search_entities, list_of(:entity) do
+      arg(:query, non_null(:string))
+      arg(:investigation_id, :string)
+      resolve(&EntityResolver.search_entities/2)
+    end
+
+    # -- Financial transaction queries -----------------------------------------
+
+    @desc "List financial transactions for an investigation"
+    field :transactions, list_of(:transaction) do
+      arg(:investigation_id, non_null(:string))
+      arg(:limit, :integer, default_value: 100)
+      arg(:offset, :integer, default_value: 0)
+      resolve(&FinancialResolver.list_transactions/2)
+    end
+
+    @desc "Follow-the-money graph traversal from an entity"
+    field :transaction_chain, list_of(:transaction_chain_result) do
+      arg(:entity_id, non_null(:string))
+      arg(:depth, :integer, default_value: 3)
+      arg(:investigation_id, :string)
+      resolve(&FinancialResolver.transaction_chain/2)
+    end
+
+    @desc "Aggregate total flow between two entities"
+    field :total_flow, list_of(:flow_aggregate) do
+      arg(:from_id, non_null(:string))
+      arg(:to_id, non_null(:string))
+      arg(:start_date, :date)
+      arg(:end_date, :date)
+      resolve(&FinancialResolver.total_flow/2)
+    end
+
+    @desc "Detect anomalies in financial transactions"
+    field :anomalies, list_of(:anomaly) do
+      arg(:investigation_id, non_null(:string))
+      resolve(&FinancialResolver.anomalies/2)
+    end
+
+    @desc "Sankey diagram data for financial flow visualisation"
+    field :sankey_data, :sankey_data do
+      arg(:investigation_id, non_null(:string))
+      resolve(&FinancialResolver.sankey_data/2)
     end
   end
 
@@ -235,6 +301,55 @@ defmodule EvidenceGraphWeb.Schema do
       resolve(fn args, _ ->
         Navigation.auto_generate_path(args.investigation_id, args.audience_type)
       end)
+    end
+
+    # -- Entity mutations -----------------------------------------------------
+
+    @desc "Create a new entity"
+    field :create_entity, :entity do
+      arg(:input, non_null(:create_entity_input))
+      resolve(&EntityResolver.create_entity/2)
+    end
+
+    @desc "Merge source entity into target (absorbs aliases, re-points edges, deletes source)"
+    field :merge_entities, :entity do
+      arg(:input, non_null(:merge_entities_input))
+      resolve(&EntityResolver.merge_entities/2)
+    end
+
+    @desc "Reverse a previous merge, restoring the source entity"
+    field :unmerge_entity, :entity do
+      arg(:target_id, non_null(:id))
+      arg(:source_id, non_null(:id))
+      resolve(&EntityResolver.unmerge_entity/2)
+    end
+
+    @desc "Add an alias to an entity"
+    field :add_entity_alias, :entity do
+      arg(:entity_id, non_null(:id))
+      arg(:alias_name, non_null(:string))
+      resolve(&EntityResolver.add_entity_alias/2)
+    end
+
+    @desc "Remove an alias from an entity"
+    field :remove_entity_alias, :entity do
+      arg(:entity_id, non_null(:id))
+      arg(:alias_name, non_null(:string))
+      resolve(&EntityResolver.remove_entity_alias/2)
+    end
+
+    @desc "Resolve NER output strings against the entity pool"
+    field :resolve_ner_entities, list_of(:ner_resolution_result) do
+      arg(:input, non_null(:resolve_ner_input))
+      resolve(&EntityResolver.resolve_ner_entities/2)
+    end
+
+    # -- Financial transaction mutations ---------------------------------------
+
+    @desc "Create a financial transaction"
+    field :create_transaction, :transaction do
+      arg(:input, non_null(:create_transaction_input))
+      resolve(&FinancialResolver.create_transaction/2)
     end
   end
 

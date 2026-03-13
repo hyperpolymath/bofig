@@ -63,6 +63,7 @@ defmodule EvidenceGraph.MixProject do
 
       # HTTP Clients
       {:tesla, "~> 1.8"},
+      {:req, "~> 0.5"},      # Lithoglyph API client
       {:mint, "~> 1.5"},
       {:castore, "~> 1.0"},  # CA certificates
       {:jason, "~> 1.4"},

@@ -4,7 +4,7 @@
 (state
   (metadata
     (version "1.0.0")
-    (last-updated "2026-02-21")
+    (last-updated "2026-03-13")
     (format "STATE.scm v1"))
 
   (project-context
@@ -14,9 +14,10 @@
     (status "released"))
 
   (current-position
-    (milestone "Phase 1 - Proof of Concept")
+    (milestone "Phase 2 - Lithoglyph Integration")
     (completion-percentage 100)
-    (focus "v1.0.0 released. NUJ testing and Hetzner deployment next."))
+    (phase-2-completion 10)
+    (focus "Phase 1 complete (v1.0.0, 257 tests). Phase 2 started: Lithoglyph integration, evidence schema extended with sha256_hash."))
 
   (components
     (component "elixir-backend"
@@ -52,7 +53,16 @@
       (notes "Credo: 0 warnings, 0 errors. 257 tests passing."))
     (component "trustfile"
       (status "complete") (completion 100)
-      (notes "A2ML v2.1 Cyberwar-Ready Trustfile with all sections")))
+      (notes "A2ML v2.1 Cyberwar-Ready Trustfile with all sections"))
+    (component "lithoglyph-integration"
+      (status "in-progress") (completion 15)
+      (notes "Phase 2: Lithoglyph client (Req HTTP), importer GenServer, evidence schema extended with sha256_hash")
+      (new-files
+        "lib/evidence_graph/lithoglyph/client.ex"
+        "lib/evidence_graph/lithoglyph/importer.ex")
+      (new-endpoints
+        "POST /api/evidence/lithoglyph-import"
+        "GET /api/evidence/lithoglyph-import/status")))
 
   (test-status
     (total-tests 257)
@@ -68,11 +78,23 @@
       (task "Zotero browser extension" (priority "medium"))))
 
   (critical-next-actions
+    (action "Complete Lithoglyph integration: entity resolution, financial graph")
     (action "Deploy v1.0.0 to Hetzner Cloud for NUJ testing")
     (action "Recruit 25 NUJ journalists for user testing")
     (action "Month 3 decision point: continue or pivot"))
 
   (session-history
+    (session "2026-03-13"
+      (completed "Phase 2 started: Lithoglyph integration")
+      (completed "Added {:req, ~> 0.5} dependency for Lithoglyph HTTP client")
+      (completed "Created lib/evidence_graph/lithoglyph/client.ex (Req-based API client)")
+      (completed "Created lib/evidence_graph/lithoglyph/importer.ex (GenServer batch import)")
+      (completed "Extended evidence schema with sha256_hash field")
+      (completed "Added POST /api/evidence/lithoglyph-import endpoint")
+      (completed "Added GET /api/evidence/lithoglyph-import/status endpoint")
+      (completed "Added sha256_hash index to ArangoDB create_indexes")
+      (completed "Updated CLAUDE.md: FormDB/FormBase references → Lithoglyph/Docudactyl")
+      (completed "Cross-repo integration plan docs created"))
     (session "2026-02-21"
       (completed "v1.0.0 release preparation")
       (completed "Deleted duplicate files: CHANGELOG.adoc, CONTRIBUTING.md, MAINTAINERS.adoc, LICENSE.txt, rescript.json, Podmanfile.md, docker-compose.yml")

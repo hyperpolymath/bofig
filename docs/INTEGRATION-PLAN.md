@@ -1,0 +1,271 @@
+# Investigative Evidence Pipeline — Integration Plan
+# Bofig + Docudactyl + Lithoglyph
+#
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Author: Jonathan D.A. Jewell
+# Created: 2026-03-11
+
+## Vision
+
+A complete pipeline from raw document dumps (court filings, flight logs,
+financial records, testimony transcripts) through HPC extraction, into an
+audit-grade database, rendered as a navigable evidence graph with
+audience-specific views.
+
+```
+Raw Documents (200K+ files)
+  → Docudactyl   (HPC extraction: OCR, NER, metadata, classification)
+    → Lithoglyph (audit-grade storage: provenance, reversibility, PROMPT)
+      → Bofig    (evidence graph: claims, relationships, navigation)
+        → 6 audience views (journalist, researcher, policymaker, ...)
+```
+
+---
+
+## Repo Assignments
+
+### Repo 1: Docudactyl (bofig/docudactyl/)
+
+**Role in pipeline:** Ingestion layer. Takes raw documents and produces
+structured extraction results.
+
+**Status:** v0.4.0, 97% complete. Awaiting multi-locale cluster testing.
+
+| # | Task | Priority | Effort | Notes |
+|---|------|----------|--------|-------|
+| D1 | Multi-locale HPC cluster test (GASNet/IBV, 4+ nodes) | Critical | Medium | Only v0.4.1 blocker |
+| D2 | Cap'n Proto → Lithoglyph output adapter | High | Medium | New output stage that emits GQL-compatible evidence records |
+| D3 | Legal document NER model | High | Medium | Docket numbers, case names, judge names, legal citations |
+| D4 | Financial record extraction stage | High | Medium | Transaction amounts, dates, account identifiers, counterparties |
+| D5 | Speaker identification stage (testimony/depositions) | Medium | Large | Who said what — maps to witness testimony in bofig |
+| D6 | Redaction detection stage | Medium | Small | Flag redacted regions, track unredaction over time |
+| D7 | British Library pilot (170M items) | Low | Large | v1.0.0 milestone |
+
+**Key output contract:** Each processed document produces:
+- Extracted text (OCR'd if needed) + confidence score
+- NER entities (people, orgs, locations, dates, amounts)
+- SHA-256 + perceptual hash (dedup)
+- Metadata (Dublin Core + format-specific)
+- Auto-PROMPT scores derived from extraction quality
+- Language, keywords, citations
+
+---
+
+### Repo 2: Lithoglyph (nextgen-databases/lithoglyph/)
+
+**Role in pipeline:** Provenance layer. Stores all evidence with full audit
+trail, reversibility, and PROMPT scoring.
+
+**Status:** 75% complete. L1/L2/L3 complete. formdb-http/ renamed to lith-http/.
+
+| # | Task | Priority | Effort | Notes |
+|---|------|----------|--------|-------|
+| L1 | Zig 0.15.2 HTTP API migration (83 call sites) | Critical | Medium | **COMPLETE** — Reader/Writer pattern applied |
+| L2 | FormBD → Lithoglyph rename (Google trademark) | Critical | Small | **COMPLETE** — formdb-http/ → lith-http/ |
+| L3 | Evidence collection schema for bofig | High | Small | **COMPLETE** — 5 collections in glyphbase/examples/bofig-evidence.json + 5 FQL test vectors |
+| L4 | Financial transaction collection | High | Small | source, destination, amount, date, instrument, intermediary |
+| L5 | Entity collection + co-reference resolution | High | Medium | Person/org/location entities with alias tracking |
+| L6 | Ingest bridge: Docudactyl Cap'n Proto → GQL INSERT | High | Medium | Batch import with auto-PROMPT scoring from extraction metadata |
+| L7 | Temporal credibility model | Medium | Medium | Source reputation updates over time (retractions, discrediting) |
+| L8 | Cross-investigation linking | Medium | Small | Shared evidence collections, automatic surfacing |
+| L9 | ControlPlane clustering (Elixir/OTP) | Low | Large | Multi-node Lithoglyph for scale |
+
+**Key guarantees Lithoglyph provides:**
+- Every mutation has actor + rationale (accountability)
+- Reversible operations (retractions with explanation)
+- Time-travel queries ("what did we know on date X?")
+- PROMPT scores as first-class citizens
+- Constraints-as-ethics (invalid evidence relationships rejected with explanation)
+- Dependent-type proofs (GQL-DT) for score bounds
+
+---
+
+### Repo 3: Bofig (bofig/)
+
+**Role in pipeline:** Application layer. Evidence graph, PROMPT scoring,
+audience-specific navigation, collaborative investigation.
+
+**Status:** Phase 1 complete (v1.0.0). 257 tests, 0 failures.
+
+| # | Task | Priority | Effort | Notes |
+|---|------|----------|--------|-------|
+| B1 | Entity resolution module | Critical | Medium | NER output → co-reference → unified entity graph |
+| B2 | Financial transaction graph + GraphQL schema | High | Small | New queries: transaction chains, flow analysis, anomaly detection |
+| B3 | Timeline D3 visualization | High | Small | Phase 2 planned — event reconstruction from extracted dates |
+| B4 | Witness testimony module | High | Large | Speaker ID, claim extraction, corroboration scoring, impeachment detection |
+| B5 | Batch evidence import (Docudactyl output) | High | Medium | GenServer consuming structured extraction results |
+| B6 | Contradiction dashboard | High | Small | Surface conflicting accounts across documents automatically |
+| B7 | Multi-investigation dashboard | Medium | Medium | Phase 2 — cross-referencing, shared evidence |
+| B8 | Real-time collaborative editing (PubSub) | Medium | Medium | Phase 2 — multiple journalists mapping evidence simultaneously |
+| B9 | Full-text search + faceted filters | Medium | Small | Phase 2 — ArangoDB fulltext indexes |
+| B10 | RBAC + sensitivity layer | Medium | Medium | Phase 2 — protect sources, sealed material, graduated access |
+| B11 | Redaction audit trail | Medium | Small | Track what was redacted/unredacted, by whom, integrated with Lithoglyph journal |
+| B12 | IPFS provenance integration | Low | Medium | Phase 2 — tamper-proof evidence archival |
+| B13 | Lithoglyph provenance layer | Low | Large | Phase 3 — supplement/replace ArangoDB with Lithoglyph for audit-grade storage |
+| B14 | Public API + SDK | Low | Medium | Phase 3 |
+| B15 | LEAN4 formal proofs for crypto protocols | Low | Large | Phase 3 |
+
+---
+
+## Integration Points (How They Fit Together)
+
+### Integration 1: Docudactyl → Lithoglyph (D2 + L6)
+
+```
+Docudactyl Cap'n Proto output
+  → Adapter (D2) serializes to GQL INSERT statements
+    → Lithoglyph ingest bridge (L6) batch-imports with:
+      - Auto-PROMPT scoring from extraction confidence
+      - SHA-256 dedup against existing evidence
+      - Actor="docudactyl-pipeline", Rationale="Batch extraction run {id}"
+      - Provenance: source file path, extraction timestamp, OCR confidence
+```
+
+### Integration 2: Lithoglyph → Bofig (L3 + B5)
+
+```
+Lithoglyph evidence/entity/transaction collections
+  → Bofig GenServer (B5) queries Lithoglyph via GQL
+    → Maps to ArangoDB graph (Phase 2) or direct Lithoglyph queries (Phase 3)
+    → PROMPT scores flow from Lithoglyph → bofig UI
+    → Provenance metadata available on hover/click in UI
+```
+
+### Integration 3: Entity Resolution Loop (D3/D4/D5 → L5 → B1)
+
+```
+Docudactyl NER extracts raw entities
+  → Lithoglyph stores with alias tracking (L5)
+    → Bofig entity resolution (B1) merges:
+      "J. Epstein" + "Jeffrey Epstein" + "Epstein, Jeffrey" → one node
+    → Merge decision logged in Lithoglyph journal with rationale
+    → Reversible if co-reference was incorrect
+```
+
+### Integration 4: Financial Flow Analysis (D4 → L4 → B2)
+
+```
+Docudactyl extracts transactions from bank records (D4)
+  → Lithoglyph financial_transactions collection (L4)
+    → Bofig GraphQL: transactionChain(entityId, depth) (B2)
+      → D3 Sankey diagram: money flow visualization
+      → Anomaly flagging: unusual patterns surface automatically
+```
+
+### Integration 5: Temporal Reconstruction (D3 → L7 → B3)
+
+```
+Docudactyl extracts dates from all documents
+  → Lithoglyph stores with temporal metadata
+    → Bofig timeline view (B3):
+      - What happened when
+      - What was known when
+      - Source credibility at each point in time (L7)
+```
+
+---
+
+## Execution Phases
+
+### Phase A: Foundation (Weeks 1-4)
+**Goal:** End-to-end pipeline working with test data
+
+- D1: Multi-locale cluster test (docudactyl v0.4.1 release)
+- L1: Zig API migration (unblocks Lithoglyph REST)
+- L2: Lithoglyph rename
+- L3: Evidence collection schema
+- B5: Batch evidence import
+
+**Milestone:** 100 test documents flow from Docudactyl → Lithoglyph → Bofig
+
+### Phase B: Entity & Financial (Weeks 5-8)
+**Goal:** Cross-document intelligence
+
+- D2: Cap'n Proto → Lithoglyph adapter
+- L5: Entity collection + co-reference
+- L6: Ingest bridge
+- B1: Entity resolution module
+- L4: Financial transaction collection
+- B2: Financial transaction graph + GraphQL
+- B3: Timeline visualization
+
+**Milestone:** Entity graph links people/orgs across 1000+ documents
+
+### Phase C: Investigation Features (Weeks 9-14)
+**Goal:** Production-ready for real investigations
+
+- D3: Legal document NER
+- D4: Financial record extraction
+- D5: Speaker identification
+- B4: Witness testimony module
+- B6: Contradiction dashboard
+- B7: Multi-investigation dashboard
+- B9: Full-text search
+- B10: RBAC + sensitivity
+
+**Milestone:** Ready for NUJ journalist user testing with real investigation data
+
+### Phase D: Scale & Trust (Weeks 15-20)
+**Goal:** Audit-grade, formally verified
+
+- L7: Temporal credibility
+- L8: Cross-investigation linking
+- B8: Real-time collaboration
+- B11: Redaction audit trail
+- B12: IPFS provenance
+- B13: Lithoglyph provenance layer (replace ArangoDB)
+- D6: Redaction detection
+- B14: Public API + SDK
+
+**Milestone:** Production deployment on Hetzner, NUJ partnership
+
+---
+
+## Epstein Files — Worked Example
+
+To process the Epstein files (~200K documents) through this pipeline:
+
+1. **Ingest:** Docudactyl processes all PDFs/images across HPC cluster
+   - OCR on scanned court filings (GPU-accelerated)
+   - NER extracts: people (witnesses, lawyers, judges), dates, locations, organizations
+   - Financial extraction: amounts, accounts, transaction dates
+   - ~3.7 hours cold run on 256 nodes
+
+2. **Store:** Lithoglyph receives structured output
+   - Each document becomes an evidence record with PROMPT scores
+   - Entity co-reference resolution: "Jane Doe 3" linked across 47 documents
+   - Financial transactions form their own collection
+   - Every import logged with provenance (source file, extraction confidence)
+
+3. **Graph:** Bofig builds the evidence graph
+   - Claims extracted from depositions and filings
+   - Relationships weighted by evidence quality (PROMPT)
+   - Contradictions automatically surfaced
+   - Financial flows visualized as Sankey diagrams
+
+4. **Navigate:** Six audience-specific paths
+   - Journalist: balanced credibility view, source protection
+   - Researcher: methodology-focused, reproducibility scores
+   - Policymaker: authoritative sources first, regulatory implications
+   - Affected person: personal impact stories, clear language
+   - Skeptic: transparency-focused, verification steps
+   - Activist: evidence quality, actionable findings
+
+5. **Audit:** Every step is reversible and traceable
+   - "Why do we believe claim X?" → full evidence chain with PROMPT scores
+   - "When did we learn fact Y?" → time-travel query to discovery date
+   - "Who added evidence Z?" → actor + rationale from Lithoglyph journal
+   - Evidence discredited → reversible operation with explanation
+
+---
+
+## Also Noted: Axiom.jl Outstanding Work
+
+File: `developer-ecosystem/julia-ecosystem/packages/Axiom.jl/TODO-URGENT-COPROCESSOR-CONSOLIDATION.md`
+
+**Status: OUTSTANDING (not stale)**
+- Created 2026-02-27, marked "NOT STARTED"
+- Proposes splitting `abstract.jl` (3,059 lines, 195 definitions) into 7 files
+- The file has actually grown since the TODO was written
+- Not blocking anything but increasingly needed as the file becomes unwieldy
+- Recommend scheduling this as a separate refactoring session

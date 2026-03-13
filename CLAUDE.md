@@ -35,10 +35,13 @@ bofig/
 ├── lib/                       # Legacy Zotero extension (2017, to be updated)
 │   └── exporter.js
 ├── config/                    # Elixir config (to be created)
-├── lib/evidence_graph/        # Elixir backend (to be created)
+├── lib/evidence_graph/        # Elixir backend
 │   ├── claims.ex
 │   ├── evidence.ex
-│   └── arango.ex
+│   ├── arango.ex
+│   └── lithoglyph/
+│       ├── client.ex          # Lithoglyph HTTP client (Req)
+│       └── importer.ex        # GenServer for batch Lithoglyph import
 ├── lib/evidence_graph_web/    # Phoenix web layer
 │   ├── schema.ex              # Absinthe GraphQL schema
 │   └── live/                  # LiveView UIs
@@ -417,8 +420,8 @@ This isn't just a database project. It's infrastructure for **coordinating witho
 - **Zotero**: Reference management (https://www.zotero.org/)
 - **Gephi**: Graph visualization (https://gephi.org/)
 - **Voyant Tools**: Text analysis (https://voyant-tools.org/)
-- **FormDB Debugger**: Proof-carrying database debugger (https://github.com/hyperpolymath/formdb-debugger)
-- **FormBase**: Open-source Airtable alternative (https://github.com/hyperpolymath/formbase)
+- **Lithoglyph**: Narrative-first, reversible, audit-grade database (https://github.com/hyperpolymath/lithoglyph) — provenance layer in the Docudactyl → Lithoglyph → Bofig pipeline
+- **Docudactyl**: Multi-format HPC document extraction engine (bofig/docudactyl/) — ingestion layer
 
 ## Changelog
 
@@ -436,8 +439,16 @@ This isn't just a database project. It's infrastructure for **coordinating witho
 
 ---
 
-**Last Updated:** 2025-11-22
-**Current Phase:** Phase 1 (PoC) - Month 1
+### Lithoglyph Integration (Phase 2)
+
+New API endpoints for Lithoglyph evidence import:
+- `POST /api/evidence/lithoglyph-import` — triggers batch import from Lithoglyph (returns 202 Accepted)
+- `GET /api/evidence/lithoglyph-import/status` — returns current import progress
+
+Lithoglyph client (`EvidenceGraph.Lithoglyph.Client`) uses `Req` to communicate with the Lithoglyph HTTP API. The importer GenServer (`EvidenceGraph.Lithoglyph.Importer`) manages background batch imports with progress tracking via PubSub.
+
+**Last Updated:** 2026-03-13
+**Current Phase:** Phase 2 — Lithoglyph integration started
 **Maintained By:** @Hyperpolymath
 **Status:** Architecture complete, moving to implementation
 

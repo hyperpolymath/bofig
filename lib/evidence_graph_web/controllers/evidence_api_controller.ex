@@ -24,7 +24,7 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
 
   # -- Plugs --
 
-  plug :validate_api_key when action in [:import, :batch_import]
+  plug :validate_api_key when action in [:import, :batch_import, :lithoglyph_import]
 
   # -- Actions --
 
@@ -211,6 +211,82 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
     })
   end
 
+  @doc """
+  POST /api/evidence/lithoglyph-import
+
+  Triggers a batch import of evidence from Lithoglyph into the Bofig evidence
+  graph. Returns immediately — progress is broadcast via PubSub.
+
+  ## Request
+
+      POST /api/evidence/lithoglyph-import
+      Content-Type: application/json
+      x-api-key: <configured API key>
+
+      {
+        "investigation_id": "epstein_files_2024",
+        "run_id": "import-2026-03-13"
+      }
+
+  ## Response (202 Accepted)
+
+      {
+        "data": {
+          "status": "started",
+          "investigation_id": "epstein_files_2024",
+          "run_id": "import-2026-03-13"
+        }
+      }
+  """
+  def lithoglyph_import(conn, %{"investigation_id" => investigation_id} = params) do
+    run_id = params["run_id"] || "import-#{System.unique_integer([:positive])}"
+
+    EvidenceGraph.Lithoglyph.Importer.run_import(investigation_id, run_id: run_id)
+
+    conn
+    |> put_status(:accepted)
+    |> json(%{
+      data: %{
+        status: "started",
+        investigation_id: investigation_id,
+        run_id: run_id
+      }
+    })
+  end
+
+  def lithoglyph_import(conn, _params) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{errors: %{detail: "Missing required field: investigation_id"}})
+  end
+
+  @doc """
+  GET /api/evidence/lithoglyph-import/status
+
+  Returns the current status of the Lithoglyph importer.
+
+  ## Response (200 OK)
+
+      {
+        "data": {
+          "status": "importing",
+          "investigation_id": "epstein_files_2024",
+          "imported": 5000,
+          "skipped": 200,
+          "failed": 3,
+          "total": 10000,
+          "started_at": "2026-03-13T10:30:00Z"
+        }
+      }
+  """
+  def lithoglyph_import_status(conn, _params) do
+    status = EvidenceGraph.Lithoglyph.Importer.status()
+
+    conn
+    |> put_status(:ok)
+    |> json(%{data: status})
+  end
+
   # -- Private helpers --
 
   defp validate_api_key(conn, _opts) do
@@ -241,6 +317,7 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
       title: evidence.title,
       evidence_type: to_string(evidence.evidence_type),
       source_url: evidence.source_url,
+      sha256_hash: Map.get(evidence, :sha256_hash),
       zotero_key: evidence.zotero_key,
       zotero_version: evidence.zotero_version,
       tags: evidence.tags,

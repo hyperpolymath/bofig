@@ -59,7 +59,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths"]
+      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions"]
     )
   end
 
@@ -76,7 +76,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths"]
+      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions"]
     )
   end
 
@@ -211,6 +211,8 @@ defmodule EvidenceGraph.ArangoDB do
       {"claims", :document},
       {"evidence", :document},
       {"navigation_paths", :document},
+      {"entities", :document},
+      {"financial_transactions", :edge},
       {"relationships", :edge}
     ]
 
@@ -241,9 +243,22 @@ defmodule EvidenceGraph.ArangoDB do
       # Zotero sync
       {"evidence", "hash", ["zotero_key"]},
 
+      # SHA-256 dedup (Lithoglyph/Docudactyl pipeline)
+      {"evidence", "hash", ["sha256_hash"]},
+
+      # Financial transaction queries
+      {"financial_transactions", "hash", ["investigation_id"]},
+      {"financial_transactions", "hash", ["source_entity_id"]},
+      {"financial_transactions", "hash", ["destination_entity_id"]},
+
       # PROMPT score queries
       {"claims", "skiplist", ["prompt_scores.provenance"]},
-      {"evidence", "skiplist", ["prompt_scores.methodology"]}
+      {"evidence", "skiplist", ["prompt_scores.methodology"]},
+
+      # Entity resolution
+      {"entities", "hash", ["investigation_id"]},
+      {"entities", "hash", ["primary_name"]},
+      {"entities", "fulltext", ["primary_name"]}
     ]
 
     Enum.each(indexes, fn {collection, type, fields} ->

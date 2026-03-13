@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraphWeb.Router do
   use EvidenceGraphWeb, :router
 
@@ -27,6 +27,7 @@ defmodule EvidenceGraphWeb.Router do
     live "/investigations/:id", InvestigationLive.Show, :show
     live "/investigations/:id/graph", GraphLive, :show
     live "/investigations/:id/prompt", PromptLive, :show
+    live "/investigations/:id/timeline", TimelineLive, :show
     live "/investigations/:id/navigate", NavigationLive, :show
     live "/investigations/:id/navigate/:audience", NavigationLive, :audience
   end
@@ -46,6 +47,10 @@ defmodule EvidenceGraphWeb.Router do
     post "/evidence/batch-import", EvidenceApiController, :batch_import
     get "/evidence/:id/export", EvidenceApiController, :export
     get "/investigations/:id/sync-status", EvidenceApiController, :sync_status
+
+    # Lithoglyph pipeline import
+    post "/evidence/lithoglyph-import", EvidenceApiController, :lithoglyph_import
+    get "/evidence/lithoglyph-import/status", EvidenceApiController, :lithoglyph_import_status
   end
 
   scope "/api" do

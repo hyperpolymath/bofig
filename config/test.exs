@@ -8,7 +8,7 @@ config :bcrypt_elixir, :log_rounds, 1
 # Configure your database (Postgres for user auth only)
 config :evidence_graph, EvidenceGraph.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "postgres",  # Test-only default; not used in production
   hostname: "localhost",
   database: "evidence_graph_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
@@ -18,7 +18,7 @@ config :evidence_graph, EvidenceGraph.Repo,
 # you can enable the server option below.
 config :evidence_graph, EvidenceGraphWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "test_secret_key_base_not_used_in_production_must_be_at_least_sixty_four_bytes_long_for_cookie_store",
+  secret_key_base: "test_secret_key_base_not_used_in_production_must_be_at_least_sixty_four_bytes_long_for_cookie_store",  # Test-only; not used in production
   server: false
 
 # Print only warnings and errors during test
@@ -41,5 +41,5 @@ config :evidence_graph, EvidenceGraph.ArangoDB,
   client: Arangox.MintClient,
   endpoints: "http://localhost:8529",
   database: "evidence_graph_test#{System.get_env("MIX_TEST_PARTITION")}",
-  auth: {:basic, "root", "dev"},
+  auth: {:basic, "root", "dev"},  # Test-only default; not used in production
   pool_size: 2

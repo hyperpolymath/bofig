@@ -64,12 +64,11 @@ config :phoenix, :json_library, Jason
 # Silence Tesla soft-deprecation warning
 config :tesla, disable_deprecated_builder_warning: true
 
-# ArangoDB configuration
+# ArangoDB configuration (credentials set per-environment in dev.exs/test.exs/runtime.exs)
 config :evidence_graph, EvidenceGraph.ArangoDB,
   client: Arangox.MintClient,
   endpoints: System.get_env("ARANGO_ENDPOINT") || "http://localhost:8529",
-  database: System.get_env("ARANGO_DATABASE") || "evidence_graph",
-  auth: {:basic, System.get_env("ARANGO_USERNAME") || "root", System.get_env("ARANGO_PASSWORD") || "dev"}
+  database: System.get_env("ARANGO_DATABASE") || "evidence_graph"
 
 # Zotero Web API v3 configuration
 config :evidence_graph, EvidenceGraph.Zotero.Client,

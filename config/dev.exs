@@ -5,7 +5,7 @@ import Config
 # Configure your database (Postgres for user auth only)
 config :evidence_graph, EvidenceGraph.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "postgres",  # Dev-only default; production uses DATABASE_URL env var
   hostname: "localhost",
   database: "evidence_graph_dev",
   stacktrace: true,
@@ -21,7 +21,7 @@ config :evidence_graph, EvidenceGraphWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "development_secret_key_base_change_in_production_with_mix_phx_gen_secret",
+  secret_key_base: "development_secret_key_base_change_in_production_with_mix_phx_gen_secret",  # Dev-only; production uses SECRET_KEY_BASE env var
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
@@ -58,5 +58,5 @@ config :evidence_graph, EvidenceGraph.ArangoDB,
   client: Arangox.MintClient,
   endpoints: "http://localhost:8529",
   database: "evidence_graph_dev",
-  auth: {:basic, "root", "dev"},
+  auth: {:basic, "root", "dev"},  # Dev-only default; production uses ARANGO_USERNAME/ARANGO_PASSWORD env vars
   pool_size: 5

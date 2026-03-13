@@ -257,14 +257,22 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
       },
       dublin_core: record["dublin_core_metadata"] || %{},
       tags: record["keywords"] || [],
-      prompt_scores: %{
-        provenance: record["prompt_provenance"] || 50,
-        replicability: record["prompt_replicability"] || 50,
-        objective: record["prompt_objective"] || 50,
-        methodology: record["prompt_methodology"] || 50,
-        publication: record["prompt_publication"] || 50,
-        transparency: record["prompt_transparency"] || 50
-      }
+      prompt_scores: extract_prompt_scores(record)
+    }
+  end
+
+  # Extract PROMPT scores from either nested promptScores object (Docudactyl format)
+  # or flat prompt_* keys (legacy/direct Lithoglyph format), with defaults.
+  defp extract_prompt_scores(record) do
+    scores = record["promptScores"] || %{}
+
+    %{
+      provenance: scores["provenance"] || record["prompt_provenance"] || 50,
+      replicability: scores["replicability"] || record["prompt_replicability"] || 50,
+      objective: scores["objective"] || record["prompt_objective"] || 50,
+      methodology: scores["methodology"] || record["prompt_methodology"] || 50,
+      publication: scores["publication"] || record["prompt_publication"] || 50,
+      transparency: scores["transparency"] || record["prompt_transparency"] || 50
     }
   end
 

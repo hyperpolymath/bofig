@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# CODEOWNERS - Evidence Graph for Investigative Journalism (bofig)
+
+# Default owner for all files
+* @hyperpolymath
+
+# Core domain logic
+/lib/evidence_graph/ @hyperpolymath
+
+# Lithoglyph integration (Phase 2)
+/lib/evidence_graph/lithoglyph/ @hyperpolymath
+
+# Security-sensitive files
+/config/ @hyperpolymath
+/.github/workflows/ @hyperpolymath
+/SECURITY.md @hyperpolymath
+
+# Machine-readable state
+/.machine_readable/ @hyperpolymath

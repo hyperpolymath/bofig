@@ -212,8 +212,8 @@ defmodule EvidenceGraphWeb.ContradictionsLive do
                 <div class="border-t dark:border-gray-700 px-4 py-4 space-y-4 bg-gray-50 dark:bg-gray-900">
                   <%!-- Side-by-side claims --%>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <.claim_card claim={c.claim_a} label="Claim A" />
-                    <.claim_card claim={c.claim_b} label="Claim B" />
+                    <.contradiction_claim_card claim={c.claim_a} label="Claim A" />
+                    <.contradiction_claim_card claim={c.claim_b} label="Claim B" />
                   </div>
 
                   <%!-- Resolution controls --%>
@@ -291,7 +291,7 @@ defmodule EvidenceGraphWeb.ContradictionsLive do
     """
   end
 
-  defp claim_card(assigns) do
+  defp contradiction_claim_card(assigns) do
     ~H"""
     <div class="border rounded p-3 dark:border-gray-700 bg-white dark:bg-gray-800">
       <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">{@label}</p>

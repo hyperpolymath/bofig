@@ -46,7 +46,7 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
   Trigger an import run for the given investigation.
 
   Returns immediately. Progress is broadcast via PubSub on
-  topic "lithoglyph:import:#{investigation_id}".
+  topic `"lithoglyph:import:<investigation_id>"`.
   """
   def run_import(investigation_id, opts \\ []) do
     GenServer.cast(__MODULE__, {:run_import, investigation_id, opts})

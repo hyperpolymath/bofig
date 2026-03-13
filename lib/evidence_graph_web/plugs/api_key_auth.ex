@@ -128,7 +128,7 @@ defmodule EvidenceGraphWeb.Plugs.ApiKeyAuth do
     now = System.monotonic_time(:second)
 
     # Check if we need to reset the window
-    window_start =
+    _window_start =
       case :ets.lookup(:bofig_rate_limits, window_key) do
         [{^window_key, start}] when now - start < @rate_window_seconds -> start
         _ ->

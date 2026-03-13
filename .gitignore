@@ -91,6 +91,9 @@ htmlcov/
 # Crash recovery artifacts
 ai-cli-crash-capture/
 
+# Hypatia scanner
+.hypatia/
+
 # Podman
 .deno/
 

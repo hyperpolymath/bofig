@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraph.Accounts.Scope do
   @moduledoc """
   Defines the scope of the caller to be used throughout the app.

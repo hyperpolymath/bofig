@@ -302,7 +302,10 @@ defmodule EvidenceGraph.ArangoDB do
         fields: fields
       }
 
-      case Arangox.request(Arangox, :post, "/_api/index?collection=#{collection}", body) do
+      # URI-encode collection name to prevent injection via URL path
+      safe_collection = URI.encode_www_form(collection)
+
+      case Arangox.request(Arangox, :post, "/_api/index?collection=#{safe_collection}", body) do
         {:ok, _req, _resp} -> :ok
         error -> IO.warn("Failed to create index on #{collection}: #{inspect(error)}")
       end

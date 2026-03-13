@@ -120,25 +120,30 @@ defmodule EvidenceGraphWeb.Plugs.ApiKeyAuth do
   defp check_rate_limit(api_key_id) do
     ensure_rate_limit_table()
 
+    # Use atomic update_counter for race-safe rate limiting.
+    # The counter key tracks request count in the current window.
+    # A separate key tracks the window start time.
+    window_key = {:window, api_key_id}
+    count_key = {:count, api_key_id}
     now = System.monotonic_time(:second)
-    window_start = now - @rate_window_seconds
 
-    # Clean expired entries and count current window
-    case :ets.lookup(:bofig_rate_limits, api_key_id) do
-      [{^api_key_id, timestamps}] ->
-        # Filter to only timestamps within the current window
-        valid_timestamps = Enum.filter(timestamps, &(&1 > window_start))
+    # Check if we need to reset the window
+    window_start =
+      case :ets.lookup(:bofig_rate_limits, window_key) do
+        [{^window_key, start}] when now - start < @rate_window_seconds -> start
+        _ ->
+          # Window expired or doesn't exist — reset atomically
+          :ets.insert(:bofig_rate_limits, [{window_key, now}, {count_key, 0}])
+          now
+      end
 
-        if length(valid_timestamps) >= @rate_limit do
-          :rate_limited
-        else
-          :ets.insert(:bofig_rate_limits, {api_key_id, [now | valid_timestamps]})
-          :ok
-        end
+    # Atomically increment and check the counter
+    count = :ets.update_counter(:bofig_rate_limits, count_key, {2, 1}, {count_key, 0})
 
-      [] ->
-        :ets.insert(:bofig_rate_limits, {api_key_id, [now]})
-        :ok
+    if count > @rate_limit do
+      :rate_limited
+    else
+      :ok
     end
   end
 

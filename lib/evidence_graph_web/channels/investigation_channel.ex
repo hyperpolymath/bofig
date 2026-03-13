@@ -30,26 +30,39 @@ defmodule EvidenceGraphWeb.InvestigationChannel do
   use Phoenix.Channel
 
   alias EvidenceGraph.Collaboration
+  alias EvidenceGraph.Authorization
+
+  @max_annotation_length 10_000
 
   @impl true
   def join("investigation:" <> investigation_id, _params, socket) do
-    user_id = socket.assigns[:user_id] || "anonymous_#{:erlang.unique_integer([:positive])}"
+    user_id = socket.assigns[:user_id]
 
-    Collaboration.join_investigation(investigation_id, user_id)
+    # Require authenticated user — reject anonymous channel joins
+    if is_nil(user_id) do
+      {:error, %{reason: "authentication_required"}}
+    else
+      # Verify user has at least viewer access to this investigation
+      case Authorization.check_access(investigation_id, user_id, :view) do
+        :ok ->
+          Collaboration.join_investigation(investigation_id, user_id)
 
-    # Subscribe to PubSub for this investigation
-    Phoenix.PubSub.subscribe(EvidenceGraph.PubSub, "investigation:#{investigation_id}")
+          Phoenix.PubSub.subscribe(EvidenceGraph.PubSub, "investigation:#{investigation_id}")
 
-    socket =
-      socket
-      |> assign(:investigation_id, investigation_id)
-      |> assign(:user_id, user_id)
+          socket =
+            socket
+            |> assign(:investigation_id, investigation_id)
+            |> assign(:user_id, user_id)
 
-    # Send current active users on join
-    active = Collaboration.active_users(investigation_id)
-    send(self(), {:after_join, active})
+          active = Collaboration.active_users(investigation_id)
+          send(self(), {:after_join, active})
 
-    {:ok, %{investigation_id: investigation_id, user_id: user_id}, socket}
+          {:ok, %{investigation_id: investigation_id, user_id: user_id}, socket}
+
+        {:error, _} ->
+          {:error, %{reason: "forbidden"}}
+      end
+    end
   end
 
   @impl true
@@ -111,6 +124,9 @@ defmodule EvidenceGraphWeb.InvestigationChannel do
     user_id = socket.assigns.user_id
     investigation_id = socket.assigns.investigation_id
 
+    if String.length(text) > @max_annotation_length do
+      {:reply, {:error, %{reason: "annotation_too_long", max: @max_annotation_length}}, socket}
+    else
     case Collaboration.annotation_create(target_id, target_type, user_id, text) do
       {:ok, annotation} ->
         # Broadcast the new annotation to all collaborators
@@ -123,6 +139,7 @@ defmodule EvidenceGraphWeb.InvestigationChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: inspect(reason)}}, socket}
+    end
     end
   end
 

@@ -260,10 +260,10 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
       prompt_scores: %{
         provenance: record["prompt_provenance"] || 50,
         replicability: record["prompt_replicability"] || 50,
-        objective: record["prompt_objectivity"] || 50,
+        objective: record["prompt_objective"] || 50,
         methodology: record["prompt_methodology"] || 50,
         publication: record["prompt_publication"] || 50,
-        transparency: record["prompt_timeliness"] || 50
+        transparency: record["prompt_transparency"] || 50
       }
     }
   end

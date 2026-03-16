@@ -1,6 +1,6 @@
 /* TEAM */
 Name: Jonathan D.A. Jewell
-Contact: jonathan.jewell@open.ac.uk
+Contact: j.d.a.jewell@open.ac.uk
 GitHub: hyperpolymath
 Location: United Kingdom
 

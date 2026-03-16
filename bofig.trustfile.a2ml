@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # bofig.trustfile.a2ml - A2ML v2.1 Cyberwar-Ready Trustfile
 # Evidence Graph for Investigative Journalism
@@ -15,7 +15,7 @@ meta:
   version: "2026.2.4-cyberwar"
   a2ml_version: "2.1"
   created: "2026-02-21"
-  author: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+  author: "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
   license: "PMPL-1.0-or-later"
 
   contexts:
@@ -528,14 +528,14 @@ elixir_hardening:
 signature_block:
   primary:
     algorithm: "Ed448+Dilithium5"
-    signer: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    signer: "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
     timestamp: "2026-02-21T00:00:00Z"
     signature: "PLACEHOLDER:Ed448+Dilithium5:trustfile-v1.0.0"
     notes: "Replace with actual signature after key generation."
 
   fallback:
     algorithm: "SPHINCS+-SHA2-256f"
-    signer: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    signer: "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
     timestamp: "2026-02-21T00:00:00Z"
     signature: "PLACEHOLDER:SPHINCS+:trustfile-v1.0.0-fallback"
     notes: "Stateless hash-based fallback signature."

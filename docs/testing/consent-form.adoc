@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 = Participant Consent Form: Evidence Graph User Testing
 :author: Jonathan D.A. Jewell
-:email: jonathan.jewell@open.ac.uk
+:email: j.d.a.jewell@open.ac.uk
 :revdate: 2026-02-21
 :toc: macro
 :toc-title: Contents
@@ -26,7 +26,7 @@ toc::[]
 | Jonathan D.A. Jewell
 
 | *Email*
-| jonathan.jewell@open.ac.uk
+| j.d.a.jewell@open.ac.uk
 
 | *Institution*
 | The Open University, Faculty of Science, Technology, Engineering and Mathematics (STEM)
@@ -105,7 +105,7 @@ after your testing session. After this period, your data will have been
 anonymised and aggregated, and it will no longer be possible to identify and
 remove your individual contribution.
 
-To withdraw, contact: jonathan.jewell@open.ac.uk, quoting your participant
+To withdraw, contact: j.d.a.jewell@open.ac.uk, quoting your participant
 identifier (provided to you at the start of the session).
 
 == Data Handling and Privacy
@@ -206,7 +206,7 @@ You have the right to:
 * Lodge a complaint with the Information Commissioner's Office (ICO) at
   https://ico.org.uk/ if you believe your data has been mishandled.
 
-To exercise any of these rights, contact: jonathan.jewell@open.ac.uk
+To exercise any of these rights, contact: j.d.a.jewell@open.ac.uk
 
 == Risks and Benefits
 
@@ -309,7 +309,7 @@ If you have questions about this study, please contact:
 |===
 | *Principal Investigator*
 | Jonathan D.A. Jewell +
-jonathan.jewell@open.ac.uk
+j.d.a.jewell@open.ac.uk
 
 | *PhD Supervisor*
 | [Supervisor name and contact -- to be inserted]

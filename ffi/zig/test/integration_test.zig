@@ -1,6 +1,6 @@
 // Evidence Graph Integration Tests
 // SPDX-License-Identifier: PMPL-1.0-or-later
-// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //
 // These tests verify that the Zig FFI correctly implements the Idris2 ABI
 // for Evidence Graph domain operations.

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # Trustfile - cryptographic verification reference for Evidence Graph (bofig)
 #
@@ -33,7 +33,7 @@ verification:
       run: "sha3sum -a 512 _build/prod/rel/evidence_graph/bin/evidence_graph"
 
   provenance:
-    author: "Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"
+    author: "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
     repository: "https://github.com/Hyperpolymath/bofig"
     ci_cd: ".github/workflows/trustfile.yml"
     transparency_log: "https://evidencegraph.org/.well-known/transparency-log"

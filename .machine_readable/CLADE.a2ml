@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "22b86e25-80b5-514e-b839-d167ca7adf31"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "bofig"
+prefixed-name = "dx-bofig"
+
+[clade]
+primary = "dx"
+secondary = []
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/bofig"
+gitlab = "hyperpolymath/bofig"
+bitbucket = "hyperpolymath/bofig"
+
+[lineage]
+type = "standalone"
+parent = "Configuration tool"
+born = "2026-03-16"

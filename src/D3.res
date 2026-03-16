@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // D3.js bindings for ReScript
 
 type selection

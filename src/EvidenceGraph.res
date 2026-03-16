@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
 // Evidence Graph Visualization with D3.js
 // Interactive force-directed graph for Claims and Evidence
 

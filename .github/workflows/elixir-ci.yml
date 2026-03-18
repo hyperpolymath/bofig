@@ -1,15 +1,18 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-permissions: read-all
+permissions:
+  contents: read
 
 name: Elixir CI
 on: [push, pull_request]
-npermissions: read-all
+npermissions:
+  contents: read
 
 
 jobs:
   test:
     runs-on: ubuntu-latest
-npermissions: read-all
+npermissions:
+  contents: read
 
     env:
       MIX_ENV: test
@@ -18,10 +21,12 @@ npermissions: read-all
       - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1
         with:
           otp-version: '26'
-npermissions: read-all
+npermissions:
+  contents: read
 
           elixir-version: '1.15'
-npermissions: read-all
+npermissions:
+  contents: read
 
       
       - name: Cache deps

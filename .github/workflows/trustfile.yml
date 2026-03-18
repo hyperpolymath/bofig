@@ -14,7 +14,8 @@ on:
     paths:
       - 'bofig.trustfile.a2ml'
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   validate:

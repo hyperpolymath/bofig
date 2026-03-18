@@ -1,22 +1,26 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-permissions: read-all
+permissions:
+  contents: read
 
 name: ReScript/Deno CI
 on: [push, pull_request]
-npermissions: read-all
+npermissions:
+  contents: read
 
 
 jobs:
   build:
     runs-on: ubuntu-latest
-npermissions: read-all
+npermissions:
+  contents: read
 
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
       - uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2
         with:
           deno-version: v1.x
-npermissions: read-all
+npermissions:
+  contents: read
 
 
       - name: Deno lint
@@ -40,7 +44,8 @@ npermissions: read-all
 
   security:
     runs-on: ubuntu-latest
-npermissions: read-all
+npermissions:
+  contents: read
 
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6

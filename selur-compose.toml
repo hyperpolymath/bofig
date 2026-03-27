@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# bofig (Evidence Graph) — Stapeln/Selur service definition.
+#
+# Infrastructure for pragmatic epistemology in investigative journalism.
+# Elixir/Phoenix with Absinthe GraphQL, LiveView, and D3.js visualisation.
+# Multi-stage build: hexpm/elixir builder + Debian bookworm runtime.
+#
+# Architecture pipeline:
+#   Docudactyl (extraction) -> Lithoglyph (storage + provenance) <- bofig (queries)
+#
+# Ports:
+#   4000 — Phoenix web + GraphQL API
+#
+# Usage:
+#   podman-compose -f selur-compose.toml up -d
+#   just stack-up
+#
+# Required secrets (set via environment or .env file):
+#   SECRET_KEY_BASE       — Phoenix secret key (mix phx.gen.secret)
+#   ARANGO_PASSWORD       — ArangoDB root password (Phase 2: relationships only)
+#   LITHOGLYPH_API_KEY    — Lithoglyph API key (Phase 2: primary store)
+
+[project]
+name = "bofig"
+
+# =============================================================================
+# VeriSimDB — Persistent store for evidence metadata (internal only)
+# =============================================================================
+[services.verisimdb]
+build = { context = "../nextgen-databases/verisimdb", dockerfile = "Containerfile" }
+restart = "unless-stopped"
+networks = ["bofig-internal"]
+healthcheck = { test = "wget -q --spider http://localhost:8080/health || exit 1", interval = "30s", timeout = "5s", retries = 3 }
+volumes = ["verisimdb-data:/data"]
+
+# =============================================================================
+# Evidence Graph — Phoenix application
+# =============================================================================
+[services.app]
+build = { context = ".", dockerfile = "Containerfile" }
+depends_on = { verisimdb = { condition = "service_healthy" } }
+restart = "unless-stopped"
+ports = ["4000:4000"]
+networks = ["bofig-internal"]
+environment = [
+  "PORT=4000",
+  "PHX_HOST=localhost",
+  "MIX_ENV=prod",
+  "LANG=en_US.UTF-8",
+  "VERISIMDB_URL=http://verisimdb:8080",
+  # ArangoDB retained for relationship graph edges (Phase 2).
+  "ARANGO_ENDPOINT=http://arangodb:8529",
+  "ARANGO_DATABASE=evidence_graph",
+  "ARANGO_USERNAME=root",
+]
+# Secrets — inject at deploy time via environment or .env file:
+#   SECRET_KEY_BASE=<mix phx.gen.secret>
+#   ARANGO_PASSWORD=<arangodb password>
+#   LITHOGLYPH_API_KEY=<lithoglyph key>
+healthcheck = { test = "curl -f http://localhost:4000/api/health || exit 1", interval = "30s", timeout = "5s", retries = 3 }
+
+# =============================================================================
+# Networks
+# =============================================================================
+[networks.bofig-internal]
+driver = "bridge"
+
+# =============================================================================
+# Volumes
+# =============================================================================
+[volumes.verisimdb-data]
+driver = "local"

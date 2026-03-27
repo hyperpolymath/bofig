@@ -255,12 +255,12 @@ graphql-example:
 
 # --- SECURITY ---
 
-# Run security audit suite
-security:
-    @echo "=== Security Audit ==="
+# Run security scan (gitleaks + trivy)
+security-scan:
+    @echo "=== Security Scan ==="
     @command -v gitleaks >/dev/null && gitleaks detect --source . --verbose || echo "gitleaks not found"
     @command -v trivy >/dev/null && trivy fs --severity HIGH,CRITICAL . || echo "trivy not found"
-    @echo "Security audit complete"
+    @echo "Security scan complete"
 
 # Scan for vulnerabilities in dependencies
 audit:

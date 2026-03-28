@@ -28,7 +28,7 @@ defmodule EvidenceGraph.PipelineContractTest do
   # Source file paths (relative to Eclipse drive repo root)
   # ---------------------------------------------------------------------------
 
-  @repos_root "/var/mnt/eclipse/repos"
+  @repos_root "/var$REPOS_DIR"
 
   @docudactyl_lith_adapter Path.join(
                               @repos_root,

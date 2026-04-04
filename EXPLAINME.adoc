@@ -3,12 +3,39 @@
 :toc:
 :icons: font
 
-The README makes claims. This file backs them up.
+The README makes claims. This file backs them up with evidence.
 
-[quote, README]
+== Key Claims From README
+
+[quote, README section "Vision"]
 ____
-An evidence graph for investigative journalism.
+We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. *This system IS that infrastructure.*
 ____
+
+*Evidence:* The project implements three interdependent epistemological systems (lines 62-72):
+1. **PROMPT Framework**: 6-dimensional epistemological scoring (Provenance, Replicability, Objective, Methodology, Publication, Transparency) with audience weighting
+2. **i-docs Navigation**: Interactive document navigation enabling reader agency and multiple perspectives
+3. **Boundary Objects**: Same evidence folded into different forms for different audiences (researcher, policymaker, skeptic, activist, affected person, journalist)
+
+The implementation is proven by the test dataset (UK Inflation 2023) with 7 claims, 30 evidence items, and 38 relationships across 3 navigation paths (lines 318-331). Each path weights PROMPT dimensions differently per audience type, proving the infrastructure exists.
+
+*Caveat:* The system enables multiple perspectives but does not resolve disagreement — it makes epistemology visible and navigable, not unified.
+
+[quote, README section "Quick Start" and "Project Structure"]
+____
+Implemented (v1.0.0): Multi-model ArangoDB integration (document + graph), GraphQL API with Absinthe (15 queries, 11 mutations), PROMPT epistemological scoring (6 dimensions, audience weighting), Claims, Evidence, Relationships, Navigation Paths data models
+____
+
+*Evidence:* The project structure (lines 272-306) shows functional implementation:
+- `lib/evidence_graph/` — 43 Elixir modules (claims, evidence, relationships, navigation, ArangoDB client, PROMPT scoring)
+- `lib/evidence_graph_web/` — Phoenix web layer with Absinthe GraphQL schema
+- `priv/repo/seeds.exs` — UK Inflation test data loaded
+- 257 tests (line 418), 0 failures
+- Full RSR compliance (line 418)
+
+The GraphQL examples (lines 124-270) demonstrate working queries and mutations for claims, evidence chains, navigation paths, and Zotero imports.
+
+*Caveat:* Phase 1 (v1.0.0) is production-ready for single investigations. Phase 2 (migrations to Lithoglyph, browser extensions, multi-investigation dashboards) is in design stages.
 
 == Technology Choices
 
@@ -16,30 +43,42 @@ ____
 |===
 | Technology | Learn More
 
-| **Elixir** | https://elixir-lang.org
-| **Zig** | https://ziglang.org
-| **Idris2 ABI** | https://www.idris-lang.org
+| **Elixir 1.16+** | https://elixir-lang.org (Phoenix framework, OTP supervision)
+| **Phoenix 1.7+** | Web framework with LiveView (real-time UI)
+| **Absinthe** | GraphQL implementation (15 queries, 11 mutations)
+| **ArangoDB 3.11+** | Multi-model database (documents + graph)
+| **Lithoglyph** | Narrative-first database (Phase 2 migration, provenance layer)
+| **D3.js** | Graph visualization + radar charts
 |===
 
 == Dogfooded Across The Account
 
-Uses the hyperpolymath ABI/FFI standard (Idris2 + Zig). Same pattern used across
-https://github.com/hyperpolymath/proven[proven],
-https://github.com/hyperpolymath/burble[burble], and
-https://github.com/hyperpolymath/gossamer[gossamer].
+Uses hyperpolymath architecture patterns:
+- Elixir for distributed systems (OTP, concurrency, fault tolerance)
+- Lithoglyph integration as provenance layer (Phase 2)
+- PROMPT scoring as measurable epistemology (custom domain)
 
-== File Map
+== File Map: Key Modules
 
 [cols="1,2"]
 |===
 | Path | What's There
 
-| `src/` | Source code
-| `lib/` | Library code
-| `ffi/` | Foreign function interface
-| `test(s)/` | Test suite
+| `lib/evidence_graph/claims/` | Claim CRUD + PROMPT scoring (6 dimensions)
+| `lib/evidence_graph/evidence/` | Evidence CRUD + metadata capture
+| `lib/evidence_graph/relationships/` | Graph edges (supports/contradicts/mentions)
+| `lib/evidence_graph/navigation/` | Audience-weighted navigation paths (6 types)
+| `lib/evidence_graph/lithoglyph/` | Phase 2: Lithoglyph client + import + NER extraction
+| `lib/evidence_graph_web/schema/` | Absinthe GraphQL schema + resolvers
+| `lib/evidence_graph_web/live/` | LiveView pages (Dashboard, Investigation, Graph, PROMPT, Navigation)
+| `config/` | Environment-specific Elixir configs
+| `priv/repo/seeds.exs` | UK Inflation 2023 test dataset (7 claims, 30 evidence, 38 relationships)
+| `assets/` | D3.js graph visualization + radar charts
+| `docs/` | Technical documentation (database evaluation, Zotero integration, testing protocols)
+| `ARCHITECTURE.md` | Full data model and API design
+| `ROADMAP.md` | 18-month implementation plan (3 phases, 25 months total)
 |===
 
 == Questions?
 
-Open an issue or reach out directly — happy to explain anything in more detail.
+Open an issue in the hyperpolymath/bofig repository for questions about PROMPT scoring, narrative-first database design, evidence graph modeling, or NUJ user testing protocols.

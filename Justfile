@@ -6,6 +6,8 @@
 # Install: https://github.com/casey/just
 
 # Default recipe (list all tasks)
+import? "contractile.just"
+
 default:
     @just --list
 

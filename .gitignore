@@ -99,3 +99,11 @@ ai-cli-crash-capture/
 
 # Separate projects (not part of bofig)
 /docudactyl/
+target/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/

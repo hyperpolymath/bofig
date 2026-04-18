@@ -40,7 +40,7 @@ Currently supported versions for security updates:
 6. **Data Protection**: EU GDPR compliance, anonymized interview subjects
 7. **Transport Security**: HTTPS/TLS in production (Phase 2)
 8. **Audit Logging**: All mutations logged with user attribution
-9. **Dependency Scanning**: Automated via CI/CD (see justfile `security-scan`)
+9. **Dependency Scanning**: Automated via CI/CD (see Justfile `security-scan`)
 10. **IPFS Provenance**: (Phase 2) Tamper-evident evidence storage with hash verification
 
 ### EU GDPR Compliance
@@ -158,7 +158,7 @@ mix credo --strict
 mix dialyzer
 
 # Security-focused linting
-just security-scan  # (see justfile)
+just security-scan  # (see Justfile)
 ```
 
 ### Manual Testing

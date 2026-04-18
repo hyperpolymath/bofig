@@ -16,7 +16,7 @@ The Evidence Graph project achieves **RSR Silver Level** compliance, implementin
 - ✅ .well-known/ directory fully implemented (RFC 9116 security.txt, ai.txt, humans.txt)
 - ✅ TPCF Perimeter 3 (Community Sandbox) governance model
 - ✅ Palimpsest License v0.8 for emotional safety and reversibility
-- ✅ Task automation (justfile with 30+ recipes)
+- ✅ Task automation (Justfile with 30+ recipes)
 - ✅ CI/CD pipeline (.gitlab-ci.yml with RSR compliance checks)
 
 **Areas for Improvement:**
@@ -268,7 +268,7 @@ end
 
 ---
 
-### 12. Build System - justfile ✅
+### 12. Build System - Justfile ✅
 
 **Requirement:** Task automation with clear recipes (just, make, etc.).
 
@@ -382,7 +382,7 @@ just rsr-check
 | 9. MAINTAINERS.md | ✅ Exceeds | Emotional temperature metrics |
 | 10. CHANGELOG.md | ✅ Full | SemVer, Keep a Changelog |
 | 11. .well-known/ | ✅ Exceeds | security.txt (RFC 9116), ai.txt, humans.txt |
-| 12. justfile | ✅ Exceeds | 30+ recipes, RSR self-check |
+| 12. Justfile | ✅ Exceeds | 30+ recipes, RSR self-check |
 | 13. CI/CD | ✅ Full | GitLab CI with RSR compliance stage |
 | 14. Test Suite | ⚠️ In Progress | Seeds only, ExUnit planned Month 2 |
 | 15. TPCF Docs | ✅ Full | P3 perimeter documented |
@@ -415,7 +415,7 @@ just rsr-check
 | **Memory Safety** | Zero unsafe blocks | BEAM VM GC | Rust: manual, Elixir: automatic (both safe) |
 | **Offline-First** | No network calls | Requires database | Trade-off: Collaboration > offline (journalism context) |
 | **Dependencies** | Zero (100 LOC) | 15+ (Phoenix, Absinthe, Arangox) | Rust: minimal, Elixir: ecosystem leverage |
-| **Build System** | cargo | mix + justfile | cargo ≈ mix, justfile adds task automation |
+| **Build System** | cargo | mix + Justfile | cargo ≈ mix, Justfile adds task automation |
 
 ### Justification for Deviations
 
@@ -461,7 +461,7 @@ just rsr-check
 - Emotional safety (Palimpsest License, CCCP Code of Conduct)
 - Security (RFC 9116 security.txt, 10+ dimensions)
 - Transparency (TPCF governance, public metrics)
-- Quality (justfile automation, CI/CD)
+- Quality (Justfile automation, CI/CD)
 
 **Next Milestone:** RSR Gold (requires 80% test coverage + offline-first CRDTs)
 

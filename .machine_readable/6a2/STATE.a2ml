@@ -7,7 +7,7 @@ project = "bofig"
 version = "0.1.0"
 last-updated = "2026-04-04"
 status = "active"
-crg-grade = "C"
+crg-grade = "E"
 
 [project-context]
 name = "bofig"

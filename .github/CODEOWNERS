@@ -2,7 +2,6 @@
 # CODEOWNERS - Evidence Graph for Investigative Journalism (bofig)
 
 # Default owner for all files
-* @hyperpolymath
 
 # Core domain logic
 /lib/evidence_graph/ @hyperpolymath

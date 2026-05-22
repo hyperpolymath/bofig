@@ -139,4 +139,4 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 - HTTPS only (no HTTP URLs)
 - No hardcoded secrets
 - SHA-pinned dependencies in workflows
-- SPDX license headers on all files (`PMPL-1.0-or-later`)
+- SPDX license headers on all files (`MPL-2.0`)

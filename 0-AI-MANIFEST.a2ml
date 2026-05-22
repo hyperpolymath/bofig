@@ -1,4 +1,4 @@
-; SPDX-License-Identifier: PMPL-1.0-or-later
+; SPDX-License-Identifier: MPL-2.0
 ; Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 ;
 ; AI Manifest for Evidence Graph (bofig)
@@ -33,7 +33,7 @@
     (invariant "Audience types are: researcher, policymaker, skeptic, activist, affected_person, journalist")
     (invariant "ArangoDB collection 'evidence' is SINGULAR (not 'evidences')")
     (invariant "Relationship edges use _from/_to format: 'claims/{key}' or 'evidence/{key}'")
-    (invariant "All files require SPDX-License-Identifier: PMPL-1.0-or-later header")
+    (invariant "All files require SPDX-License-Identifier: MPL-2.0 header")
     (invariant "PostgreSQL is for user auth ONLY — all domain data lives in ArangoDB")
     (invariant "Never use Docker/Dockerfile — use Podman/Containerfile"))
 

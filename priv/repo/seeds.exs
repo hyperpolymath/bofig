@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 # UK Inflation 2023 Investigation - Test Dataset
 # Phase 1 Goal: 7 claims, 30 evidence items, 6 navigation paths

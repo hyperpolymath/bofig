@@ -8,7 +8,7 @@ Location: United Kingdom
 Name: bofig (Evidence Graph for Investigative Journalism)
 Description: Infrastructure for pragmatic epistemology in investigative journalism
 Framework: PROMPT (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
-License: PMPL-1.0-or-later
+License: MPL-2.0
 
 /* SITE */
 Language: Elixir

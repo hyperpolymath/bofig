@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 # TOPOLOGY.md - Evidence Graph (bofig)
@@ -116,7 +116,7 @@ Documentation
   DB evaluation     ██████████ 100%  ArangoDB vs SurrealDB vs Virtuoso
 
 RSR Compliance
-  SPDX headers      ██████████ 100%  PMPL-1.0-or-later on all source files
+  SPDX headers      ██████████ 100%  MPL-2.0 on all source files
   .well-known/      ██████████ 100%  security.txt, ai.txt, humans.txt
   AI manifest       ██████████ 100%  0-AI-MANIFEST.a2ml
   .machine_readable ██████████ 100%  STATE.scm, META.scm, ECOSYSTEM.scm

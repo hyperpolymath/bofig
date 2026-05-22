@@ -1,6 +1,6 @@
 # TEST-NEEDS.md — Bofig Test Coverage Report
 
-## SPDX-License-Identifier: PMPL-1.0-or-later
+## SPDX-License-Identifier: MPL-2.0
 
 **Project:** bofig (Evidence Graph Visualization Library)
 **Date:** 2026-04-04
@@ -414,7 +414,7 @@ deno lint tests/
 7. **Isolated** — Each test is independent with no shared state
 8. **Well-Documented** — Test headers explain purpose and coverage
 9. **Deno-Native** — Uses Deno test runner, no Node.js or npm required
-10. **SPDX-Licensed** — All test files carry PMPL-1.0-or-later header
+10. **SPDX-Licensed** — All test files carry MPL-2.0 header
 
 ---
 
@@ -547,4 +547,4 @@ The test suite is maintainable, idempotent, and ready for continuous integration
 
 **Generated:** 2026-04-04
 **Author:** Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com>
-**License:** PMPL-1.0-or-later
+**License:** MPL-2.0

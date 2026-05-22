@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # RFC 9116 - Security Contact Information
 Contact: mailto:j.d.a.jewell@open.ac.uk
 Expires: 2027-02-21T23:59:59.000Z

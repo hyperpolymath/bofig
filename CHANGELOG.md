@@ -182,7 +182,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Repository**: https://github.com/Hyperpolymath/bofig
 **Contributors**: @Hyperpolymath, Claude (AI assistant)
-**License**: PMPL-1.0-or-later
+**License**: MPL-2.0
 **Status**: Phase 1 PoC v1.0.0 complete
 
 ## Version Numbering

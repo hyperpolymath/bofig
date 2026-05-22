@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # bofig.trustfile.a2ml - A2ML v2.1 Cyberwar-Ready Trustfile
@@ -16,7 +16,7 @@ meta:
   a2ml_version: "2.1"
   created: "2026-02-21"
   author: "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
-  license: "PMPL-1.0-or-later"
+  license: "MPL-2.0"
 
   contexts:
     - "https://a2ml.org/v2.1"

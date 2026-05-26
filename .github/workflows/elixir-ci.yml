@@ -1,54 +1,16 @@
 # SPDX-License-Identifier: MPL-2.0
-permissions:
-  contents: read
+# Thin wrapper around hyperpolymath/standards elixir-ci-reusable.yml.
+# See standards#174 for the reusable's purpose.
 
 name: Elixir CI
 on: [push, pull_request]
-npermissions:
-  contents: read
 
+permissions:
+  contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-npermissions:
-  contents: read
-
-    env:
-      MIX_ENV: test
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1
-        with:
-          otp-version: '26'
-npermissions:
-  contents: read
-
-          elixir-version: '1.15'
-npermissions:
-  contents: read
-
-      
-      - name: Cache deps
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
-        with:
-          path: deps
-          key: deps-${{ hashFiles('mix.lock') }}
-      
-      - name: Install deps
-        run: mix deps.get
-      
-      - name: Compile
-        run: mix compile --warnings-as-errors
-      
-      - name: Credo lint
-        run: mix credo --strict
-      
-      - name: Dialyzer
-        run: mix dialyzer
-      
-      - name: Run tests
-        run: mix test --cover
-      
-      - name: Security check
-        run: mix deps.audit || true
+  elixir-ci:
+    uses: hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml@4fdf4314b4ab54269adbaff10e30e483b5e86845
+    with:
+      otp-version: "26"
+      elixir-version: "1.15"

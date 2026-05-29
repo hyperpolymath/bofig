@@ -443,10 +443,10 @@ Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
 
 == Related Projects
 
-* https://github.com/hyperpolymath/formdb[FormDB] - The narrative-first, reversible, audit-grade database
-* https://github.com/hyperpolymath/fqldt[FQLdt] - Dependently-typed Form Query Language (compile-time proofs)
-* https://github.com/hyperpolymath/formdb-studio[FormDB Studio] - Zero-friction GUI for non-technical users
-* https://github.com/hyperpolymath/zotero-formdb[Zotero-FormDB] - Reference manager with PROMPT scores
+* https://github.com/hyperpolymath/lithoglyph[LithoglyphDB] - The narrative-first, reversible, audit-grade database
+* https://github.com/hyperpolymath/gpnl[GPNL] - Dependently-typed Glyph Projection Language (compile-time proofs)
+* https://github.com/hyperpolymath/lithoglyph-studio[Lithoglyph Studio] - Zero-friction GUI for non-technical users
+* https://github.com/hyperpolymath/zotero-formdb[Zotero-Lithoglyph] - Reference manager with PROMPT scores
 
 == License
 

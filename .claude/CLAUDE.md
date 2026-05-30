@@ -114,19 +114,19 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 | Language/Tool | Use Case | Notes |
 |---------------|----------|-------|
 | **Elixir** | This project's primary language | Phoenix, LiveView, Absinthe |
-| **ReScript** | Primary application code | Compiles to JS, type-safe |
+| **AffineScript** | Primary application code | Affine-typed, compiles to typed-wasm or Deno-ESM |
 | **Deno** | Runtime & package management | Replaces Node/npm/bun |
 | **Rust** | Performance-critical, systems, WASM | Preferred for CLI tools |
 | **Gleam** | Backend services | Runs on BEAM or compiles to JS |
 | **Bash/POSIX Shell** | Scripts, automation | Keep minimal |
-| **JavaScript** | Only where ReScript cannot | D3.js hooks in this project |
+| **JavaScript** | Only where AffineScript cannot | D3.js hooks in this project |
 | **Guile Scheme** | State/meta files | .machine_readable/6a2/STATE.a2ml, .machine_readable/6a2/META.a2ml, .machine_readable/6a2/ECOSYSTEM.a2ml |
 
 ### BANNED - Do Not Use
 
 | Banned | Replacement |
 |--------|-------------|
-| TypeScript | ReScript |
+| TypeScript | AffineScript |
 | Node.js | Deno |
 | npm/Bun/pnpm/yarn | Deno |
 | Go | Rust |

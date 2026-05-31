@@ -33,10 +33,12 @@ defmodule EvidenceGraph.Accounts do
 
   ## Examples
 
-      iex> get_user_by_email_and_password("foo@example.com", "correct_password")
+      iex> password = "valid password phrase"
+      iex> get_user_by_email_and_password("foo@example.com", password)
       %User{}
 
-      iex> get_user_by_email_and_password("foo@example.com", "invalid_password")
+      iex> password = "wrong password phrase"
+      iex> get_user_by_email_and_password("foo@example.com", password)
       nil
 
   """

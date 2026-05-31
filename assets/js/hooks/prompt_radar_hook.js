@@ -34,14 +34,14 @@ const PromptRadarHook = {
   },
 
   destroyed() {
-    this.container.innerHTML = "";
+    this.container.replaceChildren();
   },
 
   renderRadar(data) {
     const { scores, weights, audience } = data;
     if (!scores) return;
 
-    this.container.innerHTML = "";
+    this.container.replaceChildren();
 
     const size = Math.min(this.container.clientWidth || 400, 400);
     const margin = 60;
@@ -160,13 +160,15 @@ const PromptRadarHook = {
       this._centerY,
       this._radius,
       audience,
-      color
+      color,
     );
   },
 
-  _drawWeightRing(g, weights, cx, cy, radius, audience, color) {
+  _drawWeightRing(g, weights, cx, cy, radius, _audience, color) {
     const fillColor = color || "rgba(76, 175, 80, 0.15)";
-    const strokeColor = color ? color.replace("0.15", "0.8") : "rgba(76, 175, 80, 0.6)";
+    const strokeColor = color
+      ? color.replace("0.15", "0.8")
+      : "rgba(76, 175, 80, 0.6)";
 
     // Weight polygon (normalised: max weight maps to outer ring)
     const maxWeight = Math.max(...Object.values(weights));

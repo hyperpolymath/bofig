@@ -12,7 +12,7 @@ defmodule EvidenceGraph.Lithoglyph.Client do
 
       config :evidence_graph, EvidenceGraph.Lithoglyph.Client,
         base_url: "http://localhost:8080",
-        api_key: "lith_dev_key",
+        api_key: System.fetch_env!("LITHOGLYPH_API_KEY"),
         timeout: 30_000
   """
 

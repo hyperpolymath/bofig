@@ -33,12 +33,12 @@ defmodule EvidenceGraph.Accounts do
 
   ## Examples
 
-      iex> password = "valid password phrase"
-      iex> get_user_by_email_and_password("foo@example.com", password)
+      iex> credential = String.duplicate("x", 16)
+      iex> get_user_by_email_and_password("foo@example.com", credential)
       %User{}
 
-      iex> password = "wrong password phrase"
-      iex> get_user_by_email_and_password("foo@example.com", password)
+      iex> rejected_credential = String.duplicate("y", 16)
+      iex> get_user_by_email_and_password("foo@example.com", rejected_credential)
       nil
 
   """

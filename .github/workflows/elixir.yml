@@ -65,7 +65,7 @@ jobs:
     - name: Wait for ArangoDB
       run: |
         for attempt in $(seq 1 30); do
-          if curl -fsS http://localhost:8529/_api/version >/dev/null; then
+          if curl -fsS -u "root:${ARANGO_PASSWORD}" http://localhost:8529/_api/version >/dev/null; then
             exit 0
           fi
           sleep 2

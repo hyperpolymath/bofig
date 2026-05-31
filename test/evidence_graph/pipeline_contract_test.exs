@@ -12,6 +12,7 @@
 
 defmodule EvidenceGraph.PipelineContractTest do
   use ExUnit.Case, async: true
+  @moduletag :external_repo_contract
 
   @moduledoc """
   Static contract validation for the Docudactyl -> Lithoglyph -> Bofig pipeline.
@@ -25,35 +26,36 @@ defmodule EvidenceGraph.PipelineContractTest do
   """
 
   # ---------------------------------------------------------------------------
-  # Source file paths (relative to Eclipse drive repo root)
+  # Source file paths (relative to a workspace containing the pipeline repos)
   # ---------------------------------------------------------------------------
 
-  @repos_root "/var$REPOS_DIR"
+  @bofig_root Path.expand("../..", __DIR__)
+
+  @repos_root System.get_env("PIPELINE_REPOS_ROOT") ||
+                System.get_env("REPOS_DIR") ||
+                Path.expand("..", @bofig_root)
 
   @docudactyl_lith_adapter Path.join(
-                              @repos_root,
-                              "docudactyl/ffi/zig/src/lith_adapter.zig"
-                            )
+                             @repos_root,
+                             "docudactyl/ffi/zig/src/lith_adapter.zig"
+                           )
 
   @lithoglyph_openapi Path.join(
-                         @repos_root,
-                         "nextgen-databases/lithoglyph/api/spec/openapi.yaml"
-                       )
+                        @repos_root,
+                        "nextgen-databases/lithoglyph/api/spec/openapi.yaml"
+                      )
 
   @lithoglyph_graphql Path.join(
-                         @repos_root,
-                         "nextgen-databases/lithoglyph/api/graphql/bofig_ingest.graphql"
-                       )
+                        @repos_root,
+                        "nextgen-databases/lithoglyph/api/graphql/bofig_ingest.graphql"
+                      )
 
   @lithoglyph_proto Path.join(
-                       @repos_root,
-                       "nextgen-databases/lithoglyph/api/proto/bofig_ingest.proto"
-                     )
+                      @repos_root,
+                      "nextgen-databases/lithoglyph/api/proto/bofig_ingest.proto"
+                    )
 
-  @bofig_importer Path.join(
-                     @repos_root,
-                     "bofig/lib/evidence_graph/lithoglyph/importer.ex"
-                   )
+  @bofig_importer Path.join(@bofig_root, "lib/evidence_graph/lithoglyph/importer.ex")
 
   # ---------------------------------------------------------------------------
   # Canonical contract definitions
@@ -112,7 +114,7 @@ defmodule EvidenceGraph.PipelineContractTest do
         flunk(
           "Cannot read source file #{path}: #{inspect(reason)}. " <>
             "Ensure all three repos (docudactyl, lithoglyph, bofig) are " <>
-            "present under #{@repos_root}."
+            "present under #{@repos_root}, or set PIPELINE_REPOS_ROOT."
         )
     end
   end
@@ -581,7 +583,9 @@ defmodule EvidenceGraph.PipelineContractTest do
       [_, body] ->
         String.split(body, "\n")
         |> Enum.map(&String.trim/1)
-        |> Enum.reject(&(&1 == "" or String.starts_with?(&1, "#") or String.starts_with?(&1, "\"")))
+        |> Enum.reject(
+          &(&1 == "" or String.starts_with?(&1, "#") or String.starts_with?(&1, "\""))
+        )
         |> MapSet.new()
 
       nil ->

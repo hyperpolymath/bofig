@@ -72,5 +72,7 @@ jobs:
         done
         echo "::error::ArangoDB did not become ready"
         exit 1
+    - name: Set up ArangoDB schema
+      run: mix arango.setup
     - name: Run tests
       run: mix test

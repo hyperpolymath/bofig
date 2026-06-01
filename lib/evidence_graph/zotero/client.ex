@@ -11,7 +11,7 @@ defmodule EvidenceGraph.Zotero.Client do
   ## Configuration
 
       config :evidence_graph, EvidenceGraph.Zotero.Client,
-        api_key: "your-zotero-api-key",
+        api_key: System.fetch_env!("ZOTERO_API_KEY"),
         user_id: "12345",
         library_type: :user  # or :group
   """
@@ -20,10 +20,10 @@ defmodule EvidenceGraph.Zotero.Client do
 
   @base_url "https://api.zotero.org"
 
-  plug Tesla.Middleware.BaseUrl, @base_url
-  plug Tesla.Middleware.JSON
-  plug Tesla.Middleware.Headers, [{"zotero-api-version", "3"}]
-  plug Tesla.Middleware.Retry, delay: 1_000, max_retries: 3
+  plug(Tesla.Middleware.BaseUrl, @base_url)
+  plug(Tesla.Middleware.JSON)
+  plug(Tesla.Middleware.Headers, [{"zotero-api-version", "3"}])
+  plug(Tesla.Middleware.Retry, delay: 1_000, max_retries: 3)
 
   @doc """
   Build a client with the configured API key.

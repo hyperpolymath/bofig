@@ -20,14 +20,40 @@ jobs:
 
     name: Build and test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MIX_ENV: test
+      POSTGRES_PASSWORD: ${{ github.run_id }}
+      ARANGO_USERNAME: root
+      ARANGO_PASSWORD: ${{ github.run_id }}
+
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:79950da386bda7fcc9d57aa9aa9be6c6d7407596a9b8f68014b09a778a9ab316
+        env:
+          POSTGRES_PASSWORD: ${{ github.run_id }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      arangodb:
+        image: arangodb:3.12@sha256:95567b13d74dbec3869468f88c31a53ae598fa5f90e0e2e582df89b7b6893ae7
+        env:
+          ARANGO_ROOT_PASSWORD: ${{ github.run_id }}
+        ports:
+          - 8529:8529
 
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
     - name: Set up Elixir
       uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
       with:
-        elixir-version: '1.15.2' # [Required] Define the Elixir version
-        otp-version: '26.0'      # [Required] Define the Erlang/OTP version
+        elixir-version: '1.18.2'
+        otp-version: '27.2.1'
     - name: Restore dependencies cache
       uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5
       with:
@@ -36,5 +62,15 @@ jobs:
         restore-keys: ${{ runner.os }}-mix-
     - name: Install dependencies
       run: mix deps.get
+    - name: Wait for ArangoDB
+      run: |
+        for attempt in $(seq 1 30); do
+          if curl -fsS -u "root:${ARANGO_PASSWORD}" http://localhost:8529/_api/version >/dev/null; then
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "::error::ArangoDB did not become ready"
+        exit 1
     - name: Run tests
       run: mix test

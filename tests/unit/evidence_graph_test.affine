@@ -1,0 +1,347 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+//
+// Unit tests for EvidenceGraph data structures — AffineScript port.
+// Campaign #239 STEP 4-C SEED port (hyperpolymath/standards#239 / #243).
+//
+// Port shape (STEP-2 pattern, cf. session-sentinel/tests/validate.test.affine):
+//   - Each `Deno.test("name", async (t) => { ... })` / `await t.step(...)`
+//     flattens into a sequential `pub fn test_<name>() -> Bool` that
+//     returns true on pass and false (with stderr line) on fail.
+//   - The .ts source `throws` on bad factory input + `try/catch` to assert
+//     the throw — AS this Deno-ESM backend has no user-throwable exception
+//     surface, so `create_node`/`create_link` return `Option<Node>` /
+//     `Option<Link>` (None on rejected input) and negative tests check
+//     for `None`. Semantics equivalent: every caller must validate before
+//     unwrapping.
+//   - `main()` drives the test list with a `run_one` reporter and exits
+//     non-zero on any failure.
+
+use prelude::{Option, Some, None};
+use Deno::{consoleError, exit};
+
+// ── Data model ─────────────────────────────────────────────────────
+
+pub type Node = {
+  id: String,
+  label: String,
+  node_type: String,
+  prompt_score: Float
+}
+
+pub type Link = {
+  source: String,
+  target: String,
+  relationship: String
+}
+
+pub type GraphData = {
+  nodes: [Node],
+  links: [Link]
+}
+
+// ── Factories with validation ──────────────────────────────────────
+
+pub fn create_node(id: String, label: String, node_type: String, prompt_score: Float) -> Option<Node> {
+  if len(id) == 0 { return None; }
+  if len(label) == 0 { return None; }
+  if prompt_score < 0.0 { return None; }
+  if prompt_score > 100.0 { return None; }
+  Some(#{ id: id, label: label, node_type: node_type, prompt_score: prompt_score })
+}
+
+pub fn create_link(source: String, target: String, relationship: String) -> Option<Link> {
+  if len(source) == 0 { return None; }
+  if len(target) == 0 { return None; }
+  if len(relationship) == 0 { return None; }
+  Some(#{ source: source, target: target, relationship: relationship })
+}
+
+pub fn create_graph_data(nodes: [Node], links: [Link]) -> GraphData {
+  #{ nodes: nodes, links: links }
+}
+
+pub fn empty_graph() -> GraphData {
+  #{ nodes: [], links: [] }
+}
+
+// ── Test helpers ───────────────────────────────────────────────────
+
+fn fail_msg(msg: String) -> Bool {
+  let _r = consoleError("  FAIL: " ++ msg);
+  false
+}
+
+fn check_eq_str(actual: String, expected: String, label: String) -> Bool {
+  if actual == expected { true }
+  else { fail_msg(label ++ " — got '" ++ actual ++ "', expected '" ++ expected ++ "'") }
+}
+
+fn check_eq_int(actual: Int, expected: Int, label: String) -> Bool {
+  if actual == expected { true }
+  else { fail_msg(label ++ " — got " ++ int_to_string(actual) ++ ", expected " ++ int_to_string(expected)) }
+}
+
+fn check_eq_float(actual: Float, expected: Float, label: String) -> Bool {
+  if actual == expected { true }
+  else { fail_msg(label ++ " — got " ++ float_to_string(actual) ++ ", expected " ++ float_to_string(expected)) }
+}
+
+fn check_true(condition: Bool, label: String) -> Bool {
+  if condition { true } else { fail_msg(label) }
+}
+
+fn check_none_node(opt: Option<Node>, label: String) -> Bool {
+  match opt {
+    None => true,
+    Some(_) => fail_msg(label ++ " — expected None, got Some")
+  }
+}
+
+fn check_none_link(opt: Option<Link>, label: String) -> Bool {
+  match opt {
+    None => true,
+    Some(_) => fail_msg(label ++ " — expected None, got Some")
+  }
+}
+
+fn unwrap_node(opt: Option<Node>) -> Node {
+  match opt {
+    Some(n) => n,
+    None => #{ id: "INVALID", label: "INVALID", node_type: "INVALID", prompt_score: 0.0 }
+  }
+}
+
+fn unwrap_link(opt: Option<Link>) -> Link {
+  match opt {
+    Some(l) => l,
+    None => #{ source: "INVALID", target: "INVALID", relationship: "INVALID" }
+  }
+}
+
+// ── Unit Tests: Node Creation ──────────────────────────────────────
+
+pub fn test_node_create_claim() -> Bool {
+  let n = unwrap_node(create_node("claim_1", "Climate change is occurring", "claim", 85.5));
+  if !check_eq_str(n.id, "claim_1", "claim node id") { return false; }
+  if !check_eq_str(n.label, "Climate change is occurring", "claim node label") { return false; }
+  if !check_eq_str(n.node_type, "claim", "claim node type") { return false; }
+  check_eq_float(n.prompt_score, 85.5, "claim node prompt_score")
+}
+
+pub fn test_node_create_evidence() -> Bool {
+  let n = unwrap_node(create_node("evidence_1", "IPCC AR6 Report", "evidence", 92.0));
+  if !check_eq_str(n.id, "evidence_1", "evidence node id") { return false; }
+  if !check_eq_str(n.label, "IPCC AR6 Report", "evidence node label") { return false; }
+  if !check_eq_str(n.node_type, "evidence", "evidence node type") { return false; }
+  check_eq_float(n.prompt_score, 92.0, "evidence node prompt_score")
+}
+
+pub fn test_node_custom_type() -> Bool {
+  let n = unwrap_node(create_node("node_1", "Label", "custom-type", 50.0));
+  check_eq_str(n.node_type, "custom-type", "custom node_type")
+}
+
+pub fn test_node_reject_empty_id() -> Bool {
+  check_none_node(create_node("", "Label", "claim", 50.0), "empty id rejected")
+}
+
+pub fn test_node_reject_empty_label() -> Bool {
+  check_none_node(create_node("id_1", "", "claim", 50.0), "empty label rejected")
+}
+
+pub fn test_node_reject_negative_score() -> Bool {
+  check_none_node(create_node("id_1", "Label", "claim", 0.0 - 1.0), "negative prompt_score rejected")
+}
+
+pub fn test_node_reject_score_over_100() -> Bool {
+  check_none_node(create_node("id_1", "Label", "claim", 101.0), "prompt_score > 100 rejected")
+}
+
+pub fn test_node_boundary_score_0() -> Bool {
+  let n = unwrap_node(create_node("id_1", "Label", "claim", 0.0));
+  check_eq_float(n.prompt_score, 0.0, "boundary prompt_score 0")
+}
+
+pub fn test_node_boundary_score_100() -> Bool {
+  let n = unwrap_node(create_node("id_2", "Label", "claim", 100.0));
+  check_eq_float(n.prompt_score, 100.0, "boundary prompt_score 100")
+}
+
+// ── Unit Tests: Link Creation ──────────────────────────────────────
+
+pub fn test_link_supports() -> Bool {
+  let l = unwrap_link(create_link("evidence_1", "claim_1", "supports"));
+  if !check_eq_str(l.source, "evidence_1", "supports link source") { return false; }
+  if !check_eq_str(l.target, "claim_1", "supports link target") { return false; }
+  check_eq_str(l.relationship, "supports", "supports link relationship")
+}
+
+pub fn test_link_contradicts() -> Bool {
+  let l = unwrap_link(create_link("evidence_2", "claim_1", "contradicts"));
+  if !check_eq_str(l.source, "evidence_2", "contradicts link source") { return false; }
+  if !check_eq_str(l.target, "claim_1", "contradicts link target") { return false; }
+  check_eq_str(l.relationship, "contradicts", "contradicts link relationship")
+}
+
+pub fn test_link_contextualizes() -> Bool {
+  let l = unwrap_link(create_link("evidence_3", "claim_1", "contextualizes"));
+  if !check_eq_str(l.source, "evidence_3", "contextualizes link source") { return false; }
+  if !check_eq_str(l.target, "claim_1", "contextualizes link target") { return false; }
+  check_eq_str(l.relationship, "contextualizes", "contextualizes link relationship")
+}
+
+pub fn test_link_custom_relationship() -> Bool {
+  let l = unwrap_link(create_link("node_1", "node_2", "mentions"));
+  check_eq_str(l.relationship, "mentions", "custom relationship")
+}
+
+pub fn test_link_reject_empty_source() -> Bool {
+  check_none_link(create_link("", "target", "supports"), "empty source rejected")
+}
+
+pub fn test_link_reject_empty_target() -> Bool {
+  check_none_link(create_link("source", "", "supports"), "empty target rejected")
+}
+
+pub fn test_link_reject_empty_relationship() -> Bool {
+  check_none_link(create_link("source", "target", ""), "empty relationship rejected")
+}
+
+// ── Unit Tests: GraphData Structure ────────────────────────────────
+
+pub fn test_graph_empty() -> Bool {
+  let g = empty_graph();
+  if !check_eq_int(len(g.nodes), 0, "empty graph nodes length") { return false; }
+  check_eq_int(len(g.links), 0, "empty graph links length")
+}
+
+pub fn test_graph_with_nodes() -> Bool {
+  let n1 = unwrap_node(create_node("claim_1", "Test claim", "claim", 75.0));
+  let n2 = unwrap_node(create_node("evidence_1", "Test evidence", "evidence", 80.0));
+  let g = create_graph_data([n1, n2], []);
+  if !check_eq_int(len(g.nodes), 2, "graph node count") { return false; }
+  if !check_eq_str(g.nodes[0].id, "claim_1", "first node id") { return false; }
+  check_eq_str(g.nodes[1].id, "evidence_1", "second node id")
+}
+
+pub fn test_graph_with_links() -> Bool {
+  let n1 = unwrap_node(create_node("claim_1", "Test claim", "claim", 75.0));
+  let n2 = unwrap_node(create_node("evidence_1", "Test evidence", "evidence", 80.0));
+  let l1 = unwrap_link(create_link("evidence_1", "claim_1", "supports"));
+  let g = create_graph_data([n1, n2], [l1]);
+  if !check_eq_int(len(g.links), 1, "graph link count") { return false; }
+  check_eq_str(g.links[0].source, "evidence_1", "link source")
+}
+
+pub fn test_graph_complex() -> Bool {
+  let n1 = unwrap_node(create_node("claim_1", "Main claim", "claim", 85.0));
+  let n2 = unwrap_node(create_node("claim_2", "Sub-claim", "claim", 70.0));
+  let n3 = unwrap_node(create_node("evidence_1", "First evidence", "evidence", 90.0));
+  let n4 = unwrap_node(create_node("evidence_2", "Second evidence", "evidence", 75.0));
+  let l1 = unwrap_link(create_link("evidence_1", "claim_1", "supports"));
+  let l2 = unwrap_link(create_link("evidence_2", "claim_1", "supports"));
+  let l3 = unwrap_link(create_link("claim_1", "claim_2", "contextualizes"));
+  let g = create_graph_data([n1, n2, n3, n4], [l1, l2, l3]);
+  if !check_eq_int(len(g.nodes), 4, "complex graph node count") { return false; }
+  check_eq_int(len(g.links), 3, "complex graph link count")
+}
+
+// ── Unit Tests: Null/Undefined Handling ────────────────────────────
+//
+// AffineScript is statically typed and has no `null` / `undefined`
+// (Option<T> models absence explicitly). The TS-source tests that
+// passed `null as unknown as string` are vacuous in AS — the compiler
+// rejects them. We retain a representative shape (empty inputs) as
+// the AS equivalent of "the factory rejects ill-formed inputs", which
+// is what the TS source's null/undefined assertions ultimately checked.
+
+pub fn test_null_handling_via_empty_id() -> Bool {
+  check_none_node(create_node("", "Label", "claim", 50.0), "AS empty-id stand-in for null id")
+}
+
+pub fn test_null_handling_via_empty_label() -> Bool {
+  check_none_node(create_node("id_1", "", "claim", 50.0), "AS empty-label stand-in for undefined label")
+}
+
+pub fn test_null_handling_empty_arrays() -> Bool {
+  let g = create_graph_data([], []);
+  if !check_eq_int(len(g.nodes), 0, "empty arrays graph nodes length") { return false; }
+  check_eq_int(len(g.links), 0, "empty arrays graph links length")
+}
+
+// ── Unit Tests: Field Access ───────────────────────────────────────
+
+pub fn test_access_all_node_fields() -> Bool {
+  let n = unwrap_node(create_node("test_1", "Test Node", "custom", 42.5));
+  if !check_eq_str(n.id, "test_1", "node.id access") { return false; }
+  if !check_eq_str(n.label, "Test Node", "node.label access") { return false; }
+  if !check_eq_str(n.node_type, "custom", "node.node_type access") { return false; }
+  check_eq_float(n.prompt_score, 42.5, "node.prompt_score access")
+}
+
+pub fn test_access_all_link_fields() -> Bool {
+  let l = unwrap_link(create_link("source_1", "target_1", "test-rel"));
+  if !check_eq_str(l.source, "source_1", "link.source access") { return false; }
+  if !check_eq_str(l.target, "target_1", "link.target access") { return false; }
+  check_eq_str(l.relationship, "test-rel", "link.relationship access")
+}
+
+// ── Driver ─────────────────────────────────────────────────────────
+
+fn run_one(name: String, ok: Bool) -> Int {
+  if ok {
+    println("  ok " ++ name);
+    return 0;
+  }
+  println("  FAIL " ++ name);
+  return 1;
+}
+
+pub fn main() -> Int {
+  let mut failed = 0;
+
+  // Node Creation
+  failed = failed + run_one("node: create claim node", test_node_create_claim());
+  failed = failed + run_one("node: create evidence node", test_node_create_evidence());
+  failed = failed + run_one("node: custom type", test_node_custom_type());
+  failed = failed + run_one("node: reject empty id", test_node_reject_empty_id());
+  failed = failed + run_one("node: reject empty label", test_node_reject_empty_label());
+  failed = failed + run_one("node: reject negative prompt_score", test_node_reject_negative_score());
+  failed = failed + run_one("node: reject prompt_score > 100", test_node_reject_score_over_100());
+  failed = failed + run_one("node: boundary prompt_score 0", test_node_boundary_score_0());
+  failed = failed + run_one("node: boundary prompt_score 100", test_node_boundary_score_100());
+
+  // Link Creation
+  failed = failed + run_one("link: supports", test_link_supports());
+  failed = failed + run_one("link: contradicts", test_link_contradicts());
+  failed = failed + run_one("link: contextualizes", test_link_contextualizes());
+  failed = failed + run_one("link: custom relationship", test_link_custom_relationship());
+  failed = failed + run_one("link: reject empty source", test_link_reject_empty_source());
+  failed = failed + run_one("link: reject empty target", test_link_reject_empty_target());
+  failed = failed + run_one("link: reject empty relationship", test_link_reject_empty_relationship());
+
+  // GraphData Structure
+  failed = failed + run_one("graph: empty", test_graph_empty());
+  failed = failed + run_one("graph: with nodes", test_graph_with_nodes());
+  failed = failed + run_one("graph: with links", test_graph_with_links());
+  failed = failed + run_one("graph: complex", test_graph_complex());
+
+  // Null/Undefined Handling (AS stand-ins via empty inputs)
+  failed = failed + run_one("null: empty id rejected", test_null_handling_via_empty_id());
+  failed = failed + run_one("null: empty label rejected", test_null_handling_via_empty_label());
+  failed = failed + run_one("null: empty arrays graph", test_null_handling_empty_arrays());
+
+  // Field Access
+  failed = failed + run_one("access: all node fields", test_access_all_node_fields());
+  failed = failed + run_one("access: all link fields", test_access_all_link_fields());
+
+  if failed > 0 {
+    println("");
+    println("FAILED: " ++ int_to_string(failed) ++ " test(s)");
+    return 1;
+  }
+  println("");
+  println("OK: all tests passed (25/25)");
+  return 0;
+}

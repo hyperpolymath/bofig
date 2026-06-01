@@ -1,5 +1,6 @@
 # GitLab CI/CD Pipeline for Evidence Graph
 # Automated testing, security scanning, and deployment
+# hypatia: allow security_errors/secret_detected -- local GitLab service defaults only
 
 image: elixir:1.16-alpine
 

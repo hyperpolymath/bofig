@@ -4,7 +4,7 @@
 /**
  * EvidenceGraphHook — D3.js force-directed graph for claims and evidence.
  *
- * Ported from src/EvidenceGraph.res (ReScript D3 bindings).
+ * Ported from the retired ReScript D3 bindings.
  * Receives graph data via push_event("graph_data", ...) from GraphLive.
  */
 
@@ -30,8 +30,8 @@ const EvidenceGraphHook = {
   /** Colour scheme matching ReScript source */
   getNodeColor(nodeType, promptScore) {
     const colors = {
-      claim: [33, 150, 243],     // Blue
-      evidence: [76, 175, 80],   // Green
+      claim: [33, 150, 243], // Blue
+      evidence: [76, 175, 80], // Green
     };
     const [r, g, b] = colors[nodeType] || [158, 158, 158];
     const alpha = Math.max(0.3, (promptScore || 50) / 100.0);
@@ -53,7 +53,7 @@ const EvidenceGraphHook = {
 
     // Clear previous graph
     if (this.simulation) this.simulation.stop();
-    this.container.innerHTML = "";
+    this.container.replaceChildren();
 
     const width = this.container.clientWidth || 800;
     const height = this.container.clientHeight || 500;
@@ -82,15 +82,20 @@ const EvidenceGraphHook = {
 
     // Zoom behaviour
     const g = svg.append("g");
-    svg.call(d3.zoom()
-      .scaleExtent([0.3, 5])
-      .on("zoom", (event) => g.attr("transform", event.transform)));
+    svg.call(
+      d3.zoom()
+        .scaleExtent([0.3, 5])
+        .on("zoom", (event) => g.attr("transform", event.transform)),
+    );
 
     // Force simulation
     const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links)
-        .id((d) => d.id)
-        .distance(120))
+      .force(
+        "link",
+        d3.forceLink(links)
+          .id((d) => d.id)
+          .distance(120),
+      )
       .force("charge", d3.forceManyBody().strength(-300))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius(40));
@@ -113,21 +118,23 @@ const EvidenceGraphHook = {
       .data(nodes)
       .join("g")
       .attr("class", "graph-node")
-      .call(d3.drag()
-        .on("start", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          d.fx = d.x;
-          d.fy = d.y;
-        })
-        .on("drag", (event, d) => {
-          d.fx = event.x;
-          d.fy = event.y;
-        })
-        .on("end", (event, d) => {
-          if (!event.active) simulation.alphaTarget(0);
-          d.fx = null;
-          d.fy = null;
-        }));
+      .call(
+        d3.drag()
+          .on("start", (event, d) => {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+          })
+          .on("drag", (event, d) => {
+            d.fx = event.x;
+            d.fy = event.y;
+          })
+          .on("end", (event, d) => {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+          }),
+      );
 
     // Node circles
     node.append("circle")
@@ -179,7 +186,7 @@ const EvidenceGraphHook = {
     this.svg.selectAll(".graph-node circle")
       .transition()
       .duration(500)
-      .attr("fill", function() {
+      .attr("fill", function () {
         const d = d3.select(this.parentNode).datum();
         const updated = nodeMap.get(d.id);
         if (updated) {

@@ -322,7 +322,7 @@ config :evidence_graph, EvidenceGraph.ArangoDB,
   endpoints: "http://localhost:8529",
   database: "evidence_graph",
   username: "root",
-  password: "dev"
+  password: System.fetch_env!("ARANGO_PASSWORD")
 
 # lib/evidence_graph/arango.ex
 defmodule EvidenceGraph.ArangoDB do

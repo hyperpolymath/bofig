@@ -1,131 +1,128 @@
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/hyperpolymath)
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 
-= Binary-Origami Figurator
-image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// SPDX-FileCopyrightText: 2025 hyperpolymath
+\> Infrastructure for pragmatic epistemology. Combining
 
+- i-docs navigation,
 
-> Infrastructure for pragmatic epistemology. Combining 
+- PROMPT epistemological scoring, and
 
-- i-docs navigation, 
-- PROMPT epistemological scoring, and 
 - boundary objects theory.
 
 An evidence graph for investigative journalism.
 
-*Status:* Phase 1 (PoC) - v1.0.0 Release
-*Version:* 1.0.0
+**Status:** Phase 1 (PoC) - v1.0.0 Release **Version:** 1.0.0
 
-== New Here? Start with the Wiki
+# New Here? Start with the Wiki
 
-[TIP]
-====
-*Confused by the terminology?* The link:wiki/index.adoc[Binary-Origami Wiki] explains everything in metaphors, diagrams, and plain language.
-====
+> [!TIP]
+> **Confused by the terminology?** The [Binary-Origami
+> Wiki](wiki/index.adoc) explains everything in metaphors, diagrams, and
+> plain language.
 
-[quote]
-____
-This isn't just a database. It's *infrastructure for folding and unfolding evidence*—so everyone can see the shape that fits their needs.
-____
+> This isn’t just a database. It’s **infrastructure for folding and
+> unfolding evidence**—so everyone can see the shape that fits their
+> needs.
 
-=== Why "Binary-Origami"?
+## Why "Binary-Origami"?
 
-* *Binary*: Evidence is stored as clear, connected data (supports/contradicts, 0-100 scores)
-* *Origami*: The same evidence can be "folded" into different forms for different audiences
-* *Figuration*: The rules for folding/unfolding are transparent and reversible
+- **Binary**: Evidence is stored as clear, connected data
+  (supports/contradicts, 0-100 scores)
 
-[cols="1,2,1"]
-|===
-| Concept | Description | Learn More
+- **Origami**: The same evidence can be "folded" into different forms
+  for different audiences
 
-| i-docs Navigation
-| "Choose Your Own Adventure" for evidence
-| link:wiki/navigation.adoc[Wiki]
+- **Figuration**: The rules for folding/unfolding are transparent and
+  reversible
 
-| PROMPT Scoring
-| "Nutrition labels" for trustworthiness
-| link:wiki/prompt.adoc[Wiki]
+| Concept | Description | Learn More |
+|----|----|----|
+| i-docs Navigation | "Choose Your Own Adventure" for evidence | [Wiki](wiki/navigation.adoc) |
+| PROMPT Scoring | "Nutrition labels" for trustworthiness | [Wiki](wiki/prompt.adoc) |
+| Boundary Objects | "Shared maps" with multiple routes | [Wiki](wiki/boundary-objects.adoc) |
+| Evidence Graphs | The "skeleton" beneath the origami | [Wiki](wiki/graphs.adoc) |
 
-| Boundary Objects
-| "Shared maps" with multiple routes
-| link:wiki/boundary-objects.adoc[Wiki]
+## For the Impatient
 
-| Evidence Graphs
-| The "skeleton" beneath the origami
-| link:wiki/graphs.adoc[Wiki]
-|===
+1.  Try the
+    <a href="#quick-start" class="cross-reference">Quick Start</a> to
+    see it in action
 
-=== For the Impatient
+2.  Skim the [Binary-Origami Metaphor](wiki/binary-origami.adoc) page
 
-1. Try the <<quick-start,Quick Start>> to see it in action
-2. Skim the link:wiki/binary-origami.adoc[Binary-Origami Metaphor] page
-3. Dive into the link:wiki/faqs.adoc[FAQ] if something's unclear
+3.  Dive into the [FAQ](wiki/faqs.adoc) if something’s unclear
 
-== Vision
+# Vision
 
-We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. *This system IS that infrastructure.*
+We didn’t fall from Truth to Post-Truth; we evolved to complex
+epistemology without building infrastructure. **This system IS that
+infrastructure.**
 
-=== Core Concepts
+## Core Concepts
 
-1. *i-docs Navigation*: Navigation over narration, reader agency
-2. *PROMPT Framework*: 6-dimensional epistemological scoring (Provenance, Replicability, Objective, Methodology, Publication, Transparency)
-3. *Boundary Objects*: Multiple audience perspectives on same evidence
-4. Evidence Graph for Investigative Journalism amd Related Disciplines
+1.  **i-docs Navigation**: Navigation over narration, reader agency
 
-[[quick-start]]
-== Quick Start
+2.  **PROMPT Framework**: 6-dimensional epistemological scoring
+    (Provenance, Replicability, Objective, Methodology, Publication,
+    Transparency)
 
-=== Prerequisites
+3.  **Boundary Objects**: Multiple audience perspectives on same
+    evidence
 
-- *Elixir 1.18+* & *Erlang/OTP 27+*
-- *Phoenix 1.8+*
-- *Podman* & *podman-compose*
-- *just* (task runner): https://github.com/casey/just
+4.  Evidence Graph for Investigative Journalism amd Related Disciplines
 
-=== 1. Clone Repository
+# Quick Start
+
+## Prerequisites
+
+- **Elixir 1.18+** & **Erlang/OTP 27+**
+
+- **Phoenix 1.8+**
+
+- **Podman** & **podman-compose**
+
+- **just** (task runner): <https://github.com/casey/just>
+
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/Hyperpolymath/bofig.git
 cd bofig
 ```
 
-=== 2. Start Databases
+## 2. Start Databases
 
 ```bash
 podman-compose up -d
 ```
 
-Verify ArangoDB is running: http://localhost:8529 (root/dev)
+Verify ArangoDB is running: <http://localhost:8529> (root/dev)
 
-=== 3. Full Setup (deps, databases, seeds)
+## 3. Full Setup (deps, databases, seeds)
 
 ```bash
 just setup
 ```
 
-Or manually:
-```bash
-mix deps.get
-mix ecto.create
-mix run -e "EvidenceGraph.ArangoDB.setup_database()"
-mix run priv/repo/seeds.exs
-```
+Or manually: `` `bash `` `mix` `deps.get` `mix` `ecto.create` `mix`
+`run` `-e` `"EvidenceGraph.ArangoDB.setup_database()"` `mix` `run`
+`priv/repo/seeds.exs`\`
 
-=== 4. Start Phoenix Server
+## 4. Start Phoenix Server
 
 ```bash
 just dev
 ```
 
-Visit:
-- *Application*: http://localhost:4000 (register/login required)
-- *GraphQL Playground*: http://localhost:4000/api/graphiql (dev only)
-- *Health Check*: http://localhost:4000/api/health
+Visit: - **Application**: <http://localhost:4000> (register/login
+required) - **GraphQL Playground**: <http://localhost:4000/api/graphiql>
+(dev only) - **Health Check**: <http://localhost:4000/api/health>
 
-== GraphQL API Examples
+# GraphQL API Examples
 
-=== Query: Get All Claims
+## Query: Get All Claims
 
 ```graphql
 query {
@@ -155,7 +152,7 @@ query {
 }
 ```
 
-=== Query: Evidence Chain (Graph Traversal)
+## Query: Evidence Chain (Graph Traversal)
 
 ```graphql
 query {
@@ -183,7 +180,7 @@ query {
 }
 ```
 
-=== Mutation: Create Claim
+## Mutation: Create Claim
 
 ```graphql
 mutation {
@@ -210,7 +207,7 @@ mutation {
 }
 ```
 
-=== Mutation: Import from Zotero
+## Mutation: Import from Zotero
 
 ```graphql
 mutation {
@@ -232,7 +229,7 @@ mutation {
 }
 ```
 
-=== Query: Navigation Paths
+## Query: Navigation Paths
 
 ```graphql
 query {
@@ -253,7 +250,7 @@ query {
 }
 ```
 
-=== Mutation: Auto-Generate Navigation Path
+## Mutation: Auto-Generate Navigation Path
 
 ```graphql
 mutation {
@@ -271,76 +268,84 @@ mutation {
 }
 ```
 
-== Project Structure
+# Project Structure
 
-```
-bofig/
-├── lib/
-│   ├── evidence_graph/           # Core business logic
-│   │   ├── claims/                # Claims context
-│   │   │   └── claim.ex
-│   │   ├── evidence/              # Evidence context
-│   │   │   └── evidence.ex
-│   │   ├── relationships/         # Graph edges
-│   │   │   └── relationship.ex
-│   │   ├── navigation/            # Audience paths
-│   │   │   └── path.ex
-│   │   ├── arango.ex              # ArangoDB client
-│   │   ├── prompt_scores.ex       # PROMPT scoring
-│   │   └── application.ex         # OTP supervisor
-│   └── evidence_graph_web/        # Phoenix web layer
-│       ├── schema/                # GraphQL schema
-│       │   ├── types/             # Type definitions
-│       │   └── schema.ex          # Root schema
-│       ├── endpoint.ex
-│       └── router.ex
-├── priv/repo/
-│   └── seeds.exs                  # UK Inflation 2023 test data
-├── config/                        # Environment configs
-├── docs/                          # Architecture docs
-│   ├── database-evaluation.md
-│   └── zotero-integration.md
-├── ARCHITECTURE.md                # Data model, API design
-├── ROADMAP.md                     # 18-month plan
-├── CLAUDE.md                      # AI assistant context
-├── Containerfile                  # OCI container build
-└── podman-compose.yml             # Container orchestration
-```
+    bofig/
+    ├── lib/
+    │   ├── evidence_graph/           # Core business logic
+    │   │   ├── claims/                # Claims context
+    │   │   │   └── claim.ex
+    │   │   ├── evidence/              # Evidence context
+    │   │   │   └── evidence.ex
+    │   │   ├── relationships/         # Graph edges
+    │   │   │   └── relationship.ex
+    │   │   ├── navigation/            # Audience paths
+    │   │   │   └── path.ex
+    │   │   ├── arango.ex              # ArangoDB client
+    │   │   ├── prompt_scores.ex       # PROMPT scoring
+    │   │   └── application.ex         # OTP supervisor
+    │   └── evidence_graph_web/        # Phoenix web layer
+    │       ├── schema/                # GraphQL schema
+    │       │   ├── types/             # Type definitions
+    │       │   └── schema.ex          # Root schema
+    │       ├── endpoint.ex
+    │       └── router.ex
+    ├── priv/repo/
+    │   └── seeds.exs                  # UK Inflation 2023 test data
+    ├── config/                        # Environment configs
+    ├── docs/                          # Architecture docs
+    │   ├── database-evaluation.md
+    │   └── zotero-integration.md
+    ├── ARCHITECTURE.md                # Data model, API design
+    ├── ROADMAP.md                     # 18-month plan
+    ├── CLAUDE.md                      # AI assistant context
+    ├── Containerfile                  # OCI container build
+    └── podman-compose.yml             # Container orchestration
 
-== UK Inflation 2023 Test Dataset
+# UK Inflation 2023 Test Dataset
 
 The seed data includes a complete investigation:
 
-- *7 Claims* (primary, supporting, counter)
-- *10 Evidence items* (expand to 30)
-  - Official statistics: ONS CPI, Ofgem, BoE
-  - Academic: Peer-reviewed studies
-  - Think tanks: Resolution Foundation, IFS
-  - Interviews: Expert opinions
-- *10 Relationships* (supports/contradicts/contextualizes)
-- *3 Navigation Paths*:
-  1. *Researcher*: Evidence-first, methodology priority
-  2. *Policymaker*: Authoritative sources, recommendations
-  3. *Affected Person*: Personal impact, clarity
+- **7 Claims** (primary, supporting, counter)
 
-=== PROMPT Score Examples
+- **10 Evidence items** (expand to 30)
 
-| Evidence | Prov | Repl | Obj | Meth | Pub | Trans | Overall |
-|----------|------|------|-----|------|-----|-------|---------|
-| ONS CPI Data | 100 | 100 | 95 | 95 | 100 | 95 | *97.5* |
-| Academic Study | 85 | 80 | 75 | 85 | 90 | 75 | *81.8* |
-| Think Tank Report | 75 | 70 | 65 | 75 | 80 | 70 | *72.3* |
-| Expert Interview | 85 | 45 | 60 | 50 | 40 | 75 | *59.0* |
+- Official statistics: ONS CPI, Ofgem, BoE
 
-== Development
+- Academic: Peer-reviewed studies
 
-=== Run Tests
+- Think tanks: Resolution Foundation, IFS
+
+- Interviews: Expert opinions
+
+- **10 Relationships** (supports/contradicts/contextualizes)
+
+- **3 Navigation Paths**:
+
+  1.  **Researcher**: Evidence-first, methodology priority
+
+  2.  **Policymaker**: Authoritative sources, recommendations
+
+  3.  **Affected Person**: Personal impact, clarity
+
+## PROMPT Score Examples
+
+\| Evidence \| Prov \| Repl \| Obj \| Meth \| Pub \| Trans \| Overall \|
+\|----------\|------\|------\|-----\|------\|-----\|-------\|---------\|
+\| ONS CPI Data \| 100 \| 100 \| 95 \| 95 \| 100 \| 95 \| **97.5** \| \|
+Academic Study \| 85 \| 80 \| 75 \| 85 \| 90 \| 75 \| **81.8** \| \|
+Think Tank Report \| 75 \| 70 \| 65 \| 75 \| 80 \| 70 \| **72.3** \| \|
+Expert Interview \| 85 \| 45 \| 60 \| 50 \| 40 \| 75 \| **59.0** \|
+
+# Development
+
+## Run Tests
 
 ```bash
 mix test
 ```
 
-=== Interactive Shell
+## Interactive Shell
 
 ```bash
 iex -S mix phx.server
@@ -358,7 +363,7 @@ iex> EvidenceGraph.Claims.get_claim("claim_1")
 iex> EvidenceGraph.Relationships.evidence_chain("claim_1", 3)
 ```
 
-=== Code Quality
+## Code Quality
 
 ```bash
 = Format code
@@ -374,101 +379,153 @@ mix credo
 mix dialyzer
 ```
 
-== Deployment (Phase 2)
+# Deployment (Phase 2)
 
-- *Hosting*: Hetzner Cloud (EU data sovereignty)
-- *ArangoDB*: ArangoDB Oasis (€45/month)
-- *Phoenix*: Systemd service, Nginx reverse proxy
-- *CI/CD*: GitHub Actions
+- **Hosting**: Hetzner Cloud (EU data sovereignty)
 
-== Documentation
+- **ArangoDB**: ArangoDB Oasis (€45/month)
 
-=== Conceptual (Start Here!)
+- **Phoenix**: Systemd service, Nginx reverse proxy
 
-- link:wiki/index.adoc[Binary-Origami Wiki] - Explains the metaphor and concepts in plain language
-- link:wiki/binary-origami.adoc[The Metaphor] - Why "Binary-Origami Figuration"?
-- link:wiki/folding-101.adoc[Folding 101] - Hands-on tutorial
-- link:wiki/faqs.adoc[FAQ] - Common questions answered
-- link:wiki/glossary.adoc[Glossary] - Term definitions
+- **CI/CD**: GitHub Actions
 
-=== Technical
+# Documentation
 
-- link:ARCHITECTURE.md[ARCHITECTURE.md] - Data model, database design, API specs
-- link:ROADMAP.md[ROADMAP.md] - 18-month implementation plan
-- link:docs/database-evaluation.md[docs/database-evaluation.md] - ArangoDB comparison
-- link:docs/zotero-integration.md[docs/zotero-integration.md] - Two-way sync design
-- link:CLAUDE.md[CLAUDE.md] - AI assistant context
+## Conceptual (Start Here!)
 
-== Key Features
+- [Binary-Origami Wiki](wiki/index.adoc) - Explains the metaphor and
+  concepts in plain language
 
-=== Implemented (v1.0.0)
+- [The Metaphor](wiki/binary-origami.adoc) - Why "Binary-Origami
+  Figuration"?
 
-* Multi-model ArangoDB integration (document + graph)
-* GraphQL API with Absinthe (15 queries, 11 mutations)
-* PROMPT epistemological scoring (6 dimensions, audience weighting)
-* Claims, Evidence, Relationships, Navigation Paths data models
-* Graph traversal algorithms (evidence chains, shortest path, contradiction detection)
-* Zotero REST API (import, export, batch-import, sync-status)
-* Phoenix 1.8 LiveView frontend (5 pages: Dashboard, Investigation, Graph, PROMPT, Navigation)
-* User authentication (phx.gen.auth with bcrypt, magic links)
-* D3.js force-directed graph + radar chart visualisations
-* Audience-weighted navigation paths (6 types)
-* UK Inflation 2023 test dataset (7 claims, 30 evidence, 38 relationships)
-* Production deployment (Containerfile, nginx, systemd)
-* NUJ user testing protocols
-* A2ML v2.1 Cyberwar-Ready Trustfile
-* 257 tests, 0 failures, full RSR compliance
+- [Folding 101](wiki/folding-101.adoc) - Hands-on tutorial
 
-=== Coming Next (Phase 2)
+- [FAQ](wiki/faqs.adoc) - Common questions answered
 
-* Zotero browser extension (one-click import)
-* Multi-investigation dashboard
-* Real-time collaborative editing
-* Advanced visualisations (timeline, heatmap, Sankey)
-* IPFS provenance integration
-* Hetzner Cloud deployment
+- [Glossary](wiki/glossary.adoc) - Term definitions
 
-== Philosophy
+## Technical
 
-This isn't just a database. It's infrastructure for *coordinating without consensus*.
+- <a href="ARCHITECTURE.md" class="md">ARCHITECTURE</a> - Data model,
+  database design, API specs
 
-Every design choice asks:
-1. Does this support multiple audience perspectives?
-2. Does this make epistemology measurable?
-3. Does this enable navigation over narration?
+- <a href="ROADMAP.md" class="md">ROADMAP</a> - 18-month implementation
+  plan
 
-== Contributing
+- [docs/database-evaluation.md](docs/database-evaluation.md) - ArangoDB
+  comparison
 
-Open source from day 1. See [ROADMAP.md](ROADMAP.md) for planned features.
+- [docs/zotero-integration.md](docs/zotero-integration.md) - Two-way
+  sync design
 
-*Month 3 = Decision Point*: User testing with 25 NUJ journalists determines go/no-go.
+- <a href="CLAUDE.md" class="md">CLAUDE</a> - AI assistant context
 
-== Related Projects
+# Key Features
 
-* https://github.com/hyperpolymath/lithoglyph[LithoglyphDB] - The narrative-first, reversible, audit-grade database
-* https://github.com/hyperpolymath/gpnl[GPNL] - Dependently-typed Glyph Projection Language (compile-time proofs)
-* https://github.com/hyperpolymath/lithoglyph-studio[Lithoglyph Studio] - Zero-friction GUI for non-technical users
-* https://github.com/hyperpolymath/zotero-formdb[Zotero-Lithoglyph] - Reference manager with PROMPT scores
+## Implemented (v1.0.0)
 
-== License
+- Multi-model ArangoDB integration (document + graph)
 
-link:LICENSE[MPL-2.0] (Palimpsest License)
+- GraphQL API with Absinthe (15 queries, 11 mutations)
 
-== Contact
+- PROMPT epistemological scoring (6 dimensions, audience weighting)
 
-- *Repository*: https://github.com/Hyperpolymath/bofig
-- *Issues*: https://github.com/Hyperpolymath/bofig/issues
-- *User Testing*: NUJ network (Month 3, 6, 12)
+- Claims, Evidence, Relationships, Navigation Paths data models
 
----
+- Graph traversal algorithms (evidence chains, shortest path,
+  contradiction detection)
 
-*Built with:* Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
+- Zotero REST API (import, export, batch-import, sync-status)
 
-*Inspired by:* i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star & Griesemer), Pragmatic Epistemology
+- Phoenix 1.8 LiveView frontend (5 pages: Dashboard, Investigation,
+  Graph, PROMPT, Navigation)
 
-*Last Updated:* 2026-02-21
+- User authentication (phx.gen.auth with bcrypt, magic links)
 
+- D3.js force-directed graph + radar chart visualisations
 
-== Architecture
+- Audience-weighted navigation paths (6 types)
 
-See link:TOPOLOGY.md[TOPOLOGY.md] for a visual architecture map and completion dashboard.
+- UK Inflation 2023 test dataset (7 claims, 30 evidence, 38
+  relationships)
+
+- Production deployment (Containerfile, nginx, systemd)
+
+- NUJ user testing protocols
+
+- A2ML v2.1 Cyberwar-Ready Trustfile
+
+- 257 tests, 0 failures, full RSR compliance
+
+## Coming Next (Phase 2)
+
+- Zotero browser extension (one-click import)
+
+- Multi-investigation dashboard
+
+- Real-time collaborative editing
+
+- Advanced visualisations (timeline, heatmap, Sankey)
+
+- IPFS provenance integration
+
+- Hetzner Cloud deployment
+
+# Philosophy
+
+This isn’t just a database. It’s infrastructure for **coordinating
+without consensus**.
+
+Every design choice asks: 1. Does this support multiple audience
+perspectives? 2. Does this make epistemology measurable? 3. Does this
+enable navigation over narration?
+
+# Contributing
+
+Open source from day 1. See \[ROADMAP.md\](ROADMAP.md) for planned
+features.
+
+**Month 3 = Decision Point**: User testing with 25 NUJ journalists
+determines go/no-go.
+
+# Related Projects
+
+- [LithoglyphDB](https://github.com/hyperpolymath/lithoglyph) - The
+  narrative-first, reversible, audit-grade database
+
+- [GPNL](https://github.com/hyperpolymath/gpnl) - Dependently-typed
+  Glyph Projection Language (compile-time proofs)
+
+- [Lithoglyph
+  Studio](https://github.com/hyperpolymath/lithoglyph-studio) -
+  Zero-friction GUI for non-technical users
+
+- [Zotero-Lithoglyph](https://github.com/hyperpolymath/zotero-formdb) -
+  Reference manager with PROMPT scores
+
+# License
+
+<a href="LICENSE" class="0">MPL-2</a> (Palimpsest License)
+
+# Contact
+
+- **Repository**: <https://github.com/Hyperpolymath/bofig>
+
+- **Issues**: <https://github.com/Hyperpolymath/bofig/issues>
+
+- **User Testing**: NUJ network (Month 3, 6, 12)
+
+------------------------------------------------------------------------
+
+**Built with:** Elixir, Phoenix, ArangoDB, Absinthe, LiveView, D3.js
+
+**Inspired by:** i-docs (PMPL-1.0 Open Doc Lab), Boundary Objects (Star
+& Griesemer), Pragmatic Epistemology
+
+**Last Updated:** 2026-02-21
+
+# Architecture
+
+See <a href="TOPOLOGY.md" class="md">TOPOLOGY</a> for a visual
+architecture map and completion dashboard.

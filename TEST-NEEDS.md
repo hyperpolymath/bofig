@@ -1,6 +1,6 @@
 # TEST-NEEDS.md — Bofig Test Coverage Report
 
-## SPDX-License-Identifier: MPL-2.0
+## SPDX-License-Identifier: CC-BY-SA-4.0
 
 **Project:** bofig (Evidence Graph Visualization Library)
 **Date:** 2026-04-04

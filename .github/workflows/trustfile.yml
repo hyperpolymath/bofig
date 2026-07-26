@@ -15,6 +15,7 @@ on:
       - 'bofig.trustfile.a2ml'
 
 permissions:
+  actions: read
   contents: read
 
 jobs:

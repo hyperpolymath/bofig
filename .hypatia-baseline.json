@@ -190,5 +190,47 @@
     "rule_module": "workflow_audit",
     "type": "unsafe_curl_payload",
     "file": "hypatia-scan.yml"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD007",
+    "file": "0-AI-MANIFEST.a2ml"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD009",
+    "file": "ffi/zig/src/main.zig"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD009",
+    "file": "src/EvidenceGraph/ABI/Foreign.idr"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD009",
+    "file": "src/EvidenceGraph/ABI/Layout.idr"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD009",
+    "file": "src/EvidenceGraph/ABI/Types.idr"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD009",
+    "file": "src/abi/Types.idr"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "workflow_audit",
+    "type": "missing_timeout_minutes",
+    "file": "push-email-notify.yml"
   }
 ]

@@ -13,7 +13,7 @@
 
 ## Executive Summary
 
-Comprehensive test suite added for bofig ReScript/D3.js visualization library. All core data structures, operations, and security requirements now have full coverage across unit, property-based, E2E, aspect (security), and benchmark tests.
+Comprehensive test suite added for bofig AffineScript/D3.js visualization library. All core data structures, operations, and security requirements now have full coverage across unit, property-based, E2E, aspect (security), and benchmark tests.
 
 **CRG Grade:** C (meets all Code Review Grade C requirements)
 
@@ -455,9 +455,9 @@ deno lint tests/
 
 ---
 
-## What Tests Cover (ReScript Source Analysis)
+## What Tests Cover (AffineScript Source Analysis)
 
-Tests model these ReScript types and functions:
+Tests model these AffineScript types and functions:
 
 ```typescript
 // From src/EvidenceGraph.res
@@ -516,8 +516,8 @@ These are integration concerns tested in browser/E2E frameworks, not unit tests.
 - Add performance tests for D3.js integration when available
 - Add accessibility tests for DOM output
 
-### For ReScript Integration
-- If ReScript compilation is available, tests can be run against compiled JS
+### For AffineScript Integration
+- If AffineScript compilation is available, tests can be run against compiled JS
 - Current tests model the API contract; compiled JS should pass them unchanged
 - Consider adding snapshot tests for SVG output once DOM rendering tested
 

@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `docker-compose.yml` (replaced by podman-compose.yml)
 - `Podmanfile.md` (superseded by Containerfile)
-- `rescript.json` (ReScript not used in Elixir project)
+- `affinescript.json` (AffineScript not used in Elixir project)
 - `CHANGELOG.adoc` (duplicate of CHANGELOG.md)
 - `CONTRIBUTING.md` (kept CONTRIBUTING.adoc)
 - `MAINTAINERS.adoc` (kept MAINTAINERS.md)

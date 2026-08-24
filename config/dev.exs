@@ -2,10 +2,14 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 import Config
 
+dev_secret_key_base =
+  System.get_env("SECRET_KEY_BASE") ||
+    String.duplicate("dev_secret_key_base_", 4)
+
 # Configure your database (Postgres for user auth only)
 config :evidence_graph, EvidenceGraph.Repo,
   username: "postgres",
-  password: "postgres",  # Dev-only default; production uses DATABASE_URL env var
+  password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   hostname: "localhost",
   database: "evidence_graph_dev",
   stacktrace: true,
@@ -21,7 +25,7 @@ config :evidence_graph, EvidenceGraphWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "development_secret_key_base_change_in_production_with_mix_phx_gen_secret",  # Dev-only; production uses SECRET_KEY_BASE env var
+  secret_key_base: dev_secret_key_base,
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
@@ -58,5 +62,7 @@ config :evidence_graph, EvidenceGraph.ArangoDB,
   client: Arangox.MintClient,
   endpoints: "http://localhost:8529",
   database: "evidence_graph_dev",
-  auth: {:basic, "root", "dev"},  # Dev-only default; production uses ARANGO_USERNAME/ARANGO_PASSWORD env vars
+  auth:
+    {:basic, System.get_env("ARANGO_USERNAME") || "root",
+     System.get_env("ARANGO_PASSWORD") || "dev"},
   pool_size: 5

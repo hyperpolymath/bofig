@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: MPL-2.0
+# Generated third-party D3 bundle. Runtime hooks live under assets/js/hooks
+# and are scanned separately; this vendored file is not hand-edited source.
+code_safety/js_innerhtml:assets/vendor/d3.v7.min.js
+code_safety/js_http_url_in_code:assets/vendor/d3.v7.min.js

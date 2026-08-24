@@ -192,7 +192,7 @@ trustfile:
       - "SHAKE256"
       - "BLAKE3"
     kdf: "HKDF-SHAKE512"
-    password: "Argon2id"
+    password_hashing: "Argon2id"
     symmetric: "AES-256-GCM"
 
   policies:

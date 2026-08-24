@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 = Frequently Asked Questions
 :toc:
 :toc-placement!:
@@ -69,7 +69,7 @@ See link:../docs/database-evaluation.md[docs/database-evaluation.md] for detaile
 * **LiveView**: Real-time UI without a JavaScript framework
 * **Functional**: Immutable data and pattern matching reduce bugs
 
-Per the link:../.claude/CLAUDE.md[language policy], we use ReScript for frontend code and avoid Python/Node.js.
+Per the link:../.claude/CLAUDE.md[language policy], we use AffineScript for frontend code and avoid Python/Node.js.
 
 === Can I use this without PROMPT scoring?
 

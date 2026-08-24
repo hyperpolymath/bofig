@@ -40,8 +40,8 @@ defmodule EvidenceGraph.MixProject do
       {:phoenix, "~> 1.8.3"},
       {:phoenix_html, "~> 4.0"},
       {:phoenix_live_reload, "~> 1.4", only: :dev},
-      {:phoenix_live_view, "~> 1.1.19"},
-      {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:phoenix_live_view, "~> 1.2.0"},
+      {:phoenix_live_dashboard, "~> 0.9.0"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},
 
@@ -53,19 +53,25 @@ defmodule EvidenceGraph.MixProject do
 
       # Database
       {:arangox, "~> 0.7.0"},
-      {:ecto, "~> 3.11"},  # For changesets only, not SQL
-      {:phoenix_ecto, "~> 4.5"},  # Ecto integration (FormData, error helpers)
-      {:ecto_sql, "~> 3.11"},  # Minimal, for user auth only
-      {:postgrex, ">= 0.0.0"},  # User auth storage only
+      # For changesets only, not SQL
+      {:ecto, "~> 3.11"},
+      # Ecto integration (FormData, error helpers)
+      {:phoenix_ecto, "~> 4.5"},
+      # Minimal, for user auth only
+      {:ecto_sql, "~> 3.11"},
+      # User auth storage only
+      {:postgrex, ">= 0.0.0"},
 
       # Background Jobs
       {:oban, "~> 2.17"},
 
       # HTTP Clients
       {:tesla, "~> 1.8"},
-      {:req, "~> 0.5"},      # Lithoglyph API client
+      # Lithoglyph API client
+      {:req, "~> 0.5"},
       {:mint, "~> 1.5"},
-      {:castore, "~> 1.0"},  # CA certificates
+      # CA certificates
+      {:castore, "~> 1.0"},
       {:jason, "~> 1.4"},
 
       # IPFS Integration (Phase 2)
@@ -78,8 +84,10 @@ defmodule EvidenceGraph.MixProject do
       {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:gettext, "~> 1.0"},
       {:plug_cowboy, "~> 2.6"},
-      {:corsica, "~> 2.1"},  # CORS for API
-      {:swoosh, "~> 1.4"},  # Email delivery
+      # CORS for API
+      {:corsica, "~> 2.1"},
+      # Email delivery
+      {:swoosh, "~> 1.4"},
 
       # Development
       {:phoenix_copy, "~> 0.1.1", only: :dev},
@@ -101,10 +109,15 @@ defmodule EvidenceGraph.MixProject do
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "arango.setup", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default", "assets.copy_vendor"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "assets.copy_vendor", "phx.digest"],
+      "assets.deploy": [
+        "tailwind default --minify",
+        "esbuild default --minify",
+        "assets.copy_vendor",
+        "phx.digest"
+      ],
       "assets.copy_vendor": &copy_vendor_assets/1
     ]
   end

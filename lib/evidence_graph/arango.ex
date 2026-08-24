@@ -10,6 +10,28 @@ defmodule EvidenceGraph.ArangoDB do
 
   use Supervisor
 
+  @document_collections [
+    "investigations",
+    "claims",
+    "evidence",
+    "navigation_paths",
+    "entities",
+    "access_grants",
+    "investigation_links",
+    "annotations",
+    "redactions",
+    "provenance_log",
+    "api_keys",
+    "zotero_sync_state"
+  ]
+
+  @edge_collections [
+    "financial_transactions",
+    "relationships"
+  ]
+
+  @all_collections @document_collections ++ @edge_collections
+
   def start_link(opts) do
     Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -59,7 +81,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      write: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions", "access_grants", "investigation_links", "annotations", "redactions", "provenance_log", "api_keys"]
+      write: @all_collections
     )
   end
 
@@ -76,7 +98,7 @@ defmodule EvidenceGraph.ArangoDB do
           acc ++ resp.body["result"]
         end)
       end,
-      read: ["claims", "evidence", "relationships", "investigations", "navigation_paths", "entities", "financial_transactions", "access_grants", "investigation_links", "annotations", "redactions", "provenance_log", "api_keys"]
+      read: @all_collections
     )
   end
 
@@ -207,22 +229,9 @@ defmodule EvidenceGraph.ArangoDB do
   end
 
   defp create_collections do
-    collections = [
-      {"investigations", :document},
-      {"claims", :document},
-      {"evidence", :document},
-      {"navigation_paths", :document},
-      {"entities", :document},
-      {"access_grants", :document},
-      # Phase D collections
-      {"investigation_links", :document},
-      {"annotations", :document},
-      {"redactions", :document},
-      {"provenance_log", :document},
-      {"api_keys", :document},
-      {"financial_transactions", :edge},
-      {"relationships", :edge}
-    ]
+    collections =
+      Enum.map(@document_collections, &{&1, :document}) ++
+        Enum.map(@edge_collections, &{&1, :edge})
 
     Enum.each(collections, fn {name, type} ->
       case Arangox.request(Arangox, :post, "/_api/collection", %{
@@ -250,6 +259,7 @@ defmodule EvidenceGraph.ArangoDB do
 
       # Zotero sync
       {"evidence", "hash", ["zotero_key"]},
+      {"zotero_sync_state", "hash", ["investigation_id"]},
 
       # SHA-256 dedup (Lithoglyph/Docudactyl pipeline)
       {"evidence", "hash", ["sha256_hash"]},

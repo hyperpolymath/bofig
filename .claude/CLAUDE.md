@@ -130,7 +130,7 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 | Node.js | Deno |
 | npm/Bun/pnpm/yarn | Deno |
 | Go | Rust |
-| Python | Julia/Rust/ReScript |
+| Python | Julia/Rust/AffineScript |
 | Java/Kotlin | Rust |
 
 ### Security Requirements

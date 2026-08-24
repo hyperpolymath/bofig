@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0
+# SPDX-License-Identifier: MPL-2.0
 name: CodeQL Security Analysis
 
 on:
@@ -23,6 +23,7 @@ permissions:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       security-events: write
@@ -32,18 +33,20 @@ jobs:
         include:
           - language: javascript-typescript
             build-mode: none
+          - language: actions
+            build-mode: none
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@c6f931105cb2c34c8f901cc885ba1e2e259cf745 # v3
+        uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@c6f931105cb2c34c8f901cc885ba1e2e259cf745 # v3
+        uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v3
         with:
           category: "/language:${{ matrix.language }}"

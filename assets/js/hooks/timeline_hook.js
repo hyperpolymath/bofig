@@ -21,14 +21,14 @@ const TimelineHook = {
   },
 
   destroyed() {
-    this.container.innerHTML = "";
+    this.container.replaceChildren();
   },
 
   /** Event type colour map */
   getColor(type) {
     const colors = {
-      evidence: "#3B82F6",   // Blue-500
-      claim: "#22C55E",      // Green-500
+      evidence: "#3B82F6", // Blue-500
+      claim: "#22C55E", // Green-500
       transaction: "#EF4444", // Red-500
     };
     return colors[type] || "#9CA3AF";
@@ -49,7 +49,7 @@ const TimelineHook = {
     const { events, granularity } = data;
 
     // Clear previous render
-    this.container.innerHTML = "";
+    this.container.replaceChildren();
 
     if (!events || events.length === 0) {
       const empty = document.createElement("p");
@@ -67,7 +67,8 @@ const TimelineHook = {
 
     // Dimensions
     const margin = { top: 30, right: 40, bottom: 40, left: 40 };
-    const width = (this.container.clientWidth || 900) - margin.left - margin.right;
+    const width = (this.container.clientWidth || 900) - margin.left -
+      margin.right;
     const height = 260 - margin.top - margin.bottom;
 
     // Time extent
@@ -172,7 +173,11 @@ const TimelineHook = {
       .join("circle")
       .attr("class", "timeline-event")
       .attr("cx", (d) => x(d.parsedDate))
-      .attr("cy", (d) => centerY + (typeOffsets[d.type] || 0) + (Math.random() - 0.5) * 10)
+      .attr(
+        "cy",
+        (d) =>
+          centerY + (typeOffsets[d.type] || 0) + (Math.random() - 0.5) * 10,
+      )
       .attr("r", (d) => this.getRadius(d.prompt_score))
       .attr("fill", (d) => this.getColor(d.type))
       .attr("fill-opacity", 0.75)
@@ -196,14 +201,26 @@ const TimelineHook = {
       .style("z-index", "10");
 
     circles
-      .on("mouseenter", (event, d) => {
+      .on("mouseenter", (_event, d) => {
+        const type = d.type.charAt(0).toUpperCase() + d.type.slice(1);
+        const title = document.createElement("strong");
+        title.textContent = type;
+        const label = document.createTextNode(d.label || "");
+        const date = document.createElement("span");
+        date.style.color = "#9CA3AF";
+        date.textContent = d.date || "";
+        const tip = tooltip.node();
+        if (tip) {
+          tip.replaceChildren(
+            title,
+            document.createElement("br"),
+            label,
+            document.createElement("br"),
+            date,
+          );
+        }
         tooltip
-          .style("display", "block")
-          .html(`
-            <strong>${d.type.charAt(0).toUpperCase() + d.type.slice(1)}</strong><br/>
-            ${d.label}<br/>
-            <span style="color:#9CA3AF">${d.date}</span>
-          `);
+          .style("display", "block");
       })
       .on("mousemove", (event) => {
         const bounds = this.container.getBoundingClientRect();

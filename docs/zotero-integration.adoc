@@ -1,15 +1,15 @@
-# Zotero Integration Design
+== Zotero Integration Design
 
-## Overview
+=== Overview
 
-Two-way sync between Zotero and Evidence Graph:
-- **Export:** Zotero items → Evidence Graph (via modified extension)
-- **Import:** Evidence Graph → Zotero (via API + manual)
-- **Metadata:** Preserve Dublin Core, Schema.org, custom fields
+Two-way sync between Zotero and Evidence Graph: - *Export:* Zotero items
+→ Evidence Graph (via modified extension) - *Import:* Evidence Graph →
+Zotero (via API + manual) - *Metadata:* Preserve Dublin Core,
+Schema.org, custom fields
 
-## Architecture
+=== Architecture
 
-```
+....
 ┌─────────────────┐          ┌──────────────────┐         ┌─────────────────┐
 │  Zotero Client  │          │  Evidence Graph  │         │   ArangoDB      │
 │                 │          │     Phoenix API   │         │                 │
@@ -28,16 +28,18 @@ Two-way sync between Zotero and Evidence Graph:
 │  │ js plugin │  │     import to Zotero)
 │  └───────────┘  │
 └─────────────────┘
-```
+....
 
-## Zotero → Evidence Graph Export
+=== Zotero → Evidence Graph Export
 
-### Modified Extension: `lib/exporter.js`
+==== Modified Extension: `+lib/exporter.js+`
 
-The existing bofig repository contains an old Zotero→Voyant export plugin. We'll extend it to POST to Evidence Graph API.
+The existing bofig repository contains an old Zotero→Voyant export
+plugin. We’ll extend it to POST to Evidence Graph API.
 
-#### Original Plugin Structure (2017)
-```
+===== Original Plugin Structure (2017)
+
+....
 lib/
 ├── exporter.js          # Main export logic
 ├── translators/
@@ -45,10 +47,11 @@ lib/
 └── chrome/
     └── content/
         └── overlay.xul  # Firefox UI overlay
-```
+....
 
-#### New Structure (2025+)
-```
+===== New Structure (2025+)
+
+....
 lib/
 ├── exporter.js          # Extended with Evidence Graph POST
 ├── translators/
@@ -59,11 +62,12 @@ lib/
     └── content/
         ├── overlay.xul  # Updated for modern Zotero
         └── prompt.xhtml # NEW: PROMPT scoring dialog
-```
+....
 
-### Code: `lib/translators/evidencegraph.js`
+==== Code: `+lib/translators/evidencegraph.js+`
 
-```javascript
+[source,javascript]
+----
 /**
  * Evidence Graph Translator
  * Exports Zotero items to Evidence Graph API
@@ -318,13 +322,14 @@ const EvidenceGraphTranslator = {
 if (typeof module !== 'undefined') {
   module.exports = EvidenceGraphTranslator;
 }
-```
+----
 
-### Code: `lib/chrome/content/prompt.xhtml`
+==== Code: `+lib/chrome/content/prompt.xhtml+`
 
 PROMPT scoring dialog shown before export:
 
-```xml
+[source,xml]
+----
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
@@ -410,13 +415,14 @@ PROMPT scoring dialog shown before export:
     </hbox>
   </vbox>
 </dialog>
-```
+----
 
-### Code: `lib/config.js`
+==== Code: `+lib/config.js+`
 
 User configuration for API endpoint:
 
-```javascript
+[source,javascript]
+----
 const EvidenceGraphConfig = {
   getApiEndpoint() {
     return Zotero.Prefs.get('extensions.evidencegraph.apiEndpoint') ||
@@ -447,13 +453,14 @@ const EvidenceGraphConfig = {
     return Zotero.Prefs.get('extensions.evidencegraph.promptForScores') !== false;
   }
 };
-```
+----
 
-## Evidence Graph → Zotero Import
+=== Evidence Graph → Zotero Import
 
-### API Endpoint: `/api/v1/evidence/:id/export`
+==== API Endpoint: `+/api/v1/evidence/:id/export+`
 
-```elixir
+[source,elixir]
+----
 # lib/evidence_graph_web/controllers/evidence_controller.ex
 
 defmodule EvidenceGraphWeb.EvidenceController do
@@ -514,24 +521,27 @@ defmodule EvidenceGraphWeb.EvidenceController do
     end
   end
 end
-```
+----
 
-### Manual Import Workflow
+==== Manual Import Workflow
 
-1. User clicks "Export to Zotero" in Evidence Graph UI
-2. Browser downloads `evidence_123.json`
-3. User opens Zotero → File → Import → Select JSON file
-4. Zotero creates new item with metadata + PROMPT scores in "Extra" field
+[arabic]
+. User clicks "`Export to Zotero`" in Evidence Graph UI
+. Browser downloads `+evidence_123.json+`
+. User opens Zotero → File → Import → Select JSON file
+. Zotero creates new item with metadata + PROMPT scores in "`Extra`"
+field
 
-## Sync Strategy
+=== Sync Strategy
 
-### Conflict Resolution
+==== Conflict Resolution
 
-**Scenario:** User updates item in both Zotero AND Evidence Graph
+*Scenario:* User updates item in both Zotero AND Evidence Graph
 
-**Solution:** Last-write-wins with version tracking
+*Solution:* Last-write-wins with version tracking
 
-```elixir
+[source,elixir]
+----
 defmodule EvidenceGraph.Sync do
   def sync_from_zotero(evidence_id, zotero_item) do
     evidence = get_evidence!(evidence_id)
@@ -551,13 +561,14 @@ defmodule EvidenceGraph.Sync do
     end
   end
 end
-```
+----
 
-### Webhook Support (Future)
+==== Webhook Support (Future)
 
-Zotero doesn't support webhooks, but we can poll:
+Zotero doesn’t support webhooks, but we can poll:
 
-```elixir
+[source,elixir]
+----
 # Run every 15 minutes via Oban job
 defmodule EvidenceGraph.Workers.ZoteroSync do
   use Oban.Worker, queue: :sync
@@ -581,13 +592,14 @@ defmodule EvidenceGraph.Workers.ZoteroSync do
     :ok
   end
 end
-```
+----
 
-## Testing Plan
+=== Testing Plan
 
-### Unit Tests
+==== Unit Tests
 
-```elixir
+[source,elixir]
+----
 # test/evidence_graph/zotero_test.exs
 
 defmodule EvidenceGraph.ZoteroTest do
@@ -633,11 +645,12 @@ defmodule EvidenceGraph.ZoteroTest do
     end
   end
 end
-```
+----
 
-### Integration Tests
+==== Integration Tests
 
-```elixir
+[source,elixir]
+----
 # test/evidence_graph_web/controllers/evidence_controller_test.exs
 
 defmodule EvidenceGraphWeb.EvidenceControllerTest do
@@ -670,38 +683,42 @@ defmodule EvidenceGraphWeb.EvidenceControllerTest do
     assert get_resp_header(conn, "content-disposition") != []
   end
 end
-```
+----
 
-## User Documentation
+=== User Documentation
 
-### Setup Guide
+==== Setup Guide
 
-**1. Install Zotero Extension**
-```bash
+*1. Install Zotero Extension*
+
+[source,bash]
+----
 # Download from GitHub releases
 curl -LO https://github.com/Hyperpolymath/bofig/releases/latest/bofig-evidencegraph.xpi
 
 # In Zotero: Tools → Add-ons → Gear Icon → Install Add-on From File
-```
+----
 
-**2. Configure API Endpoint**
-```
+*2. Configure API Endpoint*
+
+....
 Zotero → Edit → Preferences → Evidence Graph
 - API Endpoint: https://api.evidencegraph.org
 - API Key: [paste your key from Evidence Graph settings]
 - Default Investigation: [select from dropdown]
-```
+....
 
-**3. Export Items**
-```
+*3. Export Items*
+
+....
 1. Select items in Zotero library
 2. Right-click → Export to Evidence Graph
 3. (Optional) Adjust PROMPT scores in dialog
 4. Click "Export"
 5. Items appear in Evidence Graph investigation
-```
+....
 
----
+'''''
 
-**Last Updated:** 2025-11-22
-**Status:** Design complete, implementation pending
+*Last Updated:* 2025-11-22 *Status:* Design complete, implementation
+pending

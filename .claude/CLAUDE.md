@@ -115,7 +115,7 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 |---------------|----------|-------|
 | **Elixir** | This project's primary language | Phoenix, LiveView, Absinthe |
 | **AffineScript** | Primary application code | Affine-typed, compiles to typed-wasm or ESM |
-| **Bun** | JS/TS runtime & package management (tier 1) | Default for all new work. Executes `.ts` directly, no build step. Uses an npm-compatible `package.json` plus `bun.lock` — both are expected, not anti-patterns. |
+| **Bun** | JS runtime & package management (tier 1) | Default for all new work. Runs compiled ESM/JS directly — no bundler step. Uses an npm-compatible `package.json` plus `bun.lock` — both are expected, not anti-patterns. |
 | **Rust** | Performance-critical, systems, WASM | Preferred for CLI tools |
 | **Gleam** | Backend services | Runs on BEAM or compiles to JS |
 | **Bash/POSIX Shell** | Scripts, automation | Keep minimal |
@@ -127,6 +127,7 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 | Banned | Replacement |
 |--------|-------------|
 | TypeScript | AffineScript |
+| Deno | Bun |
 | Node.js | Bun |
 | npm/pnpm/yarn | Bun |
 | Go | Rust |

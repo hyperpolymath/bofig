@@ -127,6 +127,7 @@ LithClient.exists_by_hash?("evidence", sha256_hash)
 | Banned | Replacement |
 |--------|-------------|
 | TypeScript | AffineScript |
+| ReScript | AffineScript |
 | Deno | Bun |
 | Node.js | Bun |
 | npm/pnpm/yarn | Bun |

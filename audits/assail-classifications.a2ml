@@ -1,4 +1,8 @@
 %A2ML
+# SPDX-License-Identifier: MIT
+---
+version: 1.0
+project: bofig
 - suppression:
     file: 'assets/js/hooks/prompt_radar_hook.js'
     rule: 'DynamicCodeExecution'

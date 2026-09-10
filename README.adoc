@@ -72,7 +72,7 @@ cd bofig
 podman-compose up -d
 ----
 
-Verify ArangoDB: http://localhost:8529 (root/dev)
+Verify LithoglyphDB: http://localhost:8529 (root/dev)
 
 === 3. Full Setup
 
@@ -87,7 +87,7 @@ Or manually:
 ----
 mix deps.get
 mix ecto.create
-mix run -e "EvidenceGraph.ArangoDB.setup_database()"
+mix run -e "EvidenceGraph.Lithoglyph.setup_database()"
 mix run priv/repo/seeds.exs
 ----
 
@@ -239,7 +239,7 @@ iex -S mix phx.server
 == Deployment (Phase 2)
 
 * Hetzner Cloud  
-* ArangoDB Oasis  
+* LithoglyphDB  
 * Nginx reverse proxy  
 * GitHub Actions CI/CD
 
@@ -256,7 +256,7 @@ Every design choice asks:
 
 == License
 
-MPL-2.0 (Palimpsest License)
+MPL-2.0
 
 == Contact
 

@@ -256,7 +256,7 @@ Every design choice asks:
 
 == License
 
-MPL-2.0
+MPL-2.0 (code) & CC-SA-BY-4.0 (documents)
 
 == Contact
 

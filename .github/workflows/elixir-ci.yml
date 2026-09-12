@@ -15,11 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
   elixir-ci:
-    uses: hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml@892497fe373744874316710966b81ae6f0ea9e66
+    uses: hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml@8f2ee50841e216cd8c192eeb68953118190f105c
     with:
       otp-version: "27.2.1"
       elixir-version: "1.18.2"

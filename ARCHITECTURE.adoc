@@ -1,31 +1,40 @@
-# Evidence Graph Architecture
+== Evidence Graph Architecture
 
-## Vision
+=== Vision
 
-Infrastructure for pragmatic epistemology in investigative journalism. Combines:
-- **i-docs navigation principles**: Navigation over narration, reader agency
-- **PROMPT framework**: 6-dimensional epistemological scoring
-- **Boundary objects theory**: Multiple perspectives on same evidence
+Infrastructure for pragmatic epistemology in investigative journalism.
+Combines: - *i-docs navigation principles*: Navigation over narration,
+reader agency - *PROMPT framework*: 6-dimensional epistemological
+scoring - *Boundary objects theory*: Multiple perspectives on same
+evidence
 
-## Philosophical Foundation
+=== Philosophical Foundation
 
-### The Core Argument
+==== The Core Argument
 
-We didn't fall from Truth to Post-Truth; we evolved to complex epistemology without building infrastructure. This system IS that infrastructure.
+We didn’t fall from Truth to Post-Truth; we evolved to complex
+epistemology without building infrastructure. This system IS that
+infrastructure.
 
-### Design Principles
+==== Design Principles
 
-1. **Coordination without consensus**: Different audiences navigate same evidence differently
-2. **Measurable epistemology**: PROMPT scores make evidence quality explicit
-3. **Progressive enhancement**: Works without JavaScript, enhanced with it
-4. **Open by default**: Open source, EU data sovereignty, NUJ network adoption
+[arabic]
+. *Coordination without consensus*: Different audiences navigate same
+evidence differently
+. *Measurable epistemology*: PROMPT scores make evidence quality
+explicit
+. *Progressive enhancement*: Works without JavaScript, enhanced with it
+. *Open by default*: Open source, EU data sovereignty, NUJ network
+adoption
 
-## Data Model
+=== Data Model
 
-### Core Entities
+==== Core Entities
 
-#### Claims
-```elixir
+===== Claims
+
+[source,elixir]
+----
 %Claim{
   id: UUID,
   text: String,
@@ -45,10 +54,12 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
   updated_at: DateTime,
   metadata: Map
 }
-```
+----
 
-#### Evidence
-```elixir
+===== Evidence
+
+[source,elixir]
+----
 %Evidence{
   id: UUID,
   title: String,
@@ -65,10 +76,12 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
   created_at: DateTime,
   metadata: Map
 }
-```
+----
 
-#### Relationships (Edges)
-```elixir
+===== Relationships (Edges)
+
+[source,elixir]
+----
 %Relationship{
   _from: "claims/:uuid",
   _to: "evidence/:uuid",
@@ -80,10 +93,12 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
   created_at: DateTime,
   metadata: Map
 }
-```
+----
 
-#### Navigation Paths
-```elixir
+===== Navigation Paths
+
+[source,elixir]
+----
 %NavigationPath{
   id: UUID,
   investigation_id: UUID,
@@ -100,10 +115,12 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
   }],
   created_at: DateTime
 }
-```
+----
 
-### Investigations (Container)
-```elixir
+==== Investigations (Container)
+
+[source,elixir]
+----
 %Investigation{
   id: UUID,
   title: String,
@@ -116,28 +133,25 @@ We didn't fall from Truth to Post-Truth; we evolved to complex epistemology with
   created_at: DateTime,
   updated_at: DateTime
 }
-```
+----
 
-## Database Architecture
+=== Database Architecture
 
-### Phase 1-2: ArangoDB (Multi-Model)
+==== Phase 1-2: ArangoDB (Multi-Model)
 
-**Why ArangoDB:**
-- Native graph + document database
-- Strong Elixir integration via `arangox`
-- AQL (query language) supports complex traversals
-- Production-ready, €45/month managed hosting
-- JSON storage preserves Schema.org/Dublin Core
+*Why ArangoDB:* - Native graph + document database - Strong Elixir
+integration via `+arangox+` - AQL (query language) supports complex
+traversals - Production-ready, €45/month managed hosting - JSON storage
+preserves Schema.org/Dublin Core
 
-**Collections:**
-- `investigations` (document)
-- `claims` (document)
-- `evidence` (document)
-- `navigation_paths` (document)
-- `relationships` (edge collection)
+*Collections:* - `+investigations+` (document) - `+claims+` (document) -
+`+evidence+` (document) - `+navigation_paths+` (document) -
+`+relationships+` (edge collection)
 
-**Indexes:**
-```javascript
+*Indexes:*
+
+[source,javascript]
+----
 // Full-text search on claims/evidence
 db.claims.ensureIndex({ type: "fulltext", fields: ["text"] })
 db.evidence.ensureIndex({ type: "fulltext", fields: ["title", "metadata"] })
@@ -152,22 +166,22 @@ db.evidence.ensureIndex({ type: "hash", fields: ["investigation_id"] })
 
 // Zotero sync
 db.evidence.ensureIndex({ type: "hash", fields: ["zotero_key"] })
-```
+----
 
-### Phase 3+: Optional Virtuoso (RDF/SPARQL)
+==== Phase 3+: Optional Virtuoso (RDF/SPARQL)
 
-Add only if semantic web integration becomes critical:
-- Academic repository linking
-- Cross-investigation semantic queries
-- Linked Open Data publishing
+Add only if semantic web integration becomes critical: - Academic
+repository linking - Cross-investigation semantic queries - Linked Open
+Data publishing
 
-**Migration path:** JSON-LD stored from day 1 enables easy export to RDF.
+*Migration path:* JSON-LD stored from day 1 enables easy export to RDF.
 
-## API Design
+=== API Design
 
-### GraphQL Schema (Absinthe)
+==== GraphQL Schema (Absinthe)
 
-```graphql
+[source,graphql]
+----
 type Investigation {
   id: ID!
   title: String!
@@ -334,49 +348,55 @@ input CreateRelationshipInput {
   confidence: Float!
   reasoning: String
 }
-```
+----
 
-### REST Endpoints (Phoenix)
+==== REST Endpoints (Phoenix)
 
 For Zotero integration and simple operations:
 
-```
+....
 POST   /api/v1/evidence/import          # Zotero → Evidence
 GET    /api/v1/evidence/:id/export      # Evidence → Zotero JSON
 POST   /api/v1/investigations/:id/export # Export investigation
 GET    /api/v1/health                   # System health
-```
+....
 
-## Technology Stack
+=== Technology Stack
 
-### Backend
-- **Elixir 1.16+** - Functional, concurrent, fault-tolerant
-- **Phoenix 1.7+** - Web framework
-- **Absinthe 1.7+** - GraphQL implementation
-- **ArangoDB 3.11+** - Multi-model database
-- **arangox** - Elixir ArangoDB driver
+==== Backend
 
-### Frontend
-- **Phoenix LiveView** - Server-rendered, real-time UI (progressive enhancement)
-- **D3.js** - Graph visualization
-- **Alpine.js** (minimal) - Progressive JavaScript enhancement
-- **Tailwind CSS** - Styling
+* *Elixir 1.16+* - Functional, concurrent, fault-tolerant
+* *Phoenix 1.7+* - Web framework
+* *Absinthe 1.7+* - GraphQL implementation
+* *ArangoDB 3.11+* - Multi-model database
+* *arangox* - Elixir ArangoDB driver
 
-### Integration
-- **Julia 1.10+** - Statistical analysis, PROMPT scoring algorithms
-- **IPFS** - Evidence provenance and archival
-- **Zotero API** - Two-way sync
+==== Frontend
 
-### Infrastructure
-- **Podman/Docker** - Containerization
-- **Hetzner Cloud** - EU hosting (data sovereignty)
-- **GitHub Actions** - CI/CD
+* *Phoenix LiveView* - Server-rendered, real-time UI (progressive
+enhancement)
+* *D3.js* - Graph visualization
+* *Alpine.js* (minimal) - Progressive JavaScript enhancement
+* *Tailwind CSS* - Styling
 
-## Key Algorithms
+==== Integration
 
-### PROMPT Overall Score Calculation
+* *Julia 1.10+* - Statistical analysis, PROMPT scoring algorithms
+* *IPFS* - Evidence provenance and archival
+* *Zotero API* - Two-way sync
 
-```elixir
+==== Infrastructure
+
+* *Podman/Docker* - Containerization
+* *Hetzner Cloud* - EU hosting (data sovereignty)
+* *GitHub Actions* - CI/CD
+
+=== Key Algorithms
+
+==== PROMPT Overall Score Calculation
+
+[source,elixir]
+----
 defmodule EvidenceGraph.Scoring do
   @weights %{
     provenance: 0.20,
@@ -393,13 +413,14 @@ defmodule EvidenceGraph.Scoring do
     end)
   end
 end
-```
+----
 
-### Relationship Weight Propagation
+==== Relationship Weight Propagation
 
-For evidence chains: `claim₁ → evidence₁ → claim₂ → evidence₂`
+For evidence chains: `+claim₁ → evidence₁ → claim₂ → evidence₂+`
 
-```elixir
+[source,elixir]
+----
 defmodule EvidenceGraph.Traversal do
   def propagated_weight(path) do
     path
@@ -411,13 +432,14 @@ defmodule EvidenceGraph.Traversal do
     relationship.weight * relationship.confidence
   end
 end
-```
+----
 
-### Navigation Path Scoring
+==== Navigation Path Scoring
 
 Different audiences prioritize different PROMPT dimensions:
 
-```elixir
+[source,elixir]
+----
 @audience_weights %{
   researcher: %{methodology: 0.35, replicability: 0.30, transparency: 0.20},
   policymaker: %{provenance: 0.30, publication: 0.25, objective: 0.25},
@@ -426,23 +448,27 @@ Different audiences prioritize different PROMPT dimensions:
   affected_person: %{objective: 0.35, provenance: 0.30, transparency: 0.20},
   journalist: %{provenance: 0.25, transparency: 0.25, replicability: 0.20}
 }
-```
+----
 
-## Security & Privacy
+=== Security & Privacy
 
-### Authentication
-- JWT tokens for API access
-- Role-based access: `admin`, `journalist`, `reviewer`, `reader`
-- Optional DIDs (Decentralized Identifiers) for blockchain integration
+==== Authentication
 
-### Data Protection
-- EU GDPR compliant
-- Interview subjects can be anonymized
-- Evidence can be marked as `sensitive` (restricted access)
-- Audit logs for all mutations
+* JWT tokens for API access
+* Role-based access: `+admin+`, `+journalist+`, `+reviewer+`, `+reader+`
+* Optional DIDs (Decentralized Identifiers) for blockchain integration
 
-### IPFS Integration
-```elixir
+==== Data Protection
+
+* EU GDPR compliant
+* Interview subjects can be anonymized
+* Evidence can be marked as `+sensitive+` (restricted access)
+* Audit logs for all mutations
+
+==== IPFS Integration
+
+[source,elixir]
+----
 defmodule EvidenceGraph.IPFS do
   def store_evidence(file_path) do
     {:ok, hash} = Kubo.add(file_path)
@@ -455,17 +481,18 @@ defmodule EvidenceGraph.IPFS do
     current_hash == evidence.ipfs_hash
   end
 end
-```
+----
 
-## Performance Considerations
+=== Performance Considerations
 
-### Query Optimization
+==== Query Optimization
 
-**Problem:** Deep evidence chains (10+ hops) can be slow
+*Problem:* Deep evidence chains (10+ hops) can be slow
 
-**Solution:** Pre-computed materialized paths
+*Solution:* Pre-computed materialized paths
 
-```javascript
+[source,javascript]
+----
 // ArangoDB: Store paths up to depth 3
 FOR claim IN claims
   LET paths = (
@@ -473,48 +500,54 @@ FOR claim IN claims
       RETURN p
   )
   UPDATE claim WITH { materialized_paths: paths } IN claims
-```
+----
 
-### Caching Strategy
+==== Caching Strategy
 
-- **GraphQL:** DataLoader for N+1 query prevention
-- **LiveView:** ETS cache for PROMPT score calculations
-- **ArangoDB:** Query result cache (built-in)
+* *GraphQL:* DataLoader for N+1 query prevention
+* *LiveView:* ETS cache for PROMPT score calculations
+* *ArangoDB:* Query result cache (built-in)
 
-### Benchmarks (Target)
+==== Benchmarks (Target)
 
-- Single investigation load: < 500ms
-- Evidence chain (depth 5): < 1s
-- Full-text search: < 200ms
-- GraphQL mutation: < 100ms
+* Single investigation load: < 500ms
+* Evidence chain (depth 5): < 1s
+* Full-text search: < 200ms
+* GraphQL mutation: < 100ms
 
-## Testing Strategy
+=== Testing Strategy
 
-### Unit Tests (ExUnit)
-- Data model validations
-- PROMPT score calculations
-- Relationship weight propagation
+==== Unit Tests (ExUnit)
 
-### Integration Tests
-- GraphQL query/mutation flows
-- Zotero import/export
-- ArangoDB CRUD operations
+* Data model validations
+* PROMPT score calculations
+* Relationship weight propagation
 
-### E2E Tests (Wallaby)
-- Complete investigation workflow
-- Navigation path creation
-- Graph visualization interaction
+==== Integration Tests
 
-### User Testing (Phase 1 Goal)
-- 25 participants from NUJ network
-- One complete investigation (7 claims, 30 evidence items)
-- 3 navigation paths tested
-- Qualitative feedback on PROMPT UI
+* GraphQL query/mutation flows
+* Zotero import/export
+* ArangoDB CRUD operations
 
-## Migration & Deployment
+==== E2E Tests (Wallaby)
 
-### Development
-```bash
+* Complete investigation workflow
+* Navigation path creation
+* Graph visualization interaction
+
+==== User Testing (Phase 1 Goal)
+
+* 25 participants from NUJ network
+* One complete investigation (7 claims, 30 evidence items)
+* 3 navigation paths tested
+* Qualitative feedback on PROMPT UI
+
+=== Migration & Deployment
+
+==== Development
+
+[source,bash]
+----
 # Local ArangoDB
 podman run -p 8529:8529 -e ARANGO_ROOT_PASSWORD=dev arangodb/arangodb:3.11
 
@@ -523,93 +556,103 @@ mix phx.new evidence_graph --database postgres  # For user auth only
 mix deps.get
 mix ecto.setup
 iex -S mix phx.server
-```
+----
 
-### Production (Hetzner)
-- ArangoDB Cloud: €45/month managed instance
-- Phoenix: Debian 12, systemd service
-- Nginx reverse proxy, Let's Encrypt SSL
-- Automated backups via ArangoDB Cloud
+==== Production (Hetzner)
 
-### Data Migration Path
+* ArangoDB Cloud: €45/month managed instance
+* Phoenix: Debian 12, systemd service
+* Nginx reverse proxy, Let’s Encrypt SSL
+* Automated backups via ArangoDB Cloud
 
-**Phase 1 → Phase 2:** Schema evolution within ArangoDB
-**Phase 2 → Phase 3:** If adding Virtuoso:
+==== Data Migration Path
 
-```elixir
+*Phase 1 → Phase 2:* Schema evolution within ArangoDB *Phase 2 → Phase
+3:* If adding Virtuoso:
+
+[source,elixir]
+----
 # Export to JSON-LD
 evidence |> Jason.encode!() |> JSONLD.expand()
 
 # Import to Virtuoso
 Virtuoso.import_turtle(jsonld_to_turtle(data))
-```
+----
 
-## Open Questions
+=== Open Questions
 
-1. **PROMPT scoring UI**: Sliders vs. dropdowns vs. questionnaire?
-2. **Real-time collaboration**: Conflict resolution for concurrent edits?
-3. **Evidence versioning**: Full history or snapshots?
-4. **Mobile experience**: Responsive web or native app (future)?
+[arabic]
+. *PROMPT scoring UI*: Sliders vs. dropdowns vs. questionnaire?
+. *Real-time collaboration*: Conflict resolution for concurrent edits?
+. *Evidence versioning*: Full history or snapshots?
+. *Mobile experience*: Responsive web or native app (future)?
 
-## References
+=== References
 
-- ArangoDB Multi-Model: https://www.arangodb.com/docs/stable/
-- Absinthe GraphQL: https://hexdocs.pm/absinthe/
-- IPFS Docs: https://docs.ipfs.tech/
-- Dublin Core: https://www.dublincore.org/specifications/dublin-core/
-- Schema.org: https://schema.org/
+* ArangoDB Multi-Model: https://www.arangodb.com/docs/stable/
+* Absinthe GraphQL: https://hexdocs.pm/absinthe/
+* IPFS Docs: https://docs.ipfs.tech/
+* Dublin Core: https://www.dublincore.org/specifications/dublin-core/
+* Schema.org: https://schema.org/
 
----
+'''''
 
-**Last Updated:** 2026-03-13
-**Status:** Phase 1 complete (v1.0.0). Phase 2 in progress: migrating to Lithoglyph as primary evidence store.
+*Last Updated:* 2026-03-13 *Status:* Phase 1 complete (v1.0.0). Phase 2
+in progress: migrating to Lithoglyph as primary evidence store.
 
-## Lithoglyph Migration (Phase 2→3)
+=== Lithoglyph Migration (Phase 2→3)
 
-### Current Architecture (Phase 1)
-```
+==== Current Architecture (Phase 1)
+
+....
 Browser → nginx → Phoenix (LiveView + REST + GraphQL)
                       ↓                    ↓
                  PostgreSQL            ArangoDB 3.11+
                 (user auth)     (evidence, claims, entities,
                                  relationships, navigation)
-```
+....
 
-### Target Architecture (Phase 2, in progress)
-```
+==== Target Architecture (Phase 2, in progress)
+
+....
 Browser → nginx → Phoenix (LiveView + REST + GraphQL)
                       ↓           ↓              ↓
                  PostgreSQL   Lithoglyph      ArangoDB
                 (user auth)  (evidence,    (relationships
                               claims,       edge collection
                               entities)     only)
-```
+....
 
-### Final Architecture (Phase 3)
-```
+==== Final Architecture (Phase 3)
+
+....
 Browser → nginx → Phoenix (LiveView + REST + GraphQL)
                       ↓              ↓
                  PostgreSQL      Lithoglyph
                 (user auth)   (all domain data:
                                evidence, claims,
                                entities, relationships)
-```
+....
 
-### Why Lithoglyph
+==== Why Lithoglyph
 
-ArangoDB was the right choice for Phase 1 (quick to prototype, multi-model).
-Lithoglyph is the right choice long-term because:
+ArangoDB was the right choice for Phase 1 (quick to prototype,
+multi-model). Lithoglyph is the right choice long-term because:
 
-1. **Provenance is mandatory** — every mutation is a story event with actor + rationale
-2. **PROMPT scores as first-class types** — `BoundedNat 0 100` verified at compile time
-3. **GQL-DT dependent types** — type-safe queries with proof obligations
-4. **Audit-grade WAL** — every write is journaled, reversible
-5. **No data duplication** — Docudactyl → Lithoglyph → bofig queries directly (no import step)
+[arabic]
+. *Provenance is mandatory* — every mutation is a story event with actor
++ rationale
+. *PROMPT scores as first-class types* — `+BoundedNat 0 100+` verified
+at compile time
+. *GQL-DT dependent types* — type-safe queries with proof obligations
+. *Audit-grade WAL* — every write is journaled, reversible
+. *No data duplication* — Docudactyl → Lithoglyph → bofig queries
+directly (no import step)
 
-### Migration Strategy
+==== Migration Strategy
 
-Each collection migrates independently:
-1. **Evidence** (first) — highest value, most data, Lithoglyph already stores it
-2. **Entities** — NER-resolved entities with aliases and merge history
-3. **Claims** — with PROMPT scores as GQL-DT types
-4. **Relationships** (last) — requires Factor GQL graph traversal support
+Each collection migrates independently: 1. *Evidence* (first) — highest
+value, most data, Lithoglyph already stores it 2. *Entities* —
+NER-resolved entities with aliases and merge history 3. *Claims* — with
+PROMPT scores as GQL-DT types 4. *Relationships* (last) — requires
+Factor GQL graph traversal support

@@ -177,7 +177,7 @@
     "severity": "high",
     "rule_module": "workflow_audit",
     "type": "npermissions_typo",
-    "file": "rescript-deno-ci.yml"
+    "file": "affinescript-deno-ci.yml"
   },
   {
     "severity": "high",

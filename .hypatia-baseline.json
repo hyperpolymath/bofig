@@ -91,6 +91,42 @@
   },
   {
     "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/AGENTIC.a2ml"
+  },
+  {
+    "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/ECOSYSTEM.a2ml"
+  },
+  {
+    "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/META.a2ml"
+  },
+  {
+    "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/NEUROSYM.a2ml"
+  },
+  {
+    "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/PLAYBOOK.a2ml"
+  },
+  {
+    "severity": "critical",
+    "rule_module": "structural_drift",
+    "type": "SD004",
+    "file": ".machine_readable/6a2/STATE.a2ml"
+  },
+  {
+    "severity": "critical",
     "rule_module": "workflow_audit",
     "type": "actions_expression_injection",
     "file": "boj-build.yml"
@@ -124,6 +160,12 @@
     "rule_module": "cicd_rules",
     "type": "missing_requirement",
     "file": ".github/workflows/scorecard.yml"
+  },
+  {
+    "severity": "high",
+    "rule_module": "cicd_rules",
+    "type": "missing_requirement",
+    "file": "SECURITY.md"
   },
   {
     "severity": "high",
@@ -193,6 +235,24 @@
   },
   {
     "severity": "medium",
+    "rule_module": "root_hygiene",
+    "type": "stale",
+    "file": "GEMINI.md"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "scorecard",
+    "type": "SecurityPolicy",
+    "file": "."
+  },
+  {
+    "severity": "medium",
+    "rule_module": "structural_drift",
+    "type": "SD007",
+    "file": ".claude/CLAUDE.md"
+  },
+  {
+    "severity": "medium",
     "rule_module": "structural_drift",
     "type": "SD007",
     "file": "0-AI-MANIFEST.a2ml"
@@ -226,6 +286,18 @@
     "rule_module": "structural_drift",
     "type": "SD009",
     "file": "src/abi/Types.idr"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "workflow_audit",
+    "type": "missing_timeout_minutes",
+    "file": "label-triage.yml"
+  },
+  {
+    "severity": "medium",
+    "rule_module": "workflow_audit",
+    "type": "missing_timeout_minutes",
+    "file": "labels.yml"
   },
   {
     "severity": "medium",

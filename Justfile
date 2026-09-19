@@ -209,7 +209,7 @@ validate-rsr:
     @echo "RSR Compliance Check"
     @test -f LICENSE && echo "  LICENSE" || echo "  MISSING: LICENSE"
     @test -f SECURITY.md && echo "  SECURITY.md" || echo "  MISSING: SECURITY.md"
-    @test -f CONTRIBUTING.adoc && echo "  CONTRIBUTING.adoc" || echo "  MISSING: CONTRIBUTING.adoc"
+    @test -f .github/CONTRIBUTING.md && echo "  .github/CONTRIBUTING.md" || echo "  MISSING: .github/CONTRIBUTING.md"
     @test -f CODE_OF_CONDUCT.md && echo "  CODE_OF_CONDUCT.md" || echo "  MISSING: CODE_OF_CONDUCT.md"
     @test -f MAINTAINERS.md && echo "  MAINTAINERS.md" || echo "  MISSING: MAINTAINERS.md"
     @test -f CHANGELOG.md && echo "  CHANGELOG.md" || echo "  MISSING: CHANGELOG.md"

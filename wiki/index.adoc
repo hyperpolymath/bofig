@@ -130,7 +130,7 @@ If something is still unclear after reading these pages, please link:https://git
 
 == Contributing to the Wiki
 
-Found a typo? Want to add an example? See link:../CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+Found a typo? Want to add an example? See link:../.github/CONTRIBUTING.md[../.github/CONTRIBUTING.md].
 
 Wiki pages use AsciiDoc format. Keep explanations concrete, use diagrams, and link to related pages.
 

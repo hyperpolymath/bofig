@@ -144,7 +144,7 @@ See the link:../README.adoc[README] for detailed setup instructions.
 
 === Can I contribute?
 
-Yes! The project is open source from day 1. See the link:../CONTRIBUTING.adoc[CONTRIBUTING] guide.
+Yes! The project is open source from day 1. See the link:../.github/CONTRIBUTING.md[CONTRIBUTING] guide.
 
 Priority areas:
 

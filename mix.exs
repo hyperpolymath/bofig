@@ -52,7 +52,7 @@ defmodule EvidenceGraph.MixProject do
       {:dataloader, "~> 2.0"},
 
       # Database
-      {:arangox, "~> 0.7.0"},
+      {:arangox, "~> 0.8.0"},
       # For changesets only, not SQL
       {:ecto, "~> 3.11"},
       # Ecto integration (FormData, error helpers)

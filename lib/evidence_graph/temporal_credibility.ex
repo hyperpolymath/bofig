@@ -178,19 +178,7 @@ defmodule EvidenceGraph.TemporalCredibility do
       # Recalculate credibility for each affected entity
       results =
         Enum.map(entity_ids, fn eid ->
-          case credibility_at(eid, retraction_date) do
-            {:ok, score} ->
-              # Update the entity's credibility_score field
-              ArangoDB.update("entities", eid, %{
-                credibility_score: round(score),
-                updated_at: DateTime.to_iso8601(DateTime.utc_now())
-              })
-
-              {eid, score}
-
-            _ ->
-              {eid, nil}
-          end
+          refresh_entity_credibility(eid, retraction_date)
         end)
 
       {:ok, %{evidence_id: evidence_id, affected_entities: results}}
@@ -257,22 +245,10 @@ defmodule EvidenceGraph.TemporalCredibility do
         total_evidence = stats["total_evidence"] || 0
 
         # Longevity factor: days since first appearance (capped at 365 for normalisation)
-        longevity_days =
-          case entity["first_appearance_date"] do
-            nil -> 0
-            date_str -> max(0, Date.diff(Date.utc_today(), Date.from_iso8601!(date_str)))
-          end
-
-        longevity_factor = min(longevity_days / 365.0, 1.0)
+        {longevity_days, longevity_factor} = longevity_days(entity)
 
         # Consistency factor: corroborations vs contradictions
-        total_relations = corroborations + contradictions
-        consistency_factor =
-          if total_relations > 0 do
-            corroborations / total_relations
-          else
-            0.5
-          end
+        consistency_factor = source_consistency(corroborations, contradictions)
 
         # Retraction impact: proportion of evidence retracted
         retraction_factor =
@@ -387,5 +363,37 @@ defmodule EvidenceGraph.TemporalCredibility do
       )
 
     Enum.reverse(timeline)
+  end
+
+  defp refresh_entity_credibility(eid, retraction_date) do
+    case credibility_at(eid, retraction_date) do
+      {:ok, score} ->
+        # Update the entity's credibility_score field
+        ArangoDB.update("entities", eid, %{
+          credibility_score: round(score),
+          updated_at: DateTime.to_iso8601(DateTime.utc_now())
+        })
+
+        {eid, score}
+
+      _ ->
+        {eid, nil}
+    end
+  end
+
+  defp longevity_days(entity) do
+    longevity_days =
+      case entity["first_appearance_date"] do
+        nil -> 0
+        date_str -> max(0, Date.diff(Date.utc_today(), Date.from_iso8601!(date_str)))
+      end
+
+    longevity_factor = min(longevity_days / 365.0, 1.0)
+    {longevity_days, longevity_factor}
+  end
+
+  defp source_consistency(corroborations, contradictions) do
+    total_relations = corroborations + contradictions
+    if total_relations > 0, do: corroborations / total_relations, else: 0.5
   end
 end

@@ -68,34 +68,7 @@ defmodule EvidenceGraphWeb.Plugs.ApiKeyAuth do
   defp validate_and_authorize(conn, key, required_scope) do
     case ApiKeys.validate_api_key(key) do
       {:ok, api_key_doc} ->
-        # Check scope if required
-        if required_scope && !has_scope?(api_key_doc, required_scope) do
-          conn
-          |> put_status(:forbidden)
-          |> Phoenix.Controller.json(%{
-            errors: %{detail: "Insufficient scope. Required: #{required_scope}"}
-          })
-          |> halt()
-        else
-          # Check rate limit
-          case check_rate_limit(api_key_doc["_key"]) do
-            :ok ->
-              conn
-              |> assign(:api_key, api_key_doc)
-              |> assign(:api_key_user_id, api_key_doc["user_id"])
-
-            :rate_limited ->
-              conn
-              |> put_status(:too_many_requests)
-              |> put_resp_header("retry-after", to_string(@rate_window_seconds))
-              |> Phoenix.Controller.json(%{
-                errors: %{
-                  detail: "Rate limit exceeded. Maximum #{@rate_limit} requests per hour."
-                }
-              })
-              |> halt()
-          end
-        end
+        authorize_key(conn, api_key_doc, required_scope)
 
       {:error, :not_found} ->
         conn
@@ -154,6 +127,37 @@ defmodule EvidenceGraphWeb.Plugs.ApiKeyAuth do
 
       _ref ->
         :ok
+    end
+  end
+
+  defp authorize_key(conn, api_key_doc, required_scope) do
+    # Check scope if required
+    if required_scope && !has_scope?(api_key_doc, required_scope) do
+      conn
+      |> put_status(:forbidden)
+      |> Phoenix.Controller.json(%{
+        errors: %{detail: "Insufficient scope. Required: #{required_scope}"}
+      })
+      |> halt()
+    else
+      # Check rate limit
+      case check_rate_limit(api_key_doc["_key"]) do
+        :ok ->
+          conn
+          |> assign(:api_key, api_key_doc)
+          |> assign(:api_key_user_id, api_key_doc["user_id"])
+
+        :rate_limited ->
+          conn
+          |> put_status(:too_many_requests)
+          |> put_resp_header("retry-after", to_string(@rate_window_seconds))
+          |> Phoenix.Controller.json(%{
+            errors: %{
+              detail: "Rate limit exceeded. Maximum #{@rate_limit} requests per hour."
+            }
+          })
+          |> halt()
+      end
     end
   end
 end

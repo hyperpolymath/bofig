@@ -71,8 +71,7 @@ defmodule EvidenceGraph.Lithoglyph.NERExtractor do
 
     candidates
     |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(String.length(&1) < 2))
-    |> Enum.reject(&stopword?/1)
+    |> Enum.reject(&(String.length(&1) < 2 or stopword?(&1)))
     |> Enum.uniq()
   end
 

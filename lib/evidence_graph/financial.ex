@@ -228,33 +228,7 @@ defmodule EvidenceGraph.Financial do
     with {:ok, transactions} <- list_transactions(investigation_id, limit: 10_000) do
       anomalies =
         Enum.flat_map(transactions, fn txn ->
-          flags = []
-
-          # Round number detection
-          flags =
-            if is_round_number?(txn.amount) do
-              [build_anomaly(txn, "round_number", "Exact round amount: #{txn.currency} #{txn.amount}", :medium) | flags]
-            else
-              flags
-            end
-
-          # Structuring detection (just under threshold)
-          flags =
-            if txn.amount >= threshold * 0.8 and txn.amount < threshold do
-              [build_anomaly(txn, "structuring", "Amount #{txn.currency} #{txn.amount} is just under #{threshold} threshold", :high) | flags]
-            else
-              flags
-            end
-
-          # Weekend timing
-          flags =
-            if txn.transaction_date && Date.day_of_week(txn.transaction_date) in [6, 7] do
-              [build_anomaly(txn, "unusual_timing", "Transaction on weekend: #{txn.transaction_date}", :low) | flags]
-            else
-              flags
-            end
-
-          flags
+          transaction_anomalies(txn, threshold)
         end)
 
       # Rapid succession detection (multiple txns between same parties same day)
@@ -333,14 +307,14 @@ defmodule EvidenceGraph.Financial do
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  defp is_round_number?(amount) when is_float(amount) do
+  defp round_number?(amount) when is_float(amount) do
     # Check if the amount is a round number (multiple of 1000 with no cents)
     rem_cents = :erlang.float_to_binary(amount, decimals: 2)
     String.ends_with?(rem_cents, "000.00") or
       String.ends_with?(rem_cents, "500.00")
   end
 
-  defp is_round_number?(_), do: false
+  defp round_number?(_), do: false
 
   defp build_anomaly(txn, type, description, severity) do
     %{
@@ -376,4 +350,34 @@ defmodule EvidenceGraph.Financial do
   defp format_date_param(nil), do: nil
   defp format_date_param(%Date{} = d), do: Date.to_iso8601(d)
   defp format_date_param(s) when is_binary(s), do: s
+
+  defp transaction_anomalies(txn, threshold) do
+    flags = []
+
+    # Round number detection
+    flags =
+      if round_number?(txn.amount) do
+        [build_anomaly(txn, "round_number", "Exact round amount: #{txn.currency} #{txn.amount}", :medium) | flags]
+      else
+        flags
+      end
+
+    # Structuring detection (just under threshold)
+    flags =
+      if txn.amount >= threshold * 0.8 and txn.amount < threshold do
+        [build_anomaly(txn, "structuring", "Amount #{txn.currency} #{txn.amount} is just under #{threshold} threshold", :high) | flags]
+      else
+        flags
+      end
+
+    # Weekend timing
+    flags =
+      if txn.transaction_date && Date.day_of_week(txn.transaction_date) in [6, 7] do
+        [build_anomaly(txn, "unusual_timing", "Transaction on weekend: #{txn.transaction_date}", :low) | flags]
+      else
+        flags
+      end
+
+    flags
+  end
 end

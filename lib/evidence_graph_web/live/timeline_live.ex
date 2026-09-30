@@ -267,20 +267,7 @@ defmodule EvidenceGraphWeb.TimelineLive do
     case Evidence.list_evidence(investigation_id, limit: 10_000) do
       {:ok, items} ->
         Enum.flat_map(items, fn e ->
-          date = extract_evidence_date(e)
-
-          if date do
-            [%{
-              id: e.id,
-              type: "evidence",
-              label: e.title,
-              date: date,
-              prompt_score: PromptScores.calculate_overall(e.prompt_scores),
-              entity_ids: []
-            }]
-          else
-            []
-          end
+          evidence_event(e)
         end)
 
       _ ->
@@ -402,4 +389,20 @@ defmodule EvidenceGraphWeb.TimelineLive do
 
   defp format_date_input(nil), do: ""
   defp format_date_input(%Date{} = d), do: Date.to_iso8601(d)
+  defp evidence_event(e) do
+    date = extract_evidence_date(e)
+
+    if date do
+      [%{
+        id: e.id,
+        type: "evidence",
+        label: e.title,
+        date: date,
+        prompt_score: PromptScores.calculate_overall(e.prompt_scores),
+        entity_ids: []
+      }]
+    else
+      []
+    end
+  end
 end

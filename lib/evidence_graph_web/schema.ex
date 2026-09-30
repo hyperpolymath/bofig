@@ -2,6 +2,8 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
 defmodule EvidenceGraphWeb.Schema do
+  @moduledoc "GraphQL queries and mutations for the evidence graph."
+
   use Absinthe.Schema
 
   import_types(Absinthe.Type.Custom)
@@ -18,9 +20,16 @@ defmodule EvidenceGraphWeb.Schema do
   import_types(EvidenceGraphWeb.Schema.Types.ContradictionTypes)
   import_types(EvidenceGraphWeb.Schema.Types.AuthorizationTypes)
 
-  alias EvidenceGraph.{Claims, Evidence, Navigation, Relationships}
-  alias EvidenceGraph.{Investigations, Testimony, Contradictions, Search, Authorization}
+  alias EvidenceGraph.Authorization
+  alias EvidenceGraph.Claims
+  alias EvidenceGraph.Contradictions
   alias EvidenceGraph.Entities
+  alias EvidenceGraph.Evidence
+  alias EvidenceGraph.Investigations
+  alias EvidenceGraph.Navigation
+  alias EvidenceGraph.Relationships
+  alias EvidenceGraph.Search
+  alias EvidenceGraph.Testimony
   alias EvidenceGraphWeb.Schema.Resolvers.EntityResolver
   alias EvidenceGraphWeb.Schema.Resolvers.FinancialResolver
 

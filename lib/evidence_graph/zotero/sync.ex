@@ -113,22 +113,7 @@ defmodule EvidenceGraph.Zotero.Sync do
         version = get_in(evidence.metadata, ["zotero_version"]) || 0
         Client.update_item(client, evidence.zotero_key, zotero_data, version)
       else
-        case Client.create_item(client, zotero_data) do
-          {:ok, created} ->
-            new_key = created["key"] || created["data"]["key"]
-            new_version = created["version"] || created["data"]["version"] || 0
-
-            Evidence.update_evidence(evidence_id, %{
-              zotero_key: new_key,
-              zotero_version: new_version,
-              metadata: Map.merge(evidence.metadata || %{}, %{
-                "zotero_version" => new_version
-              })
-            })
-
-          error ->
-            error
-        end
+        create_zotero_item(client, zotero_data, evidence_id, evidence)
       end
     end
   end
@@ -168,6 +153,25 @@ defmodule EvidenceGraph.Zotero.Sync do
     case ArangoDB.get("zotero_sync_state", "sync_#{investigation_id}") do
       {:ok, doc} -> doc["library_version"]
       _ -> nil
+    end
+  end
+
+  defp create_zotero_item(client, zotero_data, evidence_id, evidence) do
+    case Client.create_item(client, zotero_data) do
+      {:ok, created} ->
+        new_key = created["key"] || created["data"]["key"]
+        new_version = created["version"] || created["data"]["version"] || 0
+
+        Evidence.update_evidence(evidence_id, %{
+          zotero_key: new_key,
+          zotero_version: new_version,
+          metadata: Map.merge(evidence.metadata || %{}, %{
+            "zotero_version" => new_version
+          })
+        })
+
+      error ->
+        error
     end
   end
 end

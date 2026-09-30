@@ -177,9 +177,7 @@ defmodule EvidenceGraph.Testimony do
         avg_prompt =
           claims
           |> Enum.map(fn c -> PromptScores.calculate_overall(c.prompt_scores) end)
-          |> then(fn scores ->
-            if length(scores) > 0, do: Enum.sum(scores) / length(scores), else: 50.0
-          end)
+          |> average_prompt_score()
 
         self_contradiction_rate = min(self_contradiction_count / max(total, 1), 1.0)
         corroboration_rate = corroborated_count / max(total, 1)
@@ -315,8 +313,8 @@ defmodule EvidenceGraph.Testimony do
             %{
               claim: claim,
               timestamp: claim.inserted_at,
-              has_contradiction: length(contradiction_ids) > 0,
-              has_corroboration: length(corroboration_ids) > 0,
+              has_contradiction: contradiction_ids != [],
+              has_corroboration: corroboration_ids != [],
               contradiction_ids: contradiction_ids,
               corroboration_ids: corroboration_ids
             }
@@ -333,6 +331,9 @@ defmodule EvidenceGraph.Testimony do
   # Private helpers
   # ---------------------------------------------------------------------------
 
+  defp average_prompt_score([]), do: 50.0
+  defp average_prompt_score(scores), do: Enum.sum(scores) / length(scores)
+
   defp consistency_score(corroborating, contradicting) do
     total = corroborating + contradicting
 
@@ -346,7 +347,7 @@ defmodule EvidenceGraph.Testimony do
   defp count_corroborated_claims(claims) do
     claim_keys = Enum.map(claims, & &1.id)
 
-    if length(claim_keys) == 0 do
+    if claim_keys == [] do
       0
     else
       aql = """

@@ -13,6 +13,8 @@ defmodule Mix.Tasks.Arango.Reset do
 
   use Mix.Task
 
+  alias Mix.Tasks.Arango.Setup
+
   @shortdoc "Drop and recreate ArangoDB database"
 
   @impl Mix.Task
@@ -57,7 +59,7 @@ defmodule Mix.Tasks.Arango.Reset do
     GenServer.stop(conn)
 
     # Re-create
-    Mix.Tasks.Arango.Setup.run(args)
+    Setup.run(args)
   end
 
   defp extract_username(opts) do

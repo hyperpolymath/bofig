@@ -6,6 +6,9 @@ defmodule EvidenceGraph.Relationships do
   """
 
   alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Claims.Claim
+  alias EvidenceGraph.Entities.Entity
+  alias EvidenceGraph.Evidence.Evidence
   alias EvidenceGraph.Relationships.Relationship
 
   @doc """
@@ -56,21 +59,7 @@ defmodule EvidenceGraph.Relationships do
   """
   def update_relationship(id, attrs) do
     with {:ok, relationship} <- get_relationship(id) do
-      changeset = Relationship.changeset(relationship, attrs)
-
-      if changeset.valid? do
-        updates =
-          Ecto.Changeset.apply_changes(changeset)
-          |> Relationship.to_arango_doc()
-          |> Map.drop([:_key, :_from, :_to, :inserted_at])
-
-        case ArangoDB.update("relationships", id, updates) do
-          {:ok, doc} -> {:ok, Relationship.from_arango_doc(doc)}
-          error -> error
-        end
-      else
-        {:error, changeset}
-      end
+      update_relationship_changeset(id, relationship, attrs)
     end
   end
 
@@ -138,7 +127,7 @@ defmodule EvidenceGraph.Relationships do
       {:ok, [result]} ->
         {:ok,
          %{
-           root_claim: EvidenceGraph.Claims.Claim.from_arango_doc(result["root_claim"]),
+           root_claim: Claim.from_arango_doc(result["root_claim"]),
            nodes: parse_nodes(result["nodes"]),
            edges: Enum.map(result["edges"], &Relationship.from_arango_doc/1),
            max_depth: result["max_depth"] || 0
@@ -156,13 +145,13 @@ defmodule EvidenceGraph.Relationships do
     Enum.map(nodes, fn node ->
       cond do
         String.starts_with?(node["_id"], "claims/") ->
-          {:claim, EvidenceGraph.Claims.Claim.from_arango_doc(node)}
+          {:claim, Claim.from_arango_doc(node)}
 
         String.starts_with?(node["_id"], "evidence/") ->
-          {:evidence, EvidenceGraph.Evidence.Evidence.from_arango_doc(node)}
+          {:evidence, Evidence.from_arango_doc(node)}
 
         String.starts_with?(node["_id"], "entities/") ->
-          {:entity, EvidenceGraph.Entities.Entity.from_arango_doc(node)}
+          {:entity, Entity.from_arango_doc(node)}
 
         true ->
           {:unknown, node}
@@ -259,7 +248,7 @@ defmodule EvidenceGraph.Relationships do
         contradictions =
           Enum.map(results, fn result ->
             %{
-              claim: EvidenceGraph.Claims.Claim.from_arango_doc(result["claim"]),
+              claim: Claim.from_arango_doc(result["claim"]),
               support_count: result["support_count"],
               contradiction_count: result["contradiction_count"]
             }
@@ -269,6 +258,24 @@ defmodule EvidenceGraph.Relationships do
 
       error ->
         error
+    end
+  end
+
+  defp update_relationship_changeset(id, relationship, attrs) do
+    changeset = Relationship.changeset(relationship, attrs)
+
+    if changeset.valid? do
+      updates =
+        Ecto.Changeset.apply_changes(changeset)
+        |> Relationship.to_arango_doc()
+        |> Map.drop([:_key, :_from, :_to, :inserted_at])
+
+      case ArangoDB.update("relationships", id, updates) do
+        {:ok, doc} -> {:ok, Relationship.from_arango_doc(doc)}
+        error -> error
+      end
+    else
+      {:error, changeset}
     end
   end
 end

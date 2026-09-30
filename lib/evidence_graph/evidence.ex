@@ -6,6 +6,7 @@ defmodule EvidenceGraph.Evidence do
   """
 
   alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Claims.Claim
   alias EvidenceGraph.Evidence.Evidence
 
   @doc """
@@ -107,22 +108,7 @@ defmodule EvidenceGraph.Evidence do
   """
   def update_evidence(id, attrs) do
     with {:ok, evidence} <- get_evidence(id) do
-      changeset = Evidence.changeset(evidence, attrs)
-
-      if changeset.valid? do
-        updates =
-          Ecto.Changeset.apply_changes(changeset)
-          |> Map.put(:updated_at, DateTime.utc_now())
-          |> Evidence.to_arango_doc()
-          |> Map.drop([:_key, :inserted_at])
-
-        case ArangoDB.update("evidence", id, updates) do
-          {:ok, doc} -> {:ok, Evidence.from_arango_doc(doc)}
-          error -> error
-        end
-      else
-        {:error, changeset}
-      end
+      update_evidence_changeset(id, evidence, attrs)
     end
   end
 
@@ -262,7 +248,7 @@ defmodule EvidenceGraph.Evidence do
         claims =
           Enum.map(results, fn %{"claim" => cl, "relationship" => rel} ->
             %{
-              claim: EvidenceGraph.Claims.Claim.from_arango_doc(cl),
+              claim: Claim.from_arango_doc(cl),
               weight: rel["weight"],
               confidence: rel["confidence"],
               reasoning: rel["reasoning"]
@@ -273,6 +259,25 @@ defmodule EvidenceGraph.Evidence do
 
       error ->
         error
+    end
+  end
+
+  defp update_evidence_changeset(id, evidence, attrs) do
+    changeset = Evidence.changeset(evidence, attrs)
+
+    if changeset.valid? do
+      updates =
+        Ecto.Changeset.apply_changes(changeset)
+        |> Map.put(:updated_at, DateTime.utc_now())
+        |> Evidence.to_arango_doc()
+        |> Map.drop([:_key, :inserted_at])
+
+      case ArangoDB.update("evidence", id, updates) do
+        {:ok, doc} -> {:ok, Evidence.from_arango_doc(doc)}
+        error -> error
+      end
+    else
+      {:error, changeset}
     end
   end
 end

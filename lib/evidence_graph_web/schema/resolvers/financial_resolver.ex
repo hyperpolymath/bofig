@@ -8,9 +8,9 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.FinancialResolver do
   user's access to the investigation that owns the financial data.
   """
 
-  alias EvidenceGraph.Financial
-  alias EvidenceGraph.Entities
   alias EvidenceGraph.Authorization
+  alias EvidenceGraph.Entities
+  alias EvidenceGraph.Financial
   import EvidenceGraphWeb.Schema, only: [require_auth: 1]
 
   # ---------------------------------------------------------------------------
@@ -36,49 +36,26 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.FinancialResolver do
 
   @doc "Follow-the-money graph traversal from an entity."
   def transaction_chain(%{entity_id: entity_id} = args, resolution) do
-    with {:ok, user_id} <- require_auth(resolution) do
-      # If investigation_id is provided, check access to it directly.
-      # Otherwise, look up the entity's investigation_id.
-      inv_id =
-        if args[:investigation_id] do
-          args[:investigation_id]
-        else
-          case Entities.get_entity(entity_id) do
-            {:ok, entity} -> entity.investigation_id
-            _ -> nil
-          end
-        end
-
-      if inv_id do
-        with :ok <- Authorization.check_access(inv_id, user_id, :view) do
-          depth = args[:depth] || 3
-          opts = if args[:investigation_id], do: [investigation_id: args[:investigation_id]], else: []
-          Financial.transaction_chain(entity_id, depth, opts)
-        end
-      else
-        {:error, :not_found}
-      end
+    with {:ok, user_id} <- require_auth(resolution),
+         {:ok, inv_id} <- chain_investigation(entity_id, args),
+         :ok <- Authorization.check_access(inv_id, user_id, :view) do
+      depth = args[:depth] || 3
+      opts = if args[:investigation_id], do: [investigation_id: args[:investigation_id]], else: []
+      Financial.transaction_chain(entity_id, depth, opts)
     end
   end
 
   @doc "Aggregate total flow between two entities."
   def total_flow(%{from_id: from_id, to_id: to_id} = args, resolution) do
-    with {:ok, user_id} <- require_auth(resolution) do
-      # Look up the source entity to determine the investigation
-      case Entities.get_entity(from_id) do
-        {:ok, entity} ->
-          with :ok <- Authorization.check_access(entity.investigation_id, user_id, :view) do
-            opts =
-              []
-              |> maybe_put(:start_date, args[:start_date])
-              |> maybe_put(:end_date, args[:end_date])
+    with {:ok, user_id} <- require_auth(resolution),
+         {:ok, entity} <- Entities.get_entity(from_id),
+         :ok <- Authorization.check_access(entity.investigation_id, user_id, :view) do
+      opts =
+        []
+        |> maybe_put(:start_date, args[:start_date])
+        |> maybe_put(:end_date, args[:end_date])
 
-            Financial.total_flow(from_id, to_id, opts)
-          end
-
-        error ->
-          error
-      end
+      Financial.total_flow(from_id, to_id, opts)
     end
   end
 
@@ -116,4 +93,16 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.FinancialResolver do
 
   defp maybe_put(opts, _key, nil), do: opts
   defp maybe_put(opts, key, value), do: Keyword.put(opts, key, value)
+
+  defp chain_investigation(entity_id, args) do
+    inv_id = args[:investigation_id] || entity_investigation(entity_id)
+    if inv_id, do: {:ok, inv_id}, else: {:error, :not_found}
+  end
+
+  defp entity_investigation(entity_id) do
+    case Entities.get_entity(entity_id) do
+      {:ok, entity} -> entity.investigation_id
+      _ -> nil
+    end
+  end
 end

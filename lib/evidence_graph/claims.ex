@@ -7,6 +7,7 @@ defmodule EvidenceGraph.Claims do
 
   alias EvidenceGraph.ArangoDB
   alias EvidenceGraph.Claims.Claim
+  alias EvidenceGraph.Evidence.Evidence
 
   @doc """
   Get a claim by ID.
@@ -95,22 +96,7 @@ defmodule EvidenceGraph.Claims do
   """
   def update_claim(id, attrs) do
     with {:ok, claim} <- get_claim(id) do
-      changeset = Claim.changeset(claim, attrs)
-
-      if changeset.valid? do
-        updates =
-          Ecto.Changeset.apply_changes(changeset)
-          |> Map.put(:updated_at, DateTime.utc_now())
-          |> Claim.to_arango_doc()
-          |> Map.drop([:_key, :inserted_at])
-
-        case ArangoDB.update("claims", id, updates) do
-          {:ok, doc} -> {:ok, Claim.from_arango_doc(doc)}
-          error -> error
-        end
-      else
-        {:error, changeset}
-      end
+      update_claim_changeset(id, claim, attrs)
     end
   end
 
@@ -168,7 +154,7 @@ defmodule EvidenceGraph.Claims do
         evidence =
           Enum.map(results, fn %{"evidence" => ev, "relationship" => rel} ->
             %{
-              evidence: EvidenceGraph.Evidence.Evidence.from_arango_doc(ev),
+              evidence: Evidence.from_arango_doc(ev),
               weight: rel["weight"],
               confidence: rel["confidence"],
               reasoning: rel["reasoning"]
@@ -200,7 +186,7 @@ defmodule EvidenceGraph.Claims do
         evidence =
           Enum.map(results, fn %{"evidence" => ev, "relationship" => rel} ->
             %{
-              evidence: EvidenceGraph.Evidence.Evidence.from_arango_doc(ev),
+              evidence: Evidence.from_arango_doc(ev),
               weight: rel["weight"],
               confidence: rel["confidence"],
               reasoning: rel["reasoning"]
@@ -211,6 +197,25 @@ defmodule EvidenceGraph.Claims do
 
       error ->
         error
+    end
+  end
+
+  defp update_claim_changeset(id, claim, attrs) do
+    changeset = Claim.changeset(claim, attrs)
+
+    if changeset.valid? do
+      updates =
+        Ecto.Changeset.apply_changes(changeset)
+        |> Map.put(:updated_at, DateTime.utc_now())
+        |> Claim.to_arango_doc()
+        |> Map.drop([:_key, :inserted_at])
+
+      case ArangoDB.update("claims", id, updates) do
+        {:ok, doc} -> {:ok, Claim.from_arango_doc(doc)}
+        error -> error
+      end
+    else
+      {:error, changeset}
     end
   end
 end

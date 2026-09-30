@@ -107,22 +107,7 @@ defmodule EvidenceGraph.Navigation do
   """
   def update_path(id, attrs) do
     with {:ok, path} <- get_path(id) do
-      changeset = Path.changeset(path, attrs)
-
-      if changeset.valid? do
-        updates =
-          Ecto.Changeset.apply_changes(changeset)
-          |> Map.put(:updated_at, DateTime.utc_now())
-          |> Path.to_arango_doc()
-          |> Map.drop([:_key, :inserted_at])
-
-        case ArangoDB.update("navigation_paths", id, updates) do
-          {:ok, doc} -> {:ok, Path.from_arango_doc(doc)}
-          error -> error
-        end
-      else
-        {:error, changeset}
-      end
+      update_path_changeset(id, path, attrs)
     end
   end
 
@@ -157,26 +142,7 @@ defmodule EvidenceGraph.Navigation do
       scored_claims =
         claims
         |> Enum.map(fn claim ->
-          {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
-
-          avg_evidence_score =
-            case supporting do
-              [] ->
-                0.0
-
-              _ ->
-                supporting
-                |> Enum.map(fn %{evidence: ev} ->
-                  PromptScores.calculate_for_audience(ev.prompt_scores, audience_type)
-                end)
-                |> Enum.sum()
-                |> Kernel./(length(supporting))
-            end
-
-          claim_score = PromptScores.calculate_for_audience(claim.prompt_scores, audience_type)
-          combined_score = claim_score * 0.4 + avg_evidence_score * 0.6
-
-          {claim, combined_score}
+          score_claim_for_audience(claim, audience_type)
         end)
         |> Enum.sort_by(fn {_claim, score} -> score end, :desc)
 
@@ -186,33 +152,8 @@ defmodule EvidenceGraph.Navigation do
         |> Enum.take(5)
         |> Enum.with_index()
         |> Enum.flat_map(fn {{claim, _score}, idx} ->
-          claim_node = %{
-            "entity_id" => claim.id,
-            "entity_type" => "claim",
-            "order" => idx * 2 + 1,
-            "context" => "Key claim for #{audience_type}",
-            "emphasis" => %{"priority" => "high"}
-          }
+          claim_path_nodes(claim, idx, audience_type)
 
-          # Add top supporting evidence
-          {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
-
-          evidence_node =
-            if supporting != [] do
-              top_evidence = hd(supporting).evidence
-
-              %{
-                "entity_id" => top_evidence.id,
-                "entity_type" => "evidence",
-                "order" => idx * 2 + 2,
-                "context" => "Supporting evidence",
-                "emphasis" => %{"highlight_prompt" => true}
-              }
-            else
-              nil
-            end
-
-          [claim_node, evidence_node] |> Enum.reject(&is_nil/1)
         end)
 
       entry_point =
@@ -245,23 +186,7 @@ defmodule EvidenceGraph.Navigation do
         path.path_nodes
         |> Enum.sort_by(& &1["order"])
         |> Enum.map(fn node ->
-          entity =
-            case node["entity_type"] do
-              "claim" ->
-                {:ok, claim} = EvidenceGraph.Claims.get_claim(node["entity_id"])
-                {:claim, claim}
-
-              "evidence" ->
-                {:ok, evidence} = EvidenceGraph.Evidence.get_evidence(node["entity_id"])
-                {:evidence, evidence}
-            end
-
-          %{
-            entity: entity,
-            order: node["order"],
-            context: node["context"],
-            emphasis: node["emphasis"]
-          }
+          hydrate_path_node(node)
         end)
 
       {:ok, %{path: path, nodes: nodes}}
@@ -288,5 +213,97 @@ defmodule EvidenceGraph.Navigation do
       end)
 
     {:ok, paths}
+  end
+
+  defp update_path_changeset(id, path, attrs) do
+    changeset = Path.changeset(path, attrs)
+
+    if changeset.valid? do
+      updates =
+        Ecto.Changeset.apply_changes(changeset)
+        |> Map.put(:updated_at, DateTime.utc_now())
+        |> Path.to_arango_doc()
+        |> Map.drop([:_key, :inserted_at])
+
+      case ArangoDB.update("navigation_paths", id, updates) do
+        {:ok, doc} -> {:ok, Path.from_arango_doc(doc)}
+        error -> error
+      end
+    else
+      {:error, changeset}
+    end
+  end
+
+  defp score_claim_for_audience(claim, audience_type) do
+    {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
+
+    avg_evidence_score =
+      case supporting do
+        [] ->
+          0.0
+
+        _ ->
+          supporting
+          |> Enum.map(fn %{evidence: ev} ->
+            PromptScores.calculate_for_audience(ev.prompt_scores, audience_type)
+          end)
+          |> Enum.sum()
+          |> Kernel./(length(supporting))
+      end
+
+    claim_score = PromptScores.calculate_for_audience(claim.prompt_scores, audience_type)
+    combined_score = claim_score * 0.4 + avg_evidence_score * 0.6
+
+    {claim, combined_score}
+  end
+
+  defp hydrate_path_node(node) do
+    entity =
+      case node["entity_type"] do
+        "claim" ->
+          {:ok, claim} = EvidenceGraph.Claims.get_claim(node["entity_id"])
+          {:claim, claim}
+
+        "evidence" ->
+          {:ok, evidence} = EvidenceGraph.Evidence.get_evidence(node["entity_id"])
+          {:evidence, evidence}
+      end
+
+    %{
+      entity: entity,
+      order: node["order"],
+      context: node["context"],
+      emphasis: node["emphasis"]
+    }
+  end
+
+  defp claim_path_nodes(claim, idx, audience_type) do
+    claim_node = %{
+      "entity_id" => claim.id,
+      "entity_type" => "claim",
+      "order" => idx * 2 + 1,
+      "context" => "Key claim for #{audience_type}",
+      "emphasis" => %{"priority" => "high"}
+    }
+
+    # Add top supporting evidence
+    {:ok, supporting} = EvidenceGraph.Claims.get_supporting_evidence(claim.id)
+
+    evidence_node =
+      if supporting != [] do
+        top_evidence = hd(supporting).evidence
+
+        %{
+          "entity_id" => top_evidence.id,
+          "entity_type" => "evidence",
+          "order" => idx * 2 + 2,
+          "context" => "Supporting evidence",
+          "emphasis" => %{"highlight_prompt" => true}
+        }
+      else
+        nil
+      end
+
+    [claim_node, evidence_node] |> Enum.reject(&is_nil/1)
   end
 end

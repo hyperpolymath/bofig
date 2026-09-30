@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraphWeb.Schema.Types.PromptScoresTypes do
+  @moduledoc "GraphQL types for the six PROMPT scoring dimensions."
+
   use Absinthe.Schema.Notation
 
   @desc "PROMPT epistemological scoring (6 dimensions)"

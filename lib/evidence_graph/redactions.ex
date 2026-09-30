@@ -54,17 +54,17 @@ defmodule EvidenceGraph.Redactions do
     document = %{
       _key: "red_" <> Ecto.UUID.generate(),
       evidence_id: evidence_id,
-      page: redaction_info[:page] || redaction_info["page"],
-      position: redaction_info[:position] || redaction_info["position"],
+      page: redaction_value(redaction_info, :page),
+      position: redaction_value(redaction_info, :position),
       suspected_content_type:
-        redaction_info[:suspected_content_type] || redaction_info["suspected_content_type"],
+        redaction_value(redaction_info, :suspected_content_type),
       recovery_method:
-        redaction_info[:recovery_method] || redaction_info["recovery_method"] || "none",
+        redaction_value(redaction_info, :recovery_method) || "none",
       recovery_confidence:
-        redaction_info[:recovery_confidence] || redaction_info["recovery_confidence"] || 0.0,
+        redaction_value(redaction_info, :recovery_confidence) || 0.0,
       recovered_text:
-        redaction_info[:recovered_text] || redaction_info["recovered_text"],
-      notes: redaction_info[:notes] || redaction_info["notes"],
+        redaction_value(redaction_info, :recovered_text),
+      notes: redaction_value(redaction_info, :notes),
       created_at: DateTime.to_iso8601(DateTime.utc_now()),
       updated_at: DateTime.to_iso8601(DateTime.utc_now())
     }
@@ -204,5 +204,9 @@ defmodule EvidenceGraph.Redactions do
     """
 
     ArangoDB.query_read(aql, %{investigation_id: investigation_id})
+  end
+
+  defp redaction_value(info, key) do
+    info[key] || info[Atom.to_string(key)]
   end
 end

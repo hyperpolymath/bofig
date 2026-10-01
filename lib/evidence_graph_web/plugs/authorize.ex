@@ -95,7 +95,7 @@ defmodule EvidenceGraphWeb.Plugs.Authorize do
   defp extract_user_id(_), do: nil
 
   defp halt_unauthorized(conn) do
-    if is_api_request?(conn) do
+    if api_request?(conn) do
       conn
       |> put_status(401)
       |> json(%{error: "unauthorized", message: "Authentication required"})
@@ -109,7 +109,7 @@ defmodule EvidenceGraphWeb.Plugs.Authorize do
   end
 
   defp halt_forbidden(conn) do
-    if is_api_request?(conn) do
+    if api_request?(conn) do
       conn
       |> put_status(403)
       |> json(%{error: "forbidden", message: "You do not have access to this investigation"})
@@ -122,7 +122,7 @@ defmodule EvidenceGraphWeb.Plugs.Authorize do
     end
   end
 
-  defp is_api_request?(conn) do
+  defp api_request?(conn) do
     Enum.any?(get_req_header(conn, "accept"), &String.contains?(&1, "json")) or
       String.starts_with?(conn.request_path, "/api")
   end

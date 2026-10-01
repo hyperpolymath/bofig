@@ -395,12 +395,10 @@ defmodule EvidenceGraph.Export do
 
     rows =
       Enum.map(docs, fn doc ->
-        headers
-        |> Enum.map(fn header ->
+        Enum.map_join(headers, ",", fn header ->
           value = doc[header]
           csv_escape(value)
         end)
-        |> Enum.join(",")
       end)
 
     Enum.join([header_line | rows], "\n")
@@ -435,6 +433,7 @@ defmodule EvidenceGraph.Export do
       value
     end
   end
+
   defp csv_escape(value) when is_list(value), do: csv_escape(Enum.join(value, "; "))
   defp csv_escape(value) when is_map(value), do: csv_escape(Jason.encode!(value))
   defp csv_escape(value), do: to_string(value)

@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraphWeb.Schema.Types.NavigationTypes do
+  @moduledoc "GraphQL types for audience navigation paths."
+
   use Absinthe.Schema.Notation
 
   @desc "Navigation path for specific audience"

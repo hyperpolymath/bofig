@@ -29,11 +29,11 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
   use GenServer
   require Logger
 
+  alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Entities
+  alias EvidenceGraph.Evidence
   alias EvidenceGraph.Lithoglyph.Client, as: LithClient
   alias EvidenceGraph.Lithoglyph.NERExtractor
-  alias EvidenceGraph.ArangoDB
-  alias EvidenceGraph.Evidence
-  alias EvidenceGraph.Entities
   alias EvidenceGraph.Relationships
 
   @batch_size 100
@@ -234,24 +234,7 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
       resolved = Entities.resolve_ner_output(ner_strings, investigation_id)
 
       Enum.each(resolved, fn {ner_string, result} ->
-        case result do
-          {:existing, entity} ->
-            create_mentions_edge(evidence.id, entity.id, ner_string, 1.0)
-
-          {:created, entity} ->
-            create_mentions_edge(evidence.id, entity.id, ner_string, 0.8)
-
-          {:suggest_merge, entity, similarity} ->
-            # Link to the existing entity but with lower confidence (fuzzy match)
-            create_mentions_edge(evidence.id, entity.id, ner_string, similarity * 0.9)
-            Logger.info(
-              "Fuzzy match for '#{ner_string}' → '#{entity.primary_name}' " <>
-                "(similarity=#{Float.round(similarity, 3)})"
-            )
-
-          {:error, reason} ->
-            Logger.warning("Failed to resolve entity '#{ner_string}': #{inspect(reason)}")
-        end
+        link_resolved_entity(evidence, ner_string, result)
       end)
     end
   rescue
@@ -334,13 +317,17 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
     scores = record["promptScores"] || %{}
 
     %{
-      provenance: scores["provenance"] || record["prompt_provenance"] || 50,
-      replicability: scores["replicability"] || record["prompt_replicability"] || 50,
-      objective: scores["objective"] || record["prompt_objective"] || 50,
-      methodology: scores["methodology"] || record["prompt_methodology"] || 50,
-      publication: scores["publication"] || record["prompt_publication"] || 50,
-      transparency: scores["transparency"] || record["prompt_transparency"] || 50
+      provenance: prompt_score(scores["provenance"], record["prompt_provenance"]),
+      replicability: prompt_score(scores["replicability"], record["prompt_replicability"]),
+      objective: prompt_score(scores["objective"], record["prompt_objective"]),
+      methodology: prompt_score(scores["methodology"], record["prompt_methodology"]),
+      publication: prompt_score(scores["publication"], record["prompt_publication"]),
+      transparency: prompt_score(scores["transparency"], record["prompt_transparency"])
     }
+  end
+
+  defp prompt_score(nested, flat) do
+    nested || flat || 50
   end
 
   defp map_evidence_type("court_filing"), do: :document
@@ -385,5 +372,26 @@ defmodule EvidenceGraph.Lithoglyph.Importer do
         total: state.total
       }}
     )
+  end
+
+  defp link_resolved_entity(evidence, ner_string, result) do
+    case result do
+      {:existing, entity} ->
+        create_mentions_edge(evidence.id, entity.id, ner_string, 1.0)
+
+      {:created, entity} ->
+        create_mentions_edge(evidence.id, entity.id, ner_string, 0.8)
+
+      {:suggest_merge, entity, similarity} ->
+        # Link to the existing entity but with lower confidence (fuzzy match)
+        create_mentions_edge(evidence.id, entity.id, ner_string, similarity * 0.9)
+        Logger.info(
+          "Fuzzy match for '#{ner_string}' → '#{entity.primary_name}' " <>
+            "(similarity=#{Float.round(similarity, 3)})"
+        )
+
+      {:error, reason} ->
+        Logger.warning("Failed to resolve entity '#{ner_string}': #{inspect(reason)}")
+    end
   end
 end

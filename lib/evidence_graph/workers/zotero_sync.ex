@@ -47,10 +47,7 @@ defmodule EvidenceGraph.Workers.ZoteroSync do
       {:ok, investigation_ids} ->
         results =
           Enum.map(investigation_ids, fn inv_id ->
-            case Sync.incremental_sync(inv_id) do
-              {:ok, result} -> {:ok, inv_id, result}
-              {:error, reason} -> {:error, inv_id, reason}
-            end
+            sync_investigation(inv_id)
           end)
 
         failed = Enum.filter(results, &match?({:error, _, _}, &1))
@@ -78,5 +75,12 @@ defmodule EvidenceGraph.Workers.ZoteroSync do
     """
 
     ArangoDB.query_read(aql, %{})
+  end
+
+  defp sync_investigation(inv_id) do
+    case Sync.incremental_sync(inv_id) do
+      {:ok, result} -> {:ok, inv_id, result}
+      {:error, reason} -> {:error, inv_id, reason}
+    end
   end
 end

@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraph.Accounts.UserNotifier do
+  @moduledoc "Email notifications for account authentication."
+
   import Swoosh.Email
 
   alias EvidenceGraph.Accounts.User

@@ -11,6 +11,7 @@ defmodule EvidenceGraph.Entities do
 
   alias EvidenceGraph.ArangoDB
   alias EvidenceGraph.Entities.Entity
+  alias EvidenceGraph.Evidence.Evidence
 
   # ---------------------------------------------------------------------------
   # CRUD
@@ -246,33 +247,7 @@ defmodule EvidenceGraph.Entities do
           {:error, :merge_not_found}
 
         {[entry | _rest], remaining_history} ->
-          # Recreate the source entity from the stored snapshot
-          restored_attrs = %{
-            primary_name: entry["merged_primary_name"],
-            entity_type: String.to_existing_atom(entry["merged_entity_type"]),
-            aliases: entry["merged_aliases"] || [],
-            investigation_id: target.investigation_id,
-            metadata: Map.put(entry["merged_metadata"] || %{}, "unmerged_from", target_id)
-          }
-
-          # Remove source aliases from target
-          aliases_to_remove =
-            MapSet.new([entry["merged_primary_name"] | entry["merged_aliases"] || []])
-
-          cleaned_aliases =
-            Enum.reject(target.aliases, &MapSet.member?(aliases_to_remove, &1))
-
-          cleaned_metadata = Map.put(target.metadata, "merge_history", remaining_history)
-
-          with {:ok, restored} <- create_entity_with_id(source_id, restored_attrs),
-               {:ok, _} <-
-                 ArangoDB.update("entities", target_id, %{
-                   aliases: cleaned_aliases,
-                   metadata: cleaned_metadata,
-                   updated_at: DateTime.to_iso8601(DateTime.utc_now())
-                 }) do
-            {:ok, restored}
-          end
+          restore_merged_entity(target, target_id, source_id, entry, remaining_history)
       end
     end
   end
@@ -353,24 +328,7 @@ defmodule EvidenceGraph.Entities do
           {ner_string, {:existing, entity}}
 
         :none ->
-          case find_fuzzy_match(ner_string, existing) do
-            {:ok, entity, similarity} ->
-              {ner_string, {:suggest_merge, entity, similarity}}
-
-            :none ->
-              case create_entity(%{
-                     primary_name: ner_string,
-                     entity_type: :person,
-                     investigation_id: investigation_id,
-                     metadata: %{"source" => "ner_auto"}
-                   }) do
-                {:ok, new_entity} ->
-                  {ner_string, {:created, new_entity}}
-
-                {:error, reason} ->
-                  {ner_string, {:error, reason}}
-              end
-          end
+          resolve_unmatched_entity(ner_string, existing, investigation_id)
       end
     end)
   end
@@ -392,7 +350,7 @@ defmodule EvidenceGraph.Entities do
 
     case ArangoDB.query_read(aql, %{entity_id: entity_id}) do
       {:ok, docs} ->
-        {:ok, Enum.map(docs, &EvidenceGraph.Evidence.Evidence.from_arango_doc/1)}
+        {:ok, Enum.map(docs, &Evidence.from_arango_doc/1)}
 
       error ->
         error
@@ -498,6 +456,61 @@ defmodule EvidenceGraph.Entities do
       end
     else
       {:error, changeset}
+    end
+  end
+
+  defp restore_merged_entity(target, target_id, source_id, entry, remaining_history) do
+    # Recreate the source entity from the stored snapshot
+    restored_attrs = %{
+      primary_name: entry["merged_primary_name"],
+      entity_type: String.to_existing_atom(entry["merged_entity_type"]),
+      aliases: entry["merged_aliases"] || [],
+      investigation_id: target.investigation_id,
+      metadata: Map.put(entry["merged_metadata"] || %{}, "unmerged_from", target_id)
+    }
+
+    # Remove source aliases from target
+    aliases_to_remove =
+      MapSet.new([entry["merged_primary_name"] | entry["merged_aliases"] || []])
+
+    cleaned_aliases =
+      Enum.reject(target.aliases, &MapSet.member?(aliases_to_remove, &1))
+
+    cleaned_metadata = Map.put(target.metadata, "merge_history", remaining_history)
+
+    with {:ok, restored} <- create_entity_with_id(source_id, restored_attrs),
+         {:ok, _} <-
+           ArangoDB.update("entities", target_id, %{
+             aliases: cleaned_aliases,
+             metadata: cleaned_metadata,
+             updated_at: DateTime.to_iso8601(DateTime.utc_now())
+           }) do
+      {:ok, restored}
+    end
+  end
+
+  defp resolve_unmatched_entity(ner_string, existing, investigation_id) do
+    case find_fuzzy_match(ner_string, existing) do
+      {:ok, entity, similarity} ->
+        {ner_string, {:suggest_merge, entity, similarity}}
+
+      :none ->
+        create_ner_entity(ner_string, investigation_id)
+    end
+  end
+
+  defp create_ner_entity(ner_string, investigation_id) do
+    case create_entity(%{
+           primary_name: ner_string,
+           entity_type: :person,
+           investigation_id: investigation_id,
+           metadata: %{"source" => "ner_auto"}
+         }) do
+      {:ok, new_entity} ->
+        {ner_string, {:created, new_entity}}
+
+      {:error, reason} ->
+        {ner_string, {:error, reason}}
     end
   end
 end

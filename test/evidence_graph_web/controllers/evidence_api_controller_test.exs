@@ -20,7 +20,7 @@ defmodule EvidenceGraphWeb.EvidenceApiControllerTest do
   @valid_zotero_item %{
     "key" => "ZTEST001",
     "version" => 7,
-    "library" => %{"id" => 12345},
+    "library" => %{"id" => 12_345},
     "data" => %{
       "key" => "ZTEST001",
       "version" => 7,

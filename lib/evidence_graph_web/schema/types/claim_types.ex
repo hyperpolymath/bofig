@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 defmodule EvidenceGraphWeb.Schema.Types.ClaimTypes do
+  @moduledoc "GraphQL types for claims."
+
   use Absinthe.Schema.Notation
   @desc "A claim in an investigation"
   object :claim do

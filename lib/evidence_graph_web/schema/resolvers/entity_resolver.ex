@@ -8,8 +8,8 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.EntityResolver do
   user's access to the investigation that owns the entity.
   """
 
-  alias EvidenceGraph.Entities
   alias EvidenceGraph.Authorization
+  alias EvidenceGraph.Entities
   import EvidenceGraphWeb.Schema, only: [require_auth: 1]
 
   # ---------------------------------------------------------------------------
@@ -39,14 +39,18 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.EntityResolver do
   @doc "Search entities by name/alias."
   def search_entities(%{query: query} = args, resolution) do
     with {:ok, user_id} <- require_auth(resolution) do
-      if inv_id = args[:investigation_id] do
-        with :ok <- Authorization.check_access(inv_id, user_id, :view) do
-          Entities.search_entities(query, inv_id)
-        end
-      else
-        Entities.search_entities(query, nil)
-      end
+      search_entities_for_user(query, args[:investigation_id], user_id)
     end
+  end
+
+  defp search_entities_for_user(query, inv_id, user_id) when inv_id not in [nil, false] do
+    with :ok <- Authorization.check_access(inv_id, user_id, :view) do
+      Entities.search_entities(query, inv_id)
+    end
+  end
+
+  defp search_entities_for_user(query, _inv_id, _user_id) do
+    Entities.search_entities(query, nil)
   end
 
   # ---------------------------------------------------------------------------
@@ -104,22 +108,26 @@ defmodule EvidenceGraphWeb.Schema.Resolvers.EntityResolver do
       results =
         Entities.resolve_ner_output(ner_strings, inv_id)
         |> Enum.map(fn {ner_string, result} ->
-          case result do
-            {:existing, entity} ->
-              %{ner_string: ner_string, status: :existing, entity: entity, similarity: nil}
-
-            {:suggest_merge, entity, similarity} ->
-              %{ner_string: ner_string, status: :suggest_merge, entity: entity, similarity: similarity}
-
-            {:created, entity} ->
-              %{ner_string: ner_string, status: :created, entity: entity, similarity: nil}
-
-            {:error, _reason} ->
-              %{ner_string: ner_string, status: :error, entity: nil, similarity: nil}
-          end
+          ner_result(ner_string, result)
         end)
 
       {:ok, results}
+    end
+  end
+
+  defp ner_result(ner_string, result) do
+    case result do
+      {:existing, entity} ->
+        %{ner_string: ner_string, status: :existing, entity: entity, similarity: nil}
+
+      {:suggest_merge, entity, similarity} ->
+        %{ner_string: ner_string, status: :suggest_merge, entity: entity, similarity: similarity}
+
+      {:created, entity} ->
+        %{ner_string: ner_string, status: :created, entity: entity, similarity: nil}
+
+      {:error, _reason} ->
+        %{ner_string: ner_string, status: :error, entity: nil, similarity: nil}
     end
   end
 end

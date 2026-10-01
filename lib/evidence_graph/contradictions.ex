@@ -109,18 +109,7 @@ defmodule EvidenceGraph.Contradictions do
       heuristic =
         case ArangoDB.query_read(heuristic_aql, %{investigation_id: investigation_id}) do
           {:ok, h_results} ->
-            Enum.map(h_results, fn r ->
-              %{
-                id: "heuristic_#{r["claim_a"]["_key"]}_#{r["claim_b"]["_key"]}",
-                claim_a: Claim.from_arango_doc(r["claim_a"]),
-                claim_b: Claim.from_arango_doc(r["claim_b"]),
-                type: :same_entity_opposing,
-                severity: 0.3,
-                detected_by: :heuristic,
-                resolved: false,
-                resolution: nil
-              }
-            end)
+            parse_heuristic_contradictions(h_results)
 
           _ ->
             []
@@ -164,7 +153,7 @@ defmodule EvidenceGraph.Contradictions do
       # Most-contradicted claims: count how many contradictions each claim appears in
       claim_counts =
         contradictions
-        |> Enum.flat_map(fn c -> [c.claim_a, c.claim_b] end)
+        |> Enum.flat_map(&[&1.claim_a, &1.claim_b])
         |> Enum.frequencies_by(& &1.id)
         |> Enum.sort_by(fn {_id, count} -> count end, :desc)
         |> Enum.take(20)
@@ -173,8 +162,8 @@ defmodule EvidenceGraph.Contradictions do
         Enum.map(claim_counts, fn {_id, count} ->
           claim =
             contradictions
-            |> Enum.flat_map(fn c -> [c.claim_a, c.claim_b] end)
-            |> Enum.find(fn c -> Enum.any?(claim_counts, fn {cid, _} -> cid == c.id end) end)
+            |> Enum.flat_map(&[&1.claim_a, &1.claim_b])
+            |> Enum.find(&counted_claim?(&1, claim_counts))
 
           %{claim: claim, contradiction_count: count}
         end)
@@ -307,5 +296,24 @@ defmodule EvidenceGraph.Contradictions do
       _ ->
         []
     end
+  end
+
+  defp parse_heuristic_contradictions(h_results) do
+    Enum.map(h_results, fn r ->
+      %{
+        id: "heuristic_#{r["claim_a"]["_key"]}_#{r["claim_b"]["_key"]}",
+        claim_a: Claim.from_arango_doc(r["claim_a"]),
+        claim_b: Claim.from_arango_doc(r["claim_b"]),
+        type: :same_entity_opposing,
+        severity: 0.3,
+        detected_by: :heuristic,
+        resolved: false,
+        resolution: nil
+      }
+    end)
+  end
+
+  defp counted_claim?(claim, claim_counts) do
+    Enum.any?(claim_counts, fn {id, _} -> id == claim.id end)
   end
 end

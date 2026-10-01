@@ -301,11 +301,13 @@ defmodule EvidenceGraph.Provenance do
             first_seen: action["timestamp"],
             last_action: action["timestamp"],
             actor: action["actor"]
-          }, fn existing ->
-            %{existing | last_action: action["timestamp"]}
-          end)
+          }, &update_last_action(&1, action["timestamp"]))
       end
     end)
     |> Map.values()
+  end
+
+  defp update_last_action(existing, timestamp) do
+    %{existing | last_action: timestamp}
   end
 end

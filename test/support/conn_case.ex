@@ -16,6 +16,9 @@ defmodule EvidenceGraphWeb.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL.Sandbox
+  alias EvidenceGraph.Accounts.Scope
+
   using do
     quote do
       # The default endpoint for testing
@@ -32,8 +35,8 @@ defmodule EvidenceGraphWeb.ConnCase do
   end
 
   setup _tags do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(EvidenceGraph.Repo, caller: self())
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
+    pid = Sandbox.start_owner!(EvidenceGraph.Repo, caller: self())
+    on_exit(fn -> Sandbox.stop_owner(pid) end)
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
@@ -48,7 +51,7 @@ defmodule EvidenceGraphWeb.ConnCase do
   """
   def register_and_log_in_user(%{conn: conn} = context) do
     user = EvidenceGraph.AccountsFixtures.user_fixture()
-    scope = EvidenceGraph.Accounts.Scope.for_user(user)
+    scope = Scope.for_user(user)
 
     opts =
       context

@@ -16,8 +16,9 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
 
   use EvidenceGraphWeb, :controller
 
-  alias EvidenceGraph.Evidence
   alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Evidence
+  alias EvidenceGraph.Lithoglyph.Importer
   alias EvidenceGraph.Zotero.Sync
 
   action_fallback :handle_fallback
@@ -241,7 +242,7 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
   def lithoglyph_import(conn, %{"investigation_id" => investigation_id} = params) do
     run_id = params["run_id"] || "import-#{System.unique_integer([:positive])}"
 
-    EvidenceGraph.Lithoglyph.Importer.run_import(investigation_id, run_id: run_id)
+    Importer.run_import(investigation_id, run_id: run_id)
 
     conn
     |> put_status(:accepted)
@@ -280,7 +281,7 @@ defmodule EvidenceGraphWeb.EvidenceApiController do
       }
   """
   def lithoglyph_import_status(conn, _params) do
-    status = EvidenceGraph.Lithoglyph.Importer.status()
+    status = Importer.status()
 
     conn
     |> put_status(:ok)

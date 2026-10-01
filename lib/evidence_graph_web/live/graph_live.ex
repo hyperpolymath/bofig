@@ -16,8 +16,8 @@ defmodule EvidenceGraphWeb.GraphLive do
 
   alias EvidenceGraph.Claims
   alias EvidenceGraph.Evidence
-  alias EvidenceGraph.Relationships
   alias EvidenceGraph.PromptScores
+  alias EvidenceGraph.Relationships
 
   @audience_types [:researcher, :policymaker, :skeptic, :activist, :affected_person, :journalist]
 
@@ -191,22 +191,7 @@ defmodule EvidenceGraphWeb.GraphLive do
     # Collect relationships for all claims
     links =
       claims
-      |> Enum.flat_map(fn claim ->
-        case Relationships.get_node_relationships(claim.id, :claim) do
-          {:ok, rels} ->
-            Enum.map(rels, fn rel ->
-              %{
-                source: rel.from_id,
-                target: rel.to_id,
-                relationship: to_string(rel.relationship_type),
-                weight: rel.weight
-              }
-            end)
-
-          _ ->
-            []
-        end
-      end)
+      |> Enum.flat_map(&claim_links/1)
       |> Enum.uniq_by(fn l -> {l.source, l.target} end)
 
     %{nodes: nodes, links: links}
@@ -253,6 +238,23 @@ defmodule EvidenceGraphWeb.GraphLive do
     case apply(module, function, [investigation_id]) do
       {:ok, items} -> items
       _ -> []
+    end
+  end
+
+  defp claim_links(claim) do
+    case Relationships.get_node_relationships(claim.id, :claim) do
+      {:ok, rels} ->
+        Enum.map(rels, fn rel ->
+          %{
+            source: rel.from_id,
+            target: rel.to_id,
+            relationship: to_string(rel.relationship_type),
+            weight: rel.weight
+          }
+        end)
+
+      _ ->
+        []
     end
   end
 end

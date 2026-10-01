@@ -70,21 +70,7 @@ defmodule EvidenceGraph.IPFS do
       if is_nil(cid) or cid == "" do
         {:ok, %{pinned: false, cid: nil, hash_match: nil}}
       else
-        case check_pin_status(cid) do
-          {:ok, pinned} ->
-            # If we have both a local file and stored SHA-256, verify integrity
-            hash_match =
-              if evidence["local_path"] && evidence["sha256_hash"] do
-                verify_file_hash(evidence["local_path"], evidence["sha256_hash"])
-              else
-                nil
-              end
-
-            {:ok, %{pinned: pinned, cid: cid, hash_match: hash_match}}
-
-          {:error, reason} ->
-            {:error, reason}
-        end
+        verify_evidence_pin(evidence, cid)
       end
     end
   end
@@ -106,14 +92,7 @@ defmodule EvidenceGraph.IPFS do
       if is_nil(cid) or cid == "" do
         :ok
       else
-        with :ok <- unpin_hash(cid),
-             {:ok, _updated} <-
-               ArangoDB.update("evidence", evidence_id, %{
-                 ipfs_hash: nil,
-                 updated_at: DateTime.to_iso8601(DateTime.utc_now())
-               }) do
-          :ok
-        end
+        remove_evidence_pin(evidence_id, cid)
       end
     end
   end
@@ -141,10 +120,7 @@ defmodule EvidenceGraph.IPFS do
       {:ok, evidence_ids} ->
         results =
           Enum.map(evidence_ids, fn eid ->
-            case pin_evidence(eid) do
-              {:ok, result} -> {:ok, result}
-              {:error, reason} -> {:error, %{evidence_id: eid, reason: inspect(reason)}}
-            end
+            pin_with_error_context(eid)
           end)
 
         {successes, failures} =
@@ -286,6 +262,42 @@ defmodule EvidenceGraph.IPFS do
       actual_hash == String.downcase(expected_hash)
     else
       nil
+    end
+  end
+
+  defp verify_evidence_pin(evidence, cid) do
+    case check_pin_status(cid) do
+      {:ok, pinned} ->
+        # If we have both a local file and stored SHA-256, verify integrity
+        hash_match =
+          if evidence["local_path"] && evidence["sha256_hash"] do
+            verify_file_hash(evidence["local_path"], evidence["sha256_hash"])
+          else
+            nil
+          end
+
+        {:ok, %{pinned: pinned, cid: cid, hash_match: hash_match}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp remove_evidence_pin(evidence_id, cid) do
+    with :ok <- unpin_hash(cid),
+         {:ok, _updated} <-
+           ArangoDB.update("evidence", evidence_id, %{
+             ipfs_hash: nil,
+             updated_at: DateTime.to_iso8601(DateTime.utc_now())
+           }) do
+      :ok
+    end
+  end
+
+  defp pin_with_error_context(eid) do
+    case pin_evidence(eid) do
+      {:ok, result} -> {:ok, result}
+      {:error, reason} -> {:error, %{evidence_id: eid, reason: inspect(reason)}}
     end
   end
 end

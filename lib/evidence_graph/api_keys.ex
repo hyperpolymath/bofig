@@ -94,14 +94,7 @@ defmodule EvidenceGraph.ApiKeys do
     case ArangoDB.query_read(aql, %{key_hash: key_hash}) do
       {:ok, [doc]} ->
         if doc["active"] do
-          # Update last_used_at (fire-and-forget, don't block validation)
-          Task.start(fn ->
-            ArangoDB.update("api_keys", doc["_key"], %{
-              last_used_at: DateTime.to_iso8601(DateTime.utc_now())
-            })
-          end)
-
-          {:ok, doc}
+          touch_valid_key(doc)
         else
           {:error, :revoked}
         end
@@ -181,5 +174,16 @@ defmodule EvidenceGraph.ApiKeys do
   defp hash_key(plaintext_key) do
     :crypto.hash(:sha256, plaintext_key)
     |> Base.encode16(case: :lower)
+  end
+
+  defp touch_valid_key(doc) do
+    # Update last_used_at (fire-and-forget, don't block validation)
+    Task.start(fn ->
+      ArangoDB.update("api_keys", doc["_key"], %{
+        last_used_at: DateTime.to_iso8601(DateTime.utc_now())
+      })
+    end)
+
+    {:ok, doc}
   end
 end

@@ -29,8 +29,8 @@ defmodule EvidenceGraphWeb.InvestigationChannel do
 
   use Phoenix.Channel
 
-  alias EvidenceGraph.Collaboration
   alias EvidenceGraph.Authorization
+  alias EvidenceGraph.Collaboration
 
   @max_annotation_length 10_000
 

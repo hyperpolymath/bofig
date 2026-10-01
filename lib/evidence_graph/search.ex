@@ -15,8 +15,8 @@ defmodule EvidenceGraph.Search do
 
   alias EvidenceGraph.ArangoDB
   alias EvidenceGraph.Claims.Claim
-  alias EvidenceGraph.Evidence.Evidence
   alias EvidenceGraph.Entities.Entity
+  alias EvidenceGraph.Evidence.Evidence
 
   # ---------------------------------------------------------------------------
   # Unified search

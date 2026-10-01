@@ -13,6 +13,7 @@ defmodule EvidenceGraph.Investigations do
   """
 
   alias EvidenceGraph.ArangoDB
+  alias EvidenceGraph.Evidence.Evidence
 
   @statuses ~w(active archived closed)
 
@@ -193,16 +194,7 @@ defmodule EvidenceGraph.Investigations do
 
     case ArangoDB.query_read(aql, %{id: id}) do
       {:ok, [result]} ->
-        {:ok,
-         %{
-           evidence_count: result["evidence_count"] || 0,
-           claim_count: result["claim_count"] || 0,
-           entity_count: result["entity_count"] || 0,
-           transaction_count: result["transaction_count"] || 0,
-           relationship_count: result["relationship_count"] || 0,
-           avg_prompt_score: result["avg_prompt_score"] || 50.0,
-           contradiction_count: result["contradiction_count"] || 0
-         }}
+        parse_investigation_stats(result)
 
       {:ok, []} ->
         {:error, :not_found}
@@ -301,7 +293,7 @@ defmodule EvidenceGraph.Investigations do
         parsed =
           Enum.map(results, fn r ->
             %{
-              evidence: EvidenceGraph.Evidence.Evidence.from_arango_doc(r["evidence"]),
+              evidence: Evidence.from_arango_doc(r["evidence"]),
               appears_in_count: r["appears_in_count"]
             }
           end)
@@ -335,4 +327,17 @@ defmodule EvidenceGraph.Investigations do
   Valid investigation statuses.
   """
   def valid_statuses, do: @statuses
+
+  defp parse_investigation_stats(result) do
+    {:ok,
+     %{
+       evidence_count: result["evidence_count"] || 0,
+       claim_count: result["claim_count"] || 0,
+       entity_count: result["entity_count"] || 0,
+       transaction_count: result["transaction_count"] || 0,
+       relationship_count: result["relationship_count"] || 0,
+       avg_prompt_score: result["avg_prompt_score"] || 50.0,
+       contradiction_count: result["contradiction_count"] || 0
+     }}
+  end
 end

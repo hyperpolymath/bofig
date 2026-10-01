@@ -1,10 +1,10 @@
+-- SPDX-License-Identifier: MPL-2.0
 ||| Memory Layout Documentation for Evidence Graph
 |||
 ||| Documents memory layout for C-compatible Evidence Graph structs.
 ||| Actual size/alignment verification happens in Zig via comptime assertions
 ||| (see ffi/zig/src/main.zig).
 |||
-||| SPDX-License-Identifier: MPL-2.0
 ||| Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 
 module EvidenceGraph.ABI.Layout

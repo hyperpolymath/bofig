@@ -213,18 +213,12 @@ defmodule EvidenceGraphWeb.NavigationLive do
     path_data =
       case Navigation.list_paths(investigation_id, audience_type: audience) do
         {:ok, [path | _]} ->
-          case Navigation.get_path_with_nodes(path.id) do
-            {:ok, data} -> data
-            _ -> nil
-          end
+          path_with_nodes(path)
 
         {:ok, []} ->
           case Navigation.auto_generate_path(investigation_id, audience) do
             {:ok, path} ->
-              case Navigation.get_path_with_nodes(path.id) do
-                {:ok, data} -> data
-                _ -> nil
-              end
+              path_with_nodes(path)
 
             _ ->
               nil
@@ -235,6 +229,13 @@ defmodule EvidenceGraphWeb.NavigationLive do
       end
 
     assign(socket, path_data: path_data, loading: false)
+  end
+
+  defp path_with_nodes(path) do
+    case Navigation.get_path_with_nodes(path.id) do
+      {:ok, data} -> data
+      _ -> nil
+    end
   end
 
   defp progress_percent(current, total) when total > 0 do

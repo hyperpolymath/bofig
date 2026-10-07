@@ -12,7 +12,11 @@ defmodule EvidenceGraph.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      # Ratchet, not a target: the suite first ran in CI on 2026-10-07 at
+      # 29.73% line coverage, below Elixir's implicit 90% default. Raise this
+      # as coverage grows; never lower it.
+      test_coverage: [summary: [threshold: 29]]
     ]
   end
 

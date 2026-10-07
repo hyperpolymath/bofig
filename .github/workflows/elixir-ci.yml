@@ -21,7 +21,11 @@ permissions:
 
 jobs:
   elixir-ci:
-    uses: hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml@8f2ee50841e216cd8c192eeb68953118190f105c
+    uses: hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml@1c62ff84348892e4ee23ccf58576f8d1c728ddbe
     with:
       otp-version: "27.3.4.17"
       elixir-version: "1.18.2"
+      # The `mix test` alias runs ecto.create + arango.setup, so the suite
+      # needs both servers (config/test.exs: localhost:5432 and :8529).
+      postgres-image: "postgres:16@sha256:65b16a8b326e0cfbdf33fa7e783f2a0cb352a61448616ccccfd616ef42aa0f65"
+      arangodb-image: "arangodb:3.12@sha256:4bc086d5050ca7ea11c6d00a36d8b910c838bb54ad553f8c1b715769d3499bcf"

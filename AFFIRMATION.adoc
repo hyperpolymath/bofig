@@ -1,0 +1,554 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= AFFIRMATION — bofig, as of 2026-10-09
+Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+:toc:
+:toclevels: 2
+:icons: font
+:doctype: article
+:anchor-sha: 008665f841bbaac6fe8d2d32cff2b9c3d04064e6
+:repo-url: https://github.com/hyperpolymath/bofig
+:runs-url: https://github.com/hyperpolymath/bofig/actions/runs
+:std-url: https://github.com/hyperpolymath/standards/blob/main/docs
+
+_What we affirm was true and checkable about bofig at one exact commit._
+
+[NOTE]
+====
+This file follows Profile A (evidential) of
+link:{std-url}/AFFIRMATION-STANDARD.adoc[the AFFIRMATION authoring standard].
+It is the third of the README / EXPLAINME / AFFIRMATION trio. README says where
+the project is going. EXPLAINME says how it is built. This file says what was
+checked, how, and when. It goes out of date by design.
+====
+
+== What this is, and how it works
+
+bofig (Binary-Origami Figurator) is an Elixir/Phoenix evidence graph for
+investigative journalism. Claims, evidence and relationships are stored in
+ArangoDB (document and graph). Accounts and other relational data are stored in
+PostgreSQL through Ecto. An Absinthe GraphQL API sits on top, with PROMPT
+epistemological scoring and audience-weighted navigation paths. This file is a
+dated receipt for the commit in <<verifiable-anchor>>. It reports which checks
+were run against that commit, what each one returned, and which repository
+documents disagree with those results.
+
+== The epistemic contract
+
+This file records our best belief at the timestamp below. It is not a guarantee
+of correctness. The only guarantee is that nothing is overclaimed on purpose. A
+claim that later proves false is an error to be fixed.
+
+[IMPORTANT]
+====
+*Two kinds of evidence are used here, and they are kept apart.*
+
+. *Local runs.* These were run in this session, on this machine, against the
+  anchor commit checked out as a worktree. They are marked _(local)_.
+. *CI runs at the anchor SHA.* The Elixir test suite could *not* run locally
+  (see <<could-not-run>>). For the suite, this file therefore relies on GitHub
+  Actions runs whose `head_sha` is exactly the anchor commit. This session read
+  those runs and their job logs through the GitHub API. They are marked
+  _(CI at anchor)_ and cite a job id. *They are not local runs.* A reader who
+  distrusts GitHub's runners must re-run them (see <<reproduce>>).
+
+Where a CI result comes from a commit other than the anchor, the file says so
+and does not count it as evidence about the anchor.
+====
+
+What you may conclude:
+
+* Every claim below cites the command or the CI job that produced it in this
+  session. None is copied from a README, a status file or a previous
+  affirmation. An earlier draft of this file, anchored at `cc41782`, was
+  re-measured from scratch rather than carried forward.
+* Where a live result and a repository document disagree, the live result is
+  recorded and the document is listed as contradicted
+  (<<companion-documents>>).
+
+What you may *not* conclude:
+
+* That anything is true at a later commit. Two merges landed on `main` between
+  the earlier draft's anchor (`cc41782`, 2026-10-07T10:03:44Z) and this one
+  (2026-10-07T11:34:22Z).
+* That unlisted things pass. Silence is not a claim.
+* That a green check-run list means every workflow ran. See
+  <<outstanding>>: one workflow run at the anchor has produced no jobs at all.
+
+[[verifiable-anchor]]
+== Verifiable anchor
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+
+| Repo
+| `hyperpolymath/bofig`
+
+| Branch
+| `main`, checked out as the worktree `worktrees/bofig-affirmation` on local
+  branch `docs/affirmation-2026-10-09`, fast-forwarded to `origin/main`
+
+| Commit (HEAD)
+| `008665f841bbaac6fe8d2d32cff2b9c3d04064e6`
+  ("chore(deps-dev): bump dialyxir from 1.4.7 to 1.4.8 (#206)", committed
+  2026-10-07T11:34:22Z). Its parent is `0875df08` ("ci(elixir): re-pin
+  elixir-ci reusable to standards main d7b85cac (#212)"), whose parent is the
+  earlier draft's anchor `cc41782a`. `git diff cc41782a {anchor-sha}` touches
+  two files: `.github/workflows/elixir-ci.yml`, where the reusable pin moves
+  from `1c62ff84348892e4ee23ccf58576f8d1c728ddbe` to
+  `d7b85cac57eb16edf51508d6f30806e86d63c9d3`, and `mix.lock`, where dialyxir
+  moves 1.4.7 → 1.4.8 and erlex 0.2.8 → 0.2.9
+
+| Permalink
+| link:{repo-url}/tree/{anchor-sha}[{repo-url}/tree/{anchor-sha}]
+
+| Verified (UTC)
+| Checks ran or were read 2026-10-09T01:55:32Z to 2026-10-09T08:11:43Z.
+  The local checks ran 01:55:32Z–01:55:54Z, REUSE on an export at 01:58:06Z,
+  and the anchor-scoped gitleaks run at about 08:10Z. CI logs, the check-run
+  census, the commit statuses and the branch rules were read between
+  08:06Z and 08:11:43Z. `git ls-remote origin refs/heads/main` returned the
+  anchor SHA at 01:58:18Z and again at 08:06:29Z.
+
+| Working-tree delta at verification
+| One untracked file, this one (then still the earlier draft).
+  `git status --short --untracked-files=all` printed only `?? AFFIRMATION.adoc`
+  before and after the local checks. REUSE was also run on a `git archive`
+  export of the anchor, which excludes it. Scratch output was written outside
+  the repository.
+
+| Toolchain (local)
+| actionlint 1.7.7; ShellCheck 0.11.0; REUSE 5.0.2; Asciidoctor 2.0.26;
+  gitleaks (the build reports no version string); Nickel 1.17.0, driven by
+  `hyperpolymath/standards` `1-formats/k9/tools/k9-validate.sh` at
+  `1ffe86b308f03cab87e2472ad6cb528012a435b1`; Deno 2.9.3 (the legacy binary,
+  used only to try the existing tests); git 2.47.3; gh 2.96.0. *No Erlang or
+  Elixir ran locally.*
+
+| Toolchain (CI at anchor)
+| Runner image ubuntu-24.04 (20260927.320.1). Erlang/OTP 27, erts 15.2.7.13,
+  requested as `27.3.4.17`. Elixir 1.18.2, built for OTP 27. Read from the logs
+  of jobs 112771119645 and 112771051985. Services, each pinned by digest in its
+  workflow file:
+  `elixir-ci.yml` starts `postgres:16@sha256:65b16a8b…` and
+  `arangodb:3.12@sha256:4bc086d5…` with `docker run` on 127.0.0.1;
+  `elixir.yml` uses `postgres:16-alpine@sha256:79950da3…` and
+  `arangodb:3.12@sha256:95567b13…` as job services. The two workflows pin
+  different digests for `arangodb:3.12`.
+|===
+
+[WARNING]
+====
+If you are reading this at a later commit, the claims may have drifted. Re-run
+the reproduction steps and write a fresh affirmation; do not trust a stale one.
+This file is *anchored only if* the signed commit that adds it has
+`008665f841bbaac6fe8d2d32cff2b9c3d04064e6` as its parent. Otherwise it is a
+draft.
+====
+
+[[companion-documents]]
+== Companion documents and repo metadata (cross-check)
+
+Read these against this file: `README.adoc`, `EXPLAINME.adoc`,
+`TEST-NEEDS.adoc`, `.machine_readable/6a2/STATE.a2ml`, `mix.exs`, `mix.lock`,
+`.mise.toml`, `mise.toml`, `.github/workflows/elixir.yml` and
+`.github/workflows/elixir-ci.yml`.
+
+There is no `bofig_chora.deed`. The repository's descriptive metadata is still
+pre-deed A2ML, including a `.machine_readable/6a2/` directory. Under the
+estate's current rulings, A2ML is retired and no new `6a2/` copy may be
+created. This file records that state and does not change it.
+
+Contradictions found in this session. Each cites the check that exposed it.
+
+[cols="2,2,3",options="header"]
+|===
+| Document says | Measured | How measured
+
+| README Quick Start: run
+  `EvidenceGraph.Lithoglyph.setup_database()`
+| No such function. `setup_database/0` is defined in `EvidenceGraph.ArangoDB`
+  (`lib/evidence_graph/arango.ex:180`)
+| `grep -rn "def setup_database" lib`; the `defmodule` line of `arango.ex`
+
+| README labels `http://localhost:8529` "LithoglyphDB"
+| Port 8529 is the ArangoDB service in both CI workflows. The test alias
+  runs `arango.setup` against it
+| Workflow files (services, `arangodb-image` input); logs of jobs
+  112771051985 and 112771119645 ("ArangoDB setup complete!")
+
+| README seed data: 7 claims, 10 evidence, 10 relationships, 3 paths.
+  EXPLAINME: 7 claims, 30 evidence, 38 relationships, 3 paths
+| Call sites in `priv/repo/seeds.exs`: 7 `Claims.create_claim`, 30
+  `Evidence.create_evidence`, 38 `Relationships.create_relationship`, 6
+  `Navigation.create_path`
+| `grep -oE` on `seeds.exs`. These count call sites in the source, not inserts
+  performed: the seeds were not executed
+
+| EXPLAINME: "15 queries, 11 mutations"
+| 29 `field` entries in the `query do` block and 25 in the `mutation do`
+  block of `lib/evidence_graph_web/schema.ex`
+| `awk` over lines 40–450 and 456–787 for `^    field :`. This is a text
+  count. Imported fields, if any, are not included
+
+| EXPLAINME: "257 tests ... 0 failures"
+| 344 tests, 0 failures, 21 excluded
+| CI at anchor, jobs 112771119645 and 112771051985 (<<solid>>)
+
+| EXPLAINME: "Phase 1 (v1.0.0) is production-ready"
+| README says "Status: Phase 1 (PoC)"
+| Text of both files. No check was run on readiness itself
+
+| README and `mix.exs`: version 1.0.0
+| `STATE.a2ml`: `version = "0.1.0"`
+| Text of both files
+
+| `STATE.a2ml`: `crg-grade = "E"`
+| `TEST-NEEDS.adoc`: "CRG Grade: C — ACHIEVED"
+| Text of both files
+
+| `STATE.a2ml` lists `deno.json`, `tests/**/*.ts` and `TEST-NEEDS.md` as
+  added files
+| None of them exist. The tests are `.js` files (plus one `.affine` file and
+  a placeholder) and the report is `TEST-NEEDS.adoc`
+| `git ls-files`
+
+| `TEST-NEEDS.adoc`: the JS suite has "full coverage"
+| The JS tests do not load. `deno test` selected three files (`aspect`,
+  `e2e`, `property`), and each fails type-checking with
+  `Import "testing/asserts.ts" not a dependency`, because there is no import
+  map
+| _(local)_ `deno test --no-lock --allow-read tests/` returned rc=1. CI job
+  112771052222 (`build` in "Deno CI", `rescript-deno-ci.yml`) failed on
+  `deno task lint` with "deno task couldn't find deno.json(c) or
+  package.json"
+
+| EXPLAINME links `ARCHITECTURE.md` and `ROADMAP.md`, and cites README lines
+  272–306 and 418
+| The files are `ARCHITECTURE.adoc` and `ROADMAP.adoc`. `README.adoc` has 264
+  lines
+| `ls`; `wc -l README.adoc`
+
+| EXPLAINME: "Full RSR compliance"
+| `reuse lint` fails, and four CI jobs at the anchor failed, two of them
+  governance jobs (<<outstanding>>)
+| _(local)_ `reuse lint`; CI at anchor
+
+| EXPLAINME: "Phoenix 1.7+", "ArangoDB 3.11+"
+| `mix.lock` pins phoenix 1.8.15. CI runs `arangodb:3.12`
+| `grep '"phoenix"' mix.lock`; workflow files
+
+| README licence line: "CC-SA-BY-4.0"
+| The SPDX identifier is `CC-BY-SA-4.0`. REUSE reports the MIT licence text
+  missing (used by `assets/vendor/topbar.js`) and the `AGPL-3.0-or-later`
+  text unused
+| _(local)_ `reuse lint`
+
+| `.mise.toml` pins `erlang = "27.2.1"`
+| CI requests OTP `27.3.4.17`. The two Elixir pins agree (1.18.2)
+| `head .mise.toml`; logs of jobs 112771119645 and 112771051985
+
+| `mise.toml`, a second mise file, declares node, python, go, java,
+  `denojs`, npm, yarn and pnpm, all at `latest`
+| The estate language policy bans these runtimes. The governance job
+  "Language / package anti-pattern policy" concluded `success` at the anchor;
+  this session did not establish whether it inspects `mise.toml`
+| `head` and `grep` of `mise.toml`; check-run census. Recorded as observed,
+  not diagnosed
+
+| `.claude/CLAUDE.md`: "Compile (0 warnings required)" and "257 tests"
+| `lib/` compiles with zero warnings under `--warnings-as-errors`, but three
+  dependency warnings and one warning in bofig's own test code remain; 344
+  tests ran
+| Log of job 112771119645 (<<outstanding>>)
+|===
+
+== The honest state (one breath)
+
+At the anchor, CI ran the bofig Elixir suite in two workflows against live
+PostgreSQL and ArangoDB, and both runs passed: 344 tests, 0 failures, 21
+excluded. The standards-reusable `elixir-ci` wrapper, which produced no jobs at
+the earlier draft's anchor, ran here: it compiled `lib/` with warnings as
+errors, passed `mix credo --strict`, and measured 29.73% coverage against a
+floor of 29. Four non-required CI jobs failed, and the "GitHub Pages" run has
+sat pending with no jobs since the anchor landed. Locally, none of the six K9
+contracts conforms under strict validation, and the JS test suite does not
+load. Several repository documents state figures that the code contradicts.
+
+[[solid]]
+=== What is solid (and how we checked)
+
+* *Elixir suite green on live databases, in two workflows* _(CI at anchor)_.
+** Job 112771119645 ("elixir-ci / Compile + test", run
+   {runs-url}/37614987584[37614987584], `.github/workflows/elixir-ci.yml`
+   calling `hyperpolymath/standards/.github/workflows/elixir-ci-reusable.yml`
+   at `d7b85cac57eb16edf51508d6f30806e86d63c9d3`, `head_sha` = anchor).
+   `mix compile --warnings-as-errors` printed `Compiling 95 files (.ex)` and
+   `Generated evidence_graph app`. `mix credo --strict` printed
+   `69 checks on 116 files` and `960 mods/funs, found no issues.`
+   `mix test --cover` (seed 258226) printed `344 tests, 0 failures, 21
+   excluded` and `29.73% | Total`. The job concluded `success`.
+** Job 112771051985 ("Build and test", run
+   {runs-url}/37614986623[37614986623], the legacy
+   `.github/workflows/elixir.yml`, `head_sha` = anchor) ran plain `mix test`
+   with `MIX_ENV=test`. Its log reads `344 tests, 0 failures, 21 excluded`,
+   and every step concluded `success`.
+** In both, the log shows `Excluding tags: [external_repo_contract: true]`.
+   The 21 exclusions are the `@moduletag :external_repo_contract` module
+   `test/evidence_graph/pipeline_contract_test.exs`, excluded by
+   `test/test_helper.exs:8`. They were not run.
+* *The coverage floor was exercised and met* _(CI at anchor)_. `mix.exs:19`
+  declares `test_coverage: [summary: [threshold: 29]]`, and job 112771119645
+  measured `29.73% | Total`.
+* *Secret scanning, two instruments agree* _(local and CI at anchor)_.
+  Locally, gitleaks used the repository's `.gitleaks.toml`, which extends the
+  estate baseline `standards/config/gitleaks/estate-baseline.toml`, staged as
+  the reusable workflow stages it. Scoped to the anchor's history
+  (`--log-opts={anchor-sha}`), it reported `320 commits scanned` and
+  `no leaks found` (rc=0). The default run over every ref in the local clone
+  reported `337 commits scanned` and `no leaks found` (rc=0). With `--no-git`
+  on the working tree it reported `no leaks found` (rc=0). *Positive control:*
+  the same configuration found 2 leaks (rc=1) in a planted file, held in the
+  scratch directory outside the repository, containing an AWS-style key and a
+  `ghp_` token. In CI, `scan / gitleaks` concluded `success`. At 08:08:14Z,
+  `rules/branches/main` returned the rule types `deletion`,
+  `non_fast_forward` and `required_status_checks`, and `scan / gitleaks` was
+  the only required context.
+* *Other CI checks at the anchor that concluded `success`*. Check-runs fetched
+  at 08:08:14Z with
+  `gh api --paginate .../commits/{anchor-sha}/check-runs?per_page=100`
+  returned 45 runs: 38 `success`, 4 `failure` and 3 `skipped`. Two of the 45
+  are Dependabot update jobs created at 2026-10-09T06:12Z, which attach to
+  `main`'s head; an earlier fetch, at about 02:53Z, returned 43. The commit
+  carries one legacy commit status, `Codeac analyze results` = `success`. The
+  successes include CodeQL (`actions`, `javascript-typescript`), SonarCloud
+  Code Analysis, SonarQube, Scorecard, all seven mirror jobs, the K9 gate,
+  `boj-build`, and the 11 governance jobs (of 15 in run 37614987497) that
+  neither failed nor were skipped. These are what CI reported. This session
+  did not re-derive any of them.
+* *Workflow YAML parses* _(local)_. `actionlint` reported 28 findings, all
+  `[shellcheck]` findings on `run:` blocks. It reported no syntax, expression
+  or schema errors. Most of the findings are in `dogfood-gate.yml` (12) and
+  `hypatia-scan.yml` (12). There is one each in `elixir.yml`,
+  `generator-generic-ossf-slsa3-publish.yml`, `pages.yml` and
+  `workflow-linter.yml`.
+* *AsciiDoc builds clean* _(local)_. `asciidoctor -v` on `README.adoc`,
+  `EXPLAINME.adoc`, `ARCHITECTURE.adoc`, `ROADMAP.adoc` and `TEST-NEEDS.adoc`
+  exited 0 with no warnings.
+* *Shell scripts* _(local)_. `shellcheck setup.sh .github/hooks/*.sh` returned
+  rc=1, but only on 2 `info`-level notes (SC2094). There were no warnings or
+  errors.
+
+=== The honest nuance you must not lose
+
+* *The elixir-ci success is a measured change, not a diagnosed fix.* At the
+  earlier draft's anchor `cc41782`, run 37604869992 of `elixir-ci.yml`
+  concluded `failure` with 0 jobs. Between that commit and this anchor, the
+  only workflow change is the reusable pin (#212). The runs at the parent
+  `0875df08` (37612832435) and at this anchor succeeded. An estate finding of
+  2026-10-07 attributes the failure to the old pin, `1c62ff84`, which names a
+  pre-squash commit of standards#1190 whose branch was deleted at merge. This
+  session measured only part of that: no ref on the standards remote points
+  at `1c62ff84` (`git ls-remote`), and no remote-tracking branch in the local
+  standards clone contains it. How GitHub resolved the pin at run time was
+  not measured, so the cause is reported as that finding's, not as this
+  file's.
+* *The coverage margin is thin.* 29.73% against a floor of 29 is a margin of
+  0.73 points. #211 added the floor as a ratchet at the measured figure; it
+  is not a target. Only the `elixir-ci` job measures coverage; the legacy job
+  runs plain `mix test`.
+* *Dialyzer did not run.* The job's inputs show `enable_dialyzer: false`.
+  That is the reusable workflow's default, and the caller does not set it.
+  This file makes no claim about Dialyzer.
+* *Two workflows carry the same name.* `elixir.yml` and `elixir-ci.yml` are
+  both named "Elixir CI", so their badges and run lists are easy to confuse.
+* *"Tests pass" is about the Elixir suite only.* The JS files under `tests/`
+  (unit, property, e2e, aspect, bench) are a separate suite. That suite does
+  not load (<<outstanding>>).
+* *The K9 gate passing in CI does not mean the contracts conform.* CI's
+  "Validate K9 contracts" (job 112771052300, `.github/hooks/validate-k9.sh`)
+  printed `Errors: 0` and `Warnings: 0` for the same 6 files that the
+  standards validator rejects under `--strict`. The two instruments ask
+  different questions. The CI gate is the weaker of the two.
+* *The Hypatia baseline gate could not see three alert classes.* Its log
+  (job 112771126155) reads `Dependabot alerts unavailable`,
+  `Secret-scanning alerts unavailable` and
+  `Code-scanning alerts unavailable`, each with `GITHUB_TOKEN not set`. Those
+  alert classes were outside that gate's reach at the anchor. This file makes
+  no claim about them.
+
+=== Known-incomplete but honestly fenced
+
+* *Excluded external contract tests.* The 21 `external_repo_contract` tests
+  are opt-in and are excluded by default in `test_helper.exs`, so they are
+  excluded loudly rather than skipped silently. They were not run.
+* *K9 templates are unfilled by design.* `template-hunt`, `template-kennel` and
+  `template-yard` carry placeholder `pedigree` fields, which the strict
+  validator names with `K9-S003` and `K9-S005`. They fail loudly.
+
+[[outstanding]]
+=== Outstanding / weak / refuted (no spin)
+
+* *A workflow run at the anchor has produced no jobs.* "GitHub Pages" run
+  {runs-url}/37614986624[37614986624] (`.github/workflows/casket-pages.yml`,
+  push, `head_sha` = anchor) has been `pending` with *0 jobs* since
+  2026-10-07T11:34:25Z. It was still `pending` with 0 jobs at 08:11:18Z. The
+  workflow declares `concurrency: group: "pages"` with
+  `cancel-in-progress: false`. The group is held by the parent commit's run
+  37612831304: its `build` job concluded `success` and its `deploy` job is
+  `waiting` on environment `github-pages`. `pending_deployments` for that run
+  returns `github-pages`, `wait_timer` 0, `current_user_can_approve` false and
+  no reviewers. The environment has one protection rule, a branch policy
+  allowing `main`, and no reviewers or wait timer. *Why the deploy is waiting
+  is undetermined.* The Pages run at `cc41782` (37604869375) completed with
+  `success`. This run is invisible in the check-runs list above. It shows up
+  only through the workflow-runs API, which is the failure mode the
+  affirmation standard warns about.
+* *Failed CI jobs at the anchor (non-required).*
+** `governance / Workflow security linter` (job 112771056867):
+   `ERROR: .github/workflows/boj-build.yml missing top-level 'permissions:'
+   declaration`.
+** `governance / Validate Hypatia Baseline` (job 112771126155): the scan line
+   reads `21 findings >= medium (critical=7, high=2, medium=12, low=0,
+   info=0)`, then `Gate failed: 3 unfiltered finding(s) at or above 'info'`.
+   The three unfiltered findings are `missing_permissions` and
+   `missing_timeout_minutes` in `boj-build.yml`, and Scorecard
+   `TokenPermissions`.
+** "Hypatia Neurosymbolic Analysis" (job 112771052272, run 37614986567 of
+   `hypatia-scan.yml`): an infrastructure failure, not a finding.
+   `Could not mix rebar from any hex.pm mirror`, then
+   `Path does not exist: hypatia.sarif`.
+** `build` in "Deno CI" (job 112771052222, run 37614986570 of
+   `rescript-deno-ci.yml`): `deno task couldn't find deno.json(c) or
+   package.json`. The repository tracks `deno.lock` but no manifest.
+* *Compile warnings* _(CI at anchor)_. The zero-warnings rule in
+  `.claude/CLAUDE.md` is now enforced and met for `lib/`, but not for test
+  code or dependencies. In job 112771119645, `mix compile
+  --warnings-as-errors` passed on the 95 files of `lib/`. Three warnings
+  appear earlier, in `mix deps.compile`, which is not gated. Two are
+  `VelocyPack.encode!/1` and `VelocyPack.decode!/1` undefined, in the
+  `arangox` dependency (`lib/arangox/connection.ex:2240` and `:2353`). One is
+  an unused clause of `defp expected_error?/1`, in the `oban` dependency
+  (`lib/oban/repo.ex:253`). A fourth warning is bofig's own: during
+  `mix test --cover`, the default value of the last optional argument of
+  `run_query/3` is never used
+  (`test/evidence_graph_web/schema/authorization_test.exs:31`). Test code is
+  not under the strict compile. The legacy job 112771051985 shows the same
+  four warnings.
+* *JS test suite does not load* _(local)_. `deno test --no-lock --allow-read
+  tests/` returned rc=1 with `TS2307 ... Import "testing/asserts.ts" not a
+  dependency` for each of the three files it selected. The estate runtime is
+  now Bun, and these tests have not been ported.
+* *K9 contracts: 0 of 6 conform* _(local)_. `k9-validate.sh --strict` was run
+  from a directory outside the repository, because inside it an untrusted
+  `mise.toml` makes every Nickel call fail before validation begins. Results:
+  `examples/ci-config` and `examples/project-metadata` fail with `K9-N001`
+  (the `K9.Component` contract is broken). `examples/setup-repo` fails with
+  `K9-S007`, `K9-S009` and `K9-S010` (capabilities not covered by the grant,
+  no signature, empty `side_effects`). `template-hunt` fails with `K9-S003`,
+  `K9-S005`, `K9-S007`, `K9-S009` and `K9-S010`. `template-kennel` fails with
+  `K9-N001` (extra field `export`), `K9-S003` and `K9-S005`. `template-yard`
+  fails with `K9-S003` and `K9-S005`. These are the same codes, file for file,
+  as the run against `cc41782`.
+* *REUSE non-compliant* _(local)_. `reuse lint` on a `git archive` export of
+  the anchor returned rc=1. Copyright information is present in 179 of 318
+  files and licence information in 254 of 318. The MIT text is missing and
+  the AGPL text is unused. `0-AI-MANIFEST.a2ml` holds an SPDX expression that
+  cannot be parsed. In the worktree, the untracked draft of this file adds a
+  319th file.
+* *Stale status documents.* `STATE.a2ml` (dated 2026-04-04), `TEST-NEEDS.adoc`
+  and `EXPLAINME.adoc` are contradicted on the points listed in
+  <<companion-documents>>. The live results above supersede them.
+
+[[could-not-run]]
+=== What could not run in this session
+
+* *The Elixir suite, locally.* The machine's toolchain store
+  (`developer/tools/opt/mise/installs`) holds no `erlang` 27.2.1 and no
+  `elixir` 1.18.2-otp-27, the versions `.mise.toml` pins. Installing them was
+  not authorised. A local run would also need `mix deps.get`, which writes
+  `deps/` into the tree, and running PostgreSQL and ArangoDB servers.
+* *`mix format --check-formatted`, `mix dialyzer`, the seeds.* None of these
+  ran locally, and neither CI job at the anchor ran them. This file makes no
+  claim about them.
+* *Docstring coverage.* `standards/.githooks/docstring-scan.sh` scores the
+  functions a diff touches. At a snapshot with no code change it has nothing
+  to score, so it gives no verdict. It was not used as evidence.
+
+[[reproduce]]
+== Reproduce it yourself
+
+[source,bash]
+----
+git clone https://github.com/hyperpolymath/bofig && cd bofig
+git checkout 008665f841bbaac6fe8d2d32cff2b9c3d04064e6
+
+# Elixir suite (needs OTP 27 + Elixir 1.18.2, Postgres on :5432 and
+# ArangoDB on :8529 as in config/test.exs)
+mix deps.get
+mix compile --warnings-as-errors  # expect: Generated evidence_graph app
+mix credo --strict                # expect: found no issues
+mix test --cover                  # expect: 344 tests, 0 failures,
+                                  # 21 excluded; 29.73% | Total (floor 29)
+
+# CI evidence at the anchor
+S=008665f841bbaac6fe8d2d32cff2b9c3d04064e6
+gh api --paginate \
+  "repos/hyperpolymath/bofig/commits/$S/check-runs?per_page=100" \
+  -q '.check_runs[] | [.name, .conclusion] | @tsv'   # 45 rows at 08:08Z
+gh api --paginate \
+  "repos/hyperpolymath/bofig/commits/$S/statuses?per_page=100" \
+  -q '.[] | [.context, .state] | @tsv'               # Codeac, success
+gh api --paginate \
+  "repos/hyperpolymath/bofig/actions/runs?head_sha=$S&per_page=100" \
+  -q '.workflow_runs[] | [.id, .path, .status, .conclusion] | @tsv'
+gh api "repos/hyperpolymath/bofig/actions/runs/37614986624/jobs" \
+  -q .total_count                         # 0 while the Pages run is pending
+gh api repos/hyperpolymath/bofig/actions/jobs/112771119645/logs \
+  | grep -E 'tests, |\| Total|found no issues'
+
+# Local checks
+actionlint                           # expect 28 [shellcheck], no others
+shellcheck setup.sh .github/hooks/*.sh            # expect 2 info notes
+git archive --format=tar HEAD | (mkdir -p /tmp/bofig-export &&
+  tar -x -C /tmp/bofig-export) && (cd /tmp/bofig-export && reuse lint)
+                                     # expect non-compliant (see above)
+cp <standards>/config/gitleaks/estate-baseline.toml .gitleaks-estate.toml
+gitleaks detect --source . --config .gitleaks.toml --log-opts="$S"
+                                     # expect 320 commits, no leaks found
+(cd /tmp && for f in "$OLDPWD"/contractiles/k9/examples/*.k9.ncl \
+   "$OLDPWD"/contractiles/k9/*.k9.ncl; do
+   <standards>/1-formats/k9/tools/k9-validate.sh --strict "$f"; done)
+                                     # expect 6 of 6 non-conforming
+----
+
+== One-line characterisation (quote this)
+
+At `008665f8`, bofig's Elixir suite passed in CI against live PostgreSQL and
+ArangoDB in two workflows (344 tests, 0 failures, 21 excluded; jobs
+112771119645 and 112771051985), with `lib/` compiling warning-free, credo
+clean, and coverage at 29.73% against a floor of 29. Four non-required CI jobs
+failed, a Pages run has sat pending with no jobs, none of the six K9 contracts
+conforms, and its README, EXPLAINME and status files overstate or misstate
+what the code contains.
+
+== Joint attestation
+
+[cols="1,3",options="header"]
+|===
+| Party | Attestation
+
+| Engineering party (AI)
+| Model `claude-opus-5-5` (Claude Code agent). Ran or read the checks above
+  between 2026-10-09T01:55:32Z and 2026-10-09T08:11:43Z against
+  `008665f841bbaac6fe8d2d32cff2b9c3d04064e6`. The wording of this file is a
+  faithful report of those runs. Local runs and CI runs are labelled as such.
+  Every refuted or failing result found is listed above, and none was
+  omitted. The AI did not commit or sign this file.
+
+| Owner / maintainer
+| Jonathan D.A. Jewell. Signs by committing this file with `git commit -S`
+  (`id_ed25519_signing`), with the anchor commit as the parent. The signed
+  commit is the affirmation.
+|===
